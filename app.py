@@ -14,7 +14,7 @@ def get_pdf_text(pdf_docs):
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
-            text += page.extract_text()
+            text += page.extract_text() or ""
     return text
 
 def get_text_chunks(text):
@@ -23,6 +23,8 @@ def get_text_chunks(text):
     return chunks
 
 def get_vectorstore(text_chunks):
+    if not text_chunks:
+        raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
@@ -65,8 +67,11 @@ def main():
             with st.spinner("Processing"):
                 raw_text = get_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
-                vectorstore = get_vectorstore(text_chunks)
-                st.session_state.conversation = get_conversation_chain(vectorstore)
+                if text_chunks:
+                    vectorstore = get_vectorstore(text_chunks)
+                    st.session_state.conversation = get_conversation_chain(vectorstore)
+                else:
+                    st.error("No valid text extracted from PDFs. Please check your documents.")
 
 if __name__ == '__main__':
     main()
