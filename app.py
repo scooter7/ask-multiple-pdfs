@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -22,8 +23,8 @@ def get_text_chunks(text):
     return chunks
 
 def get_vectorstore(text_chunks):
-    openai_api_key = st.secrets["openai_api_key"]
-    embeddings = OpenAIEmbeddings(api_key=openai_api_key)
+    os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
+    embeddings = OpenAIEmbeddings()
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
