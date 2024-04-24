@@ -48,7 +48,7 @@ def handle_userinput(user_question):
 
 def main():
     # Set the configuration for the page, including a custom icon
-    st.set_page_config(page_title="Ask Whatever My Name Will Be", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2023/01/Carnegie-Favicon_1920x750_WHITE-RED.jpg")
+    st.set_page_config(page_title="Ask Whatever My Name Will Be", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
 
     # Initialize session state if necessary
@@ -57,8 +57,13 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    # Header with the image
-    header_html = f'<h1 style="font-weight:bold;">Ask Whatever My Name Will Be <img src="https://www.carnegiehighered.com/wp-content/uploads/2023/01/Carnegie-Favicon_1920x750_WHITE-RED.jpg" alt="Icon" style="height:42px; width:42px; vertical-align:middle;"></h1>'
+    # Header with the image centered below the text
+    header_html = """
+    <div style="text-align: center;">
+        <h1 style="font-weight: bold;">Ask Whatever My Name Will Be</h1>
+        <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:75px; width:200px;">
+    </div>
+    """
     st.markdown(header_html, unsafe_allow_html=True)
     
     # Input field for user questions
