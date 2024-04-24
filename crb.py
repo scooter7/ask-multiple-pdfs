@@ -47,15 +47,21 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
-    st.set_page_config(page_title="Ask Whatever My Name Will Be", page_icon=":books:")
+    # Set the configuration for the page, including a custom icon
+    st.set_page_config(page_title="Ask Whatever My Name Will Be", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2023/01/Carnegie-Favicon_1920x750_WHITE-RED.jpg")
     st.write(css, unsafe_allow_html=True)
 
+    # Initialize session state if necessary
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Ask Whatever My Name Will Be :books:")
+    # Header with the image
+    header_html = f'<h1 style="font-weight:bold;">Ask Whatever My Name Will Be <img src="https://www.carnegiehighered.com/wp-content/uploads/2023/01/Carnegie-Favicon_1920x750_WHITE-RED.jpg" alt="Icon" style="height:42px; width:42px; vertical-align:middle;"></h1>'
+    st.markdown(header_html, unsafe_allow_html=True)
+    
+    # Input field for user questions
     user_question = st.text_input("Ask about anything Carnegie:")
     if user_question:
         handle_userinput(user_question)
