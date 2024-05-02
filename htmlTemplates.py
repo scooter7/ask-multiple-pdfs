@@ -4,7 +4,7 @@ css = '''
     padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; display: flex
 }
 .chat-message.user {
-    background-color: #002633
+    background-color: #740b0b
 }
 .chat-message.bot {
     background-color: #475063
