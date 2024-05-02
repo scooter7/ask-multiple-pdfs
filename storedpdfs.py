@@ -14,15 +14,24 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/docs/"
 
 def get_github_pdfs(repo_url):
-    # Correctly format the API URL to list files under the 'docs' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
+    
+    # Debugging: Print the status code and response data
+    print("Status Code:", response.status_code)
+    print("Response JSON:", response.json())
+    
     files = response.json()
+    
+    # Check if the response contains an expected list
+    if not isinstance(files, list):
+        st.error("Failed to fetch files. Response was not a list.")
+        return []
     
     pdf_docs = []
     for file in files:
-        if file['name'].endswith('.pdf'):
+        if 'name' in file and file['name'].endswith('.pdf'):
             pdf_url = file['download_url']
             response = requests.get(pdf_url)
             pdf_docs.append(BytesIO(response.content))
