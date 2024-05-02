@@ -14,24 +14,15 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/docs/"
 
 def get_github_pdfs(repo_url):
+    # Correctly format the API URL to list files under the 'docs' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
-    
-    # Debugging: Print the status code and response data
-    print("Status Code:", response.status_code)
-    print("Response JSON:", response.json())
-    
     files = response.json()
-    
-    # Check if the response contains an expected list
-    if not isinstance(files, list):
-        st.error("Failed to fetch files. Response was not a list.")
-        return []
     
     pdf_docs = []
     for file in files:
-        if 'name' in file and file['name'].endswith('.pdf'):
+        if file['name'].endswith('.pdf'):
             pdf_url = file['download_url']
             response = requests.get(pdf_url)
             pdf_docs.append(BytesIO(response.content))
@@ -59,14 +50,10 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    try:
-        llm = ChatOpenAI()
-        memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-        conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
-        return conversation_chain
-    except AttributeError as error:
-        st.error(f"Failed to initialize conversation chain: {error}")
-        return None
+    llm = ChatOpenAI()
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+    return conversation_chain
 
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question})
@@ -89,13 +76,7 @@ def main():
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
-
-    # Initialize session state for conversation and chat history if they don't already exist
-    if "conversation" not in st.session_state:
-        st.session_state.conversation = None
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-
+    
     # Retrieve PDFs from GitHub
     pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
     if pdf_docs:
@@ -106,11 +87,8 @@ def main():
             st.session_state.conversation = get_conversation_chain(vectorstore)
 
     user_question = st.text_input("Ask about anything Carnegie:")
-    if user_question and st.session_state.conversation:
+    if user_question:
         handle_userinput(user_question)
-    elif user_question:
-        st.error("The conversation model is not initialized. Please check document processing.")
 
 if __name__ == '__main__':
     main()
-
