@@ -66,12 +66,12 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
-    st.set_page_config(page_title="Carnegie Artifical Intelligence (CAI)", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
+    st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
 
     header_html = """
     <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Ask CAI</h1>
+        <h1 style="font-weight: bold;">Carnegie Artifical Intelligence - CAI</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
     </div>
     """
