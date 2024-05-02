@@ -14,8 +14,8 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/docs/"
 
 def get_github_pdfs(repo_url):
-    # Construct the API URL to list files under the 'docs' directory
-    api_url = f"https://api.github.com/repos{scooter7/ask-multiple-pdfs/contents/docs}"
+    # Correctly format the API URL to list files under the 'docs' directory
+    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
     files = response.json()
