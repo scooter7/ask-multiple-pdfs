@@ -50,10 +50,14 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
-    return conversation_chain
+    try:
+        llm = ChatOpenAI()
+        memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+        conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+        return conversation_chain
+    except AttributeError as error:
+        st.error(f"Failed to initialize conversation chain: {error}")
+        return None
 
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question})
