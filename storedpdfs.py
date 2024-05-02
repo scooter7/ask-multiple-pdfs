@@ -69,6 +69,12 @@ def main():
     st.set_page_config(page_title="Ask Whatever My Name Will Be", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
 
+    header_html = """
+    <div style="text-align: center;">
+        <h1 style="font-weight: bold;">Ask Whatever My Name Will Be</h1>
+        <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+    </div>
+    """
     st.markdown(header_html, unsafe_allow_html=True)
     
     # Retrieve PDFs from GitHub
@@ -86,3 +92,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
