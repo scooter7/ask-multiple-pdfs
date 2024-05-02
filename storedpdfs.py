@@ -89,7 +89,13 @@ def main():
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
-    
+
+    # Initialize session state for conversation and chat history if they don't already exist
+    if "conversation" not in st.session_state:
+        st.session_state.conversation = None
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
     # Retrieve PDFs from GitHub
     pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
     if pdf_docs:
@@ -100,8 +106,11 @@ def main():
             st.session_state.conversation = get_conversation_chain(vectorstore)
 
     user_question = st.text_input("Ask about anything Carnegie:")
-    if user_question:
+    if user_question and st.session_state.conversation:
         handle_userinput(user_question)
+    elif user_question:
+        st.error("The conversation model is not initialized. Please check document processing.")
 
 if __name__ == '__main__':
     main()
+
