@@ -10,12 +10,23 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from io import BytesIO
+import json
 
 def fetch_pdfs_from_github(github_url):
     response = requests.get(github_url)
-    data = response.json()
-    pdf_urls = [file['download_url'] for file in data if file['name'].endswith('.pdf')]
-    return pdf_urls
+    try:
+        data = response.json()
+        if isinstance(data, list):
+            pdf_urls = [file['download_url'] for file in data if file['name'].endswith('.pdf')]
+            return pdf_urls
+        else:
+            st.error("Unexpected response structure from GitHub API.")
+            print("Response from GitHub API:", json.dumps(data, indent=2))
+            return []
+    except json.JSONDecodeError:
+        st.error("Failed to decode the response from GitHub.")
+        print("Response content:", response.text)
+        return []
 
 def download_pdfs(pdf_urls):
     pdf_docs = []
@@ -87,7 +98,6 @@ def main():
         uploaded_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
 
         if uploaded_vectorstore:
-            # Display instructions and questions area
             st.subheader("Ask a Question")
             user_question = st.text_input("Ask a question about your uploaded document:")
 
@@ -95,9 +105,7 @@ def main():
             conversation_chain = initialize_conversation(uploaded_vectorstore) if uploaded_vectorstore else None
 
             if user_question and conversation_chain:
-                # The bot responds based on the uploaded document's content
                 handle_userinput(conversation_chain, user_question)
-
         else:
             st.error("No valid text extracted from the uploaded PDF. Please check your document.")
 
