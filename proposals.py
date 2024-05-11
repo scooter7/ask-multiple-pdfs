@@ -87,13 +87,17 @@ def main():
         uploaded_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
 
         if uploaded_vectorstore:
-            # Initialize the conversation chain with existing proposals' content
-            conversation_chain = initialize_conversation(existing_vectorstore) if existing_vectorstore else None
-
+            # Display instructions and questions area
             st.subheader("Ask a Question")
-            user_question = st.text_input("Ask a question about your document based on the existing proposals:")
+            user_question = st.text_input("Ask a question about your uploaded document:")
+
+            # Initialize the conversation chain with the uploaded document's content
+            conversation_chain = initialize_conversation(uploaded_vectorstore) if uploaded_vectorstore else None
+
             if user_question and conversation_chain:
+                # The bot responds based on the uploaded document's content
                 handle_userinput(conversation_chain, user_question)
+
         else:
             st.error("No valid text extracted from the uploaded PDF. Please check your document.")
 
