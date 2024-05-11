@@ -80,13 +80,13 @@ def main():
     st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
-    # Load and process the existing PDFs from GitHub
+    # Load and process the existing PDFs from GitHub as the knowledge base
     github_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     pdf_urls = fetch_pdfs_from_github(github_url)
-    existing_pdfs = download_pdfs(pdf_urls)
-    existing_text = get_pdf_text(existing_pdfs)
-    existing_chunks = get_text_chunks(existing_text)
-    existing_vectorstore = get_vectorstore(existing_chunks) if existing_chunks else None
+    knowledge_pdfs = download_pdfs(pdf_urls)
+    knowledge_text = get_pdf_text(knowledge_pdfs)
+    knowledge_chunks = get_text_chunks(knowledge_text)
+    knowledge_vectorstore = get_vectorstore(knowledge_chunks) if knowledge_chunks else None
 
     st.header("Proposal Exploration Tool :books:")
 
@@ -95,17 +95,26 @@ def main():
     if uploaded_pdf:
         user_uploaded_text = get_pdf_text([uploaded_pdf])
         user_uploaded_chunks = get_text_chunks(user_uploaded_text)
-        uploaded_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
+        user_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
 
-        if uploaded_vectorstore:
-            st.subheader("Ask a Question")
-            user_question = st.text_input("Ask a question about your uploaded document:")
+        if user_vectorstore:
+            st.subheader("Ask a Question About the Uploaded Document")
+            user_question = st.text_input("What do you want to know about the uploaded document?")
 
             # Initialize the conversation chain with the uploaded document's content
-            conversation_chain = initialize_conversation(uploaded_vectorstore) if uploaded_vectorstore else None
+            user_conversation_chain = initialize_conversation(user_vectorstore) if user_vectorstore else None
 
-            if user_question and conversation_chain:
-                handle_userinput(conversation_chain, user_question)
+            if user_question and user_conversation_chain:
+                st.subheader("Responses Based on the Uploaded Document")
+                handle_userinput(user_conversation_chain, user_question)
+
+            st.subheader("Ask How Existing Knowledge Applies")
+            knowledge_question = st.text_input("How can the existing knowledge be applied here?")
+
+            # Use the existing knowledge to answer how it can be applied to the uploaded document
+            if knowledge_question and knowledge_vectorstore:
+                knowledge_conversation_chain = initialize_conversation(knowledge_vectorstore)
+                handle_userinput(knowledge_conversation_chain, knowledge_question)
         else:
             st.error("No valid text extracted from the uploaded PDF. Please check your document.")
 
