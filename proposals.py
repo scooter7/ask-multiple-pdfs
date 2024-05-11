@@ -80,14 +80,14 @@ def main():
     st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
+    st.header("Proposal Exploration Tool :books:")
+
     # Load and process the existing PDFs from GitHub as part of the knowledge base
     github_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     pdf_urls = fetch_pdfs_from_github(github_url)
     knowledge_pdfs = download_pdfs(pdf_urls)
     knowledge_text = get_pdf_text(knowledge_pdfs)
     knowledge_chunks = get_text_chunks(knowledge_text)
-
-    st.header("Proposal Exploration Tool :books:")
 
     # Upload and process the user's new proposal requirements
     uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
@@ -96,25 +96,28 @@ def main():
         user_uploaded_chunks = get_text_chunks(user_uploaded_text)
 
         # Create a combined context from both the uploaded document and the existing knowledge
-        combined_text_chunks = knowledge_chunks + user_uploaded_chunks
-        combined_vectorstore = get_vectorstore(combined_text_chunks) if combined_text_chunks else None
+        combined_text = knowledge_text + "\n" + user_uploaded_text
+        combined_chunks = get_text_chunks(combined_text)
+        combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
 
         if combined_vectorstore:
             st.subheader("Ask a Question About the Uploaded Document")
             user_question = st.text_input("What do you want to know about the uploaded document?")
 
-            # Initialize the conversation chain with the combined context
-            combined_conversation_chain = initialize_conversation(combined_vectorstore) if combined_vectorstore else None
+            # Directly use uploaded document's context for specific questions
+            user_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
+            user_conversation_chain = initialize_conversation(user_vectorstore) if user_vectorstore else None
 
-            if user_question and combined_conversation_chain:
+            if user_question and user_conversation_chain:
                 st.subheader("Responses Based on the Uploaded Document")
-                handle_userinput(combined_conversation_chain, user_question)
+                handle_userinput(user_conversation_chain, user_question)
 
             st.subheader("Ask How Existing Knowledge Applies")
             knowledge_question = st.text_input("How can the existing knowledge be applied here?")
 
-            # Answer how the existing knowledge can be applied using the same combined context
-            if knowledge_question and combined_conversation_chain:
+            # Use the combined context to answer how existing knowledge can be applied
+            if knowledge_question and combined_vectorstore:
+                combined_conversation_chain = initialize_conversation(combined_vectorstore)
                 st.subheader("Application of Existing Knowledge")
                 handle_userinput(combined_conversation_chain, knowledge_question)
         else:
