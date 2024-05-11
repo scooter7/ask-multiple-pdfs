@@ -12,7 +12,6 @@ from htmlTemplates import css, bot_template, user_template
 from io import BytesIO
 
 def fetch_pdfs_from_github(github_url):
-    # Assuming the structure of the GitHub API response and the repository
     response = requests.get(github_url)
     data = response.json()
     pdf_urls = [file['download_url'] for file in data if file['name'].endswith('.pdf')]
@@ -46,21 +45,17 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def get_conversation_chain(vectorstore):
+def initialize_conversation(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
 
-def handle_userinput(user_question, vectorstore):
-    if not vectorstore:
-        st.error("Vector store is not initialized.")
+def handle_userinput(conversation_chain, user_question):
+    if not conversation_chain:
+        st.error("The conversation model is not initialized.")
         return
 
-    llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
-    
     response = conversation_chain({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
@@ -74,30 +69,38 @@ def main():
     st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
+    # Load and process the existing PDFs from GitHub
     github_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     pdf_urls = fetch_pdfs_from_github(github_url)
     existing_pdfs = download_pdfs(pdf_urls)
-    raw_text = get_pdf_text(existing_pdfs)
-    text_chunks = get_text_chunks(raw_text)
-    vectorstore = get_vectorstore(text_chunks) if text_chunks else None
+    existing_text = get_pdf_text(existing_pdfs)
+    existing_chunks = get_text_chunks(existing_text)
+    existing_vectorstore = get_vectorstore(existing_chunks) if existing_chunks else None
 
     st.header("Proposal Exploration Tool :books:")
-    user_question = st.text_input("Ask a question about your documents:")
-    if user_question and vectorstore:
-        handle_userinput(user_question, vectorstore)
 
     with st.sidebar:
-        st.subheader("Your documents")
-        uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", accept_multiple_files=False)
-        if uploaded_pdf and st.button("Process"):
-            with st.spinner("Processing your uploaded document"):
-                uploaded_text = get_pdf_text([uploaded_pdf])
-                uploaded_chunks = get_text_chunks(uploaded_text)
-                if uploaded_chunks:
-                    uploaded_vectorstore = get_vectorstore(uploaded_chunks)
-                    st.session_state.conversation = get_conversation_chain(uploaded_vectorstore)
-                else:
-                    st.error("No valid text extracted from the uploaded PDF. Please check your document.")
+        st.subheader("Your Proposal Requirements Document")
+        uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
+        if uploaded_pdf:
+            user_uploaded_text = get_pdf_text([uploaded_pdf])
+            user_uploaded_chunks = get_text_chunks(user_uploaded_text)
+            uploaded_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
+
+            # Initialize the conversation chain with existing proposals' content
+            conversation_chain = initialize_conversation(existing_vectorstore) if existing_vectorstore else None
+
+            user_question = st.text_input("Ask a question about your document based on the existing proposals:")
+            if user_question and conversation_chain:
+                handle_userinput(conversation_chain, user_question)
+
+            if st.button("Process Uploaded Document"):
+                with st.spinner("Processing your uploaded document"):
+                    if uploaded_vectorstore:
+                        # Direct interaction now can use both the user's uploaded document content and the existing content
+                        handle_userinput(conversation_chain, "Start processing the new proposal requirements.")
+                    else:
+                        st.error("No valid text extracted from the uploaded PDF. Please check your document.")
 
 if __name__ == '__main__':
     main()
