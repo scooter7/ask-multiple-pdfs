@@ -79,28 +79,23 @@ def main():
 
     st.header("Proposal Exploration Tool :books:")
 
-    with st.sidebar:
-        st.subheader("Your Proposal Requirements Document")
-        uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
-        if uploaded_pdf:
-            user_uploaded_text = get_pdf_text([uploaded_pdf])
-            user_uploaded_chunks = get_text_chunks(user_uploaded_text)
-            uploaded_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
+    # Upload and process the user's new proposal requirements
+    uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
+    if uploaded_pdf:
+        user_uploaded_text = get_pdf_text([uploaded_pdf])
+        user_uploaded_chunks = get_text_chunks(user_uploaded_text)
+        uploaded_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
 
+        if uploaded_vectorstore:
             # Initialize the conversation chain with existing proposals' content
             conversation_chain = initialize_conversation(existing_vectorstore) if existing_vectorstore else None
 
+            st.subheader("Ask a Question")
             user_question = st.text_input("Ask a question about your document based on the existing proposals:")
             if user_question and conversation_chain:
                 handle_userinput(conversation_chain, user_question)
-
-            if st.button("Process Uploaded Document"):
-                with st.spinner("Processing your uploaded document"):
-                    if uploaded_vectorstore:
-                        # Direct interaction now can use both the user's uploaded document content and the existing content
-                        handle_userinput(conversation_chain, "Start processing the new proposal requirements.")
-                    else:
-                        st.error("No valid text extracted from the uploaded PDF. Please check your document.")
+        else:
+            st.error("No valid text extracted from the uploaded PDF. Please check your document.")
 
 if __name__ == '__main__':
     main()
