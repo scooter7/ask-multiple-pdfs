@@ -11,6 +11,10 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from io import BytesIO
 import json
+import spacy
+
+# Load a small model for named entity recognition
+nlp = spacy.load("en_core_web_sm")
 
 def fetch_pdfs_from_github(github_url):
     response = requests.get(github_url)
@@ -43,7 +47,7 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-def get_text_chunks(text, chunk_size=1000, chunk_overlap=200):
+def get_text_chunks(text, chunk_size=1500, chunk_overlap=300):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
@@ -76,6 +80,14 @@ def handle_userinput(conversation_chain, user_question):
         else:
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
+def summarize_text(text):
+    """Generate a brief summary of the given text."""
+    doc = nlp(text)
+    summary = []
+    for ent in doc.ents:
+        summary.append(ent.text)
+    return ' '.join(summary)
+
 def main():
     st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
@@ -88,17 +100,16 @@ def main():
     knowledge_text = get_pdf_text(knowledge_pdfs)
     knowledge_chunks = get_text_chunks(knowledge_text)
 
-    # Enhance initial context with a clear task description
-    initial_context = "Use the following past proposals to address new requirements.\n\n"
-    knowledge_text = initial_context + knowledge_text
-    knowledge_chunks = get_text_chunks(knowledge_text)
-
     uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
     if uploaded_pdf:
         user_uploaded_text = get_pdf_text([uploaded_pdf])
         user_uploaded_chunks = get_text_chunks(user_uploaded_text)
 
-        combined_text = knowledge_text + "\n\n" + "Additional Context from the Uploaded Document:\n" + user_uploaded_text
+        # Summarize the user-uploaded document
+        user_doc_summary = summarize_text(user_uploaded_text)
+        
+        # Prepare the combined text with a clear directive
+        combined_text = f"Past proposals:\n{knowledge_text}\n\nUser-uploaded document summary:\n{user_doc_summary}\n\nFull text from the uploaded document:\n{user_uploaded_text}"
         combined_chunks = get_text_chunks(combined_text)
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
 
@@ -106,7 +117,7 @@ def main():
             conversation_chain = initialize_conversation(combined_vectorstore)
 
             st.subheader("Ask a Question About How to Address New Requirements Using Past Proposals")
-            user_question = st.text_input("Enter your question about how to address new requirements:")
+            user_question = st.text_input("Enter your question about how to address new requirements using past proposals:")
 
             if user_question:
                 st.subheader("Responses Based on Combined Knowledge")
