@@ -19,6 +19,7 @@ def get_github_pdfs(repo_url):
     api_url = f"https://api.github.com/repos/{repo_url.split('/')[-2]}/{repo_url.split('/')[-1].split('?')[0]}/contents"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
+    print("GitHub API response:", response.text)  # Debug print
     files = response.json()
 
     pdf_docs = []
