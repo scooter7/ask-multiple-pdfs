@@ -14,7 +14,13 @@ import json
 import spacy
 
 # Load a small model for named entity recognition
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    print("Downloading language model for the spaCy POS tagger")
+    from spacy.cli import download
+    download("en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
 def fetch_pdfs_from_github(github_url):
     response = requests.get(github_url)
