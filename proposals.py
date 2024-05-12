@@ -14,6 +14,7 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
+    # Use the corrected API URL to list files under the 'rfps' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
@@ -32,8 +33,7 @@ def get_pdf_text(pdf_docs):
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
-            page_text = page.extract_text() or ""
-            text += page_text
+            text += page.extract_text() or ""
     return text
 
 def get_text_chunks(text):
@@ -62,10 +62,26 @@ def modify_response_language(original_response):
     response = response.replace("Their ", "Our ")
     return response
 
-def handle_userinput(user_question):
-    response = st.session_state.conversation({'question': user_question})
+def handle_userinput(user_question, requirements_text, rfps_text):
+    # Formulating the detailed prompt for the OpenAI model
+    prompt = f"""
+    Your task is to use the reference documents provided to answer questions and meet the requirements specified by the user.
+
+    Reference Documents Content:
+    {rfps_text}
+
+    User's Requirements:
+    {requirements_text}
+
+    Question:
+    {user_question}
+    """
+
+    # Sending this prompt to the language model
+    response = st.session_state.conversation({'question': prompt})
     st.session_state.chat_history = response['chat_history']
 
+    # Displaying the modified responses
     for i, message in enumerate(st.session_state.chat_history):
         modified_content = modify_response_language(message.content)
         if i % 2 == 0:
@@ -84,34 +100,26 @@ def main():
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
-
-    uploaded_file = st.file_uploader("Upload a PDF file to add to the knowledge base", type=["pdf"])
+    
+    # User uploads a PDF file referred to as "requirements"
+    uploaded_file = st.file_uploader("Upload your requirements PDF", type="pdf")
+    requirements_text = ""
     if uploaded_file:
-        pdf_docs = [BytesIO(uploaded_file.read())]
-        st.write("Uploaded file will be added to the knowledge base.")
-    else:
-        pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
-        st.write(f"Fetched {len(pdf_docs)} documents from GitHub.")
+        requirements_text = get_pdf_text([uploaded_file])
 
+    # Retrieve PDFs from GitHub's 'rfps' folder and extract their combined text
+    pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
+    rfps_text = ""
     if pdf_docs:
-        raw_text = get_pdf_text(pdf_docs)
-        st.write(f"Extracted {len(raw_text)} characters from PDF documents.")
-
-        text_chunks = get_text_chunks(raw_text)
-        st.write(f"Generated {len(text_chunks)} text chunks from the raw text.")
-
+        rfps_text = get_pdf_text(pdf_docs)
+        text_chunks = get_text_chunks(rfps_text)
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
-            st.write("Conversation model is ready to answer questions.")
-        else:
-            st.write("No text chunks found. Please check the content of your PDFs.")
-    else:
-        st.write("No PDF documents found. Please upload a file or check the GitHub repo.")
 
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
-        handle_userinput(user_question)
+        handle_userinput(user_question, requirements_text, rfps_text)
 
 if __name__ == '__main__':
     main()
