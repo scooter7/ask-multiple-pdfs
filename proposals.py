@@ -12,21 +12,38 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 
-# Adjusted to point to the 'rfps' folder
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
+    
+    if response.status_code != 200:
+        print(f"Failed to get files from GitHub API. Status code: {response.status_code}")
+        print("Response:", response.text)
+        return []
+    
     files = response.json()
+    
+    print("API Response:", files)
+    
+    if not isinstance(files, list):
+        print(f"Expected a list but got {type(files)}.")
+        return []
     
     pdf_docs = []
     for file in files:
-        if file['name'].endswith('.pdf'):
-            pdf_url = file['download_url']
-            response = requests.get(pdf_url)
-            pdf_docs.append(BytesIO(response.content))
+        try:
+            if file['name'].endswith('.pdf'):
+                pdf_url = file['download_url']
+                response = requests.get(pdf_url)
+                pdf_docs.append(BytesIO(response.content))
+        except TypeError as e:
+            print(f"TypeError accessing file attributes: {e}")
+        except KeyError as e:
+            print(f"KeyError accessing file attributes: {e}")
+
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
@@ -110,14 +127,13 @@ def main():
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
+            user_question = st.text_input("Ask CAI about anything Carnegie:")
+            if user_question:
+                handle_userinput(user_question, requirements_text, vectorstore, text_chunks)
         else:
             st.error("No text chunks available from the 'rfps' documents.")
     else:
         st.error("No PDF documents found in the specified GitHub 'rfps' folder.")
-
-    user_question = st.text_input("Ask CAI about anything Carnegie:")
-    if user_question:
-        handle_userinput(user_question, requirements_text, vectorstore, text_chunks)
 
 if __name__ == '__main__':
     main()
