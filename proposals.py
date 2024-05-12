@@ -43,7 +43,7 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-def get_text_chunks(text, chunk_size=1500, chunk_overlap=300):
+def get_text_chunks(text, chunk_size=1000, chunk_overlap=200):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
@@ -88,12 +88,16 @@ def main():
     knowledge_text = get_pdf_text(knowledge_pdfs)
     knowledge_chunks = get_text_chunks(knowledge_text)
 
+    # Enhance initial context with a clear task description
+    initial_context = "Use the following past proposals to address new requirements.\n\n"
+    knowledge_text = initial_context + knowledge_text
+    knowledge_chunks = get_text_chunks(knowledge_text)
+
     uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
     if uploaded_pdf:
         user_uploaded_text = get_pdf_text([uploaded_pdf])
         user_uploaded_chunks = get_text_chunks(user_uploaded_text)
 
-        # Ensure the knowledge text is leading the combined text to give it a base context
         combined_text = knowledge_text + "\n\n" + "Additional Context from the Uploaded Document:\n" + user_uploaded_text
         combined_chunks = get_text_chunks(combined_text)
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
