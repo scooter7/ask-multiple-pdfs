@@ -22,11 +22,12 @@ def get_github_pdfs(repo_url):
     files = response.json()
 
     pdf_docs = []
-    for file in files:
-        if file['name'].endswith('.pdf'):
-            pdf_url = file['download_url']
-            response = requests.get(pdf_url)
-            pdf_docs.append(BytesIO(response.content))
+    if isinstance(files, list):
+        for file in files:
+            if 'download_url' in file and file['name'].endswith('.pdf'):
+                pdf_url = file['download_url']
+                response = requests.get(pdf_url)
+                pdf_docs.append(BytesIO(response.content))
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
