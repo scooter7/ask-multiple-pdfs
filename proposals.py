@@ -43,7 +43,7 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-def get_text_chunks(text, chunk_size=1000, chunk_overlap=200):
+def get_text_chunks(text, chunk_size=1500, chunk_overlap=300):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
@@ -97,28 +97,19 @@ def main():
         combined_chunks = get_text_chunks(combined_text)
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
 
-        knowledge_vectorstore = get_vectorstore(knowledge_chunks) if knowledge_chunks else None
-        knowledge_conversation_chain = initialize_conversation(knowledge_vectorstore) if knowledge_vectorstore else None
-
         if combined_vectorstore:
-            st.subheader("Ask a Question About the Uploaded Document")
+            conversation_chain = initialize_conversation(combined_vectorstore)
+
+            st.subheader("Ask a Question About the Uploaded Document and Existing Knowledge")
             user_question = st.text_input("What do you want to know about the uploaded document?")
 
-            user_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
-            user_conversation_chain = initialize_conversation(user_vectorstore) if user_vectorstore else None
-
-            if user_question and user_conversation_chain:
-                st.subheader("Responses Based on the Uploaded Document")
-                handle_userinput(user_conversation_chain, user_question)
-
-            st.subheader("Ask How Existing Knowledge Applies")
-            knowledge_question = st.text_input("How can the existing knowledge be applied here?")
-
-            if knowledge_question and knowledge_conversation_chain:
-                st.subheader("Application of Existing Knowledge")
-                handle_userinput(knowledge_conversation_chain, knowledge_question)
+            if user_question:
+                st.subheader("Responses Based on Combined Knowledge")
+                handle_userinput(conversation_chain, user_question)
         else:
             st.error("No valid text extracted from the uploaded PDF. Please check your document.")
+    else:
+        st.warning("Please upload a document to start the analysis.")
 
 if __name__ == '__main__':
     main()
