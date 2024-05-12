@@ -11,10 +11,11 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 
+# Adjusted to point to the 'rfps' folder
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
-    # Use the corrected API URL to list files under the 'rfps' directory
+    # Adjust to fetch from the 'rfps' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
@@ -62,26 +63,21 @@ def modify_response_language(original_response):
     response = response.replace("Their ", "Our ")
     return response
 
-def handle_userinput(user_question, requirements_text, rfps_text):
-    # Formulating the detailed prompt for the OpenAI model
-    prompt = f"""
-    Your task is to use the reference documents provided to answer questions and meet the requirements specified by the user.
-
-    Reference Documents Content:
-    {rfps_text}
-
-    User's Requirements:
-    {requirements_text}
-
-    Question:
-    {user_question}
-    """
-
-    # Sending this prompt to the language model
+def handle_userinput(user_question, requirements_text, vectorstore):
+    # Prepare the conversation context using the requirements_text and the user's question
+    if requirements_text:
+        # Use the vector store to retrieve the most relevant sections from the 'rfps' documents
+        retrieved_texts = vectorstore.retrieve_texts([requirements_text], top_k=5)
+        combined_context = " ".join([text for text, _ in retrieved_texts])
+    else:
+        combined_context = ""
+    
+    # Formulate the prompt with combined contexts
+    prompt = f"Context: {combined_context}\n\nQuestion: {user_question}"
     response = st.session_state.conversation({'question': prompt})
     st.session_state.chat_history = response['chat_history']
 
-    # Displaying the modified responses
+    # Display the modified responses
     for i, message in enumerate(st.session_state.chat_history):
         modified_content = modify_response_language(message.content)
         if i % 2 == 0:
@@ -100,26 +96,29 @@ def main():
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
-    
-    # User uploads a PDF file referred to as "requirements"
+
+    # Allow users to upload their "requirements" PDF
     uploaded_file = st.file_uploader("Upload your requirements PDF", type="pdf")
     requirements_text = ""
     if uploaded_file:
         requirements_text = get_pdf_text([uploaded_file])
 
-    # Retrieve PDFs from GitHub's 'rfps' folder and extract their combined text
+    # Retrieve PDFs from GitHub's 'rfps' folder
     pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
-    rfps_text = ""
     if pdf_docs:
-        rfps_text = get_pdf_text(pdf_docs)
-        text_chunks = get_text_chunks(rfps_text)
+        raw_text = get_pdf_text(pdf_docs)
+        text_chunks = get_text_chunks(raw_text)
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
+        else:
+            st.error("No text chunks available from the 'rfps' documents.")
+    else:
+        st.error("No PDF documents found in the specified GitHub 'rfps' folder.")
 
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
-        handle_userinput(user_question, requirements_text, rfps_text)
+        handle_userinput(user_question, requirements_text, vectorstore)
 
 if __name__ == '__main__':
     main()
