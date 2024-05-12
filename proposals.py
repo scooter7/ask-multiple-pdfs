@@ -82,7 +82,7 @@ def main():
 
     header_html = """
     <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Carnegie Artifical Intelligence - CAI</h1>
+        <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
     </div>
     """
@@ -92,16 +92,20 @@ def main():
     requirements_file = st.file_uploader("Upload your requirements PDF file")
     
     # Retrieve PDFs from GitHub "rfps" folder
-    pdf_docs = get_github_pdfs(RFPS_REPO_URL)
+    rfps_pdf_docs = get_github_pdfs(RFPS_REPO_URL)
+    all_pdf_docs = []
 
     if requirements_file:
         # Process uploaded requirements file
         requirements_content = requirements_file.read()
         requirements_file.seek(0)  # Reset file pointer
-        pdf_docs.append(requirements_file)
+        all_pdf_docs.append(requirements_file)
 
-    if pdf_docs:
-        raw_text = get_pdf_text(pdf_docs)
+    if rfps_pdf_docs:
+        all_pdf_docs.extend(rfps_pdf_docs)
+
+    if all_pdf_docs:
+        raw_text = get_pdf_text(all_pdf_docs)
         text_chunks = get_text_chunks(raw_text)
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
