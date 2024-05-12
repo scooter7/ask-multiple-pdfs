@@ -11,28 +11,26 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 
-# Point to the 'rfps' folder
-GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
+def convert_github_url_to_api_url(web_url):
+    path_part = web_url.split("github.com/")[1]
+    segments = path_part.split("/")
+    username = segments[0]
+    repo = segments[1]
+    if "tree" in segments and "main" in segments:
+        path_index = segments.index("main") + 1
+        folder_path = "/".join(segments[path_index:])
+    else:
+        folder_path = ""
+    api_url = f"https://api.github.com/repos/{username}/{repo}/contents/{folder_path}"
+    return api_url
 
-def get_github_pdfs(repo_url):
-    # Correctly format the API URL to list files under the 'rfps' directory
-    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
+def get_github_pdfs(web_repo_url):
+    api_url = convert_github_url_to_api_url(web_repo_url)
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
-    
-    # Check the response status and print debug information
     if response.status_code != 200:
-        print(f"Failed to get data from GitHub API: {response.status_code}")
-        print("Response:", response.text)
         return []
-    
     files = response.json()
-    
-    # Ensure that files is a list of dictionaries
-    if not isinstance(files, list) or not all(isinstance(file, dict) for file in files):
-        print("Error: Unexpected format of files:", files)
-        return []
-
     pdf_docs = []
     for file in files:
         if file.get('name', '').endswith('.pdf'):
@@ -40,8 +38,6 @@ def get_github_pdfs(repo_url):
             if pdf_url:
                 response = requests.get(pdf_url)
                 pdf_docs.append(BytesIO(response.content))
-            else:
-                print(f"Missing 'download_url' in file: {file}")
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
@@ -79,21 +75,22 @@ def modify_response_language(original_response):
     return response
 
 def handle_userinput(user_question):
-    response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
-
-    for i, message in enumerate(st.session_state.chat_history):
-        modified_content = modify_response_language(message.content)
-        if i % 2 == 0:
-            st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+    if 'conversation' in st.session_state and st.session_state.conversation:
+        response = st.session_state.conversation({'question': user_question})
+        st.session_state.chat_history = response['chat_history']
+        for i, message in enumerate(st.session_state.chat_history):
+            modified_content = modify_response_language(message.content)
+            if i % 2 == 0:
+                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+    else:
+        st.write("The conversation model is not initialized due to missing RFP data.")
 
 def analyze_requirements(requirements_pdf, rfps_vectorstore):
     requirements_text = get_pdf_text([requirements_pdf])
     requirements_chunks = get_text_chunks(requirements_text)
     requirements_store = get_vectorstore(requirements_chunks)
-    
     best_matches = rfps_vectorstore.search(requirements_store, k=3)
     results = []
     for match in best_matches:
@@ -103,7 +100,6 @@ def analyze_requirements(requirements_pdf, rfps_vectorstore):
 def main():
     st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
-
     header_html = """
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
@@ -111,25 +107,17 @@ def main():
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
-    
-    # Initialize rfps_vectorstore to None or an appropriate default
     rfps_vectorstore = None
-    
-    # Retrieve PDFs from GitHub's 'rfps' folder
+    GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
     rfps_docs = get_github_pdfs(GITHUB_REPO_URL)
     if rfps_docs:
         rfps_text = get_pdf_text(rfps_docs)
         rfps_chunks = get_text_chunks(rfps_text)
         rfps_vectorstore = get_vectorstore(rfps_chunks)
-        if 'conversation' not in st.session_state:
-            st.session_state.conversation = get_conversation_chain(rfps_vectorstore)
+        st.session_state.conversation = get_conversation_chain(rfps_vectorstore)
     else:
-        # If no documents are retrieved, print a message or handle the case as needed
         st.write("No RFP documents were retrieved from the repository.")
-        # Ensure conversation is initialized even if no RFPs are retrieved
-        if 'conversation' not in st.session_state:
-            st.session_state.conversation = lambda x: {"chat_history": []}
-
+        st.session_state.conversation = None
     uploaded_file = st.file_uploader("Upload a requirements PDF", type="pdf")
     if uploaded_file and rfps_vectorstore:
         uploaded_pdf = BytesIO(uploaded_file.getvalue())
@@ -138,20 +126,10 @@ def main():
         for result in results:
             st.write(result)
     elif uploaded_file:
-        # Handle the case where there is no vectorstore to compare against
         st.write("Unable to analyze requirements; no RFP data is available.")
-
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
-        # Initialize chat_history if it doesn't exist
-        if 'chat_history' not in st.session_state:
-            st.session_state.chat_history = []
-        
-        # Check if 'conversation' is properly initialized before using it
-        if 'conversation' in st.session_state:
-            handle_userinput(user_question)
-        else:
-            st.write("The conversation model is not initialized due to missing RFP data.")
+        handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
