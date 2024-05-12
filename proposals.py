@@ -11,7 +11,6 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
-from transformers import pipeline
 
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
@@ -76,10 +75,9 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
 
 def extract_key_information(text):
-    # Use regex to extract sections
     sections = re.split(r'Section \d+:', text)
     section_info = {}
-    for section in sections[1:]:  # Skip the first split part which is usually header or empty
+    for section in sections[1:]:
         title_match = re.match(r'(.+?)\n', section)
         if title_match:
             title = title_match.group(1).strip()
@@ -87,13 +85,19 @@ def extract_key_information(text):
             section_info[title] = content
     return section_info
 
-def summarize_scope_and_budget(text):
-    summarizer = pipeline("summarization")
-    scope_summary = summarizer(text, max_length=130, min_length=30, do_sample=False)
+def summarize_text(text, max_length=100):
+    embeddings = OpenAIEmbeddings()
+    text_chunks = get_text_chunks(text)
+    chunk_embeddings = embeddings.embed_texts(text_chunks)
+    summary_vector = chunk_embeddings.mean(axis=0)
+    closest_chunk_index = ((chunk_embeddings - summary_vector) ** 2).sum(axis=1).argmin()
+    return text_chunks[closest_chunk_index][:max_length]
+
+def estimate_total_budget(text):
     budget_pattern = r'\$[\d,\.]+'
     budgets = re.findall(budget_pattern, text)
     total_budget = sum(map(lambda x: float(x.replace('$', '').replace(',', '')), budgets))
-    return scope_summary[0]['summary_text'], total_budget
+    return total_budget
 
 def main():
     st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
@@ -110,16 +114,16 @@ def main():
     uploaded_file = st.file_uploader("Upload a PDF file to add to the knowledge base", type=["pdf"])
     if uploaded_file:
         user_pdf_docs = [BytesIO(uploaded_file.read())]
-        st.write("Uploaded file will be added to the knowledge base.")
         user_text = get_pdf_text(user_pdf_docs)
         key_info = extract_key_information(user_text)
         st.write("Key Sections and their content:")
         for title, content in key_info.items():
             st.write(f"**{title}**")
-            st.write(content[:500] + "...")  # Displaying a snippet for brevity
+            st.write(content[:500] + "...")
 
-        scope_summary, total_budget = summarize_scope_and_budget(user_text)
+        scope_summary = summarize_text(user_text)
         st.write("**Summary of Scope of Work:**", scope_summary)
+        total_budget = estimate_total_budget(user_text)
         st.write("**Estimated Total Budget:**", f"${total_budget:,.2f}")
 
         st.write("Processing existing RFPs to inform responses...")
@@ -127,13 +131,10 @@ def main():
         combined_text = user_text + "\n" + get_pdf_text(github_pdf_docs)
     else:
         github_pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
-        st.write(f"Fetched {len(github_pdf_docs)} documents from GitHub.")
         combined_text = get_pdf_text(github_pdf_docs)
 
     if combined_text:
         text_chunks = get_text_chunks(combined_text)
-        st.write(f"Generated {len(text_chunks)} text chunks from the combined text.")
-
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
