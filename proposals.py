@@ -20,27 +20,20 @@ def get_github_pdfs(repo_url):
     response = requests.get(api_url, headers=headers)
     files = response.json()
     
-    # Debug: Print the type and content of files to understand the structure
-    print(f"Type of files: {type(files)}")
-    if isinstance(files, dict):
-        print("files is a dictionary, possibly an error message:", files)
-        return []
-    if not isinstance(files, list):
-        print("Unexpected type for files:", files)
+    if isinstance(files, dict):  # Handle potential error messages
+        st.write("Error fetching files:", files.get("message", "Unknown error"))
         return []
 
     pdf_docs = []
     for file in files:
         try:
-            if 'name' in file and file['name'].endswith('.pdf'):
+            if file.get('name', '').endswith('.pdf'):
                 pdf_url = file['download_url']
                 response = requests.get(pdf_url)
                 pdf_docs.append(BytesIO(response.content))
-        except KeyError as e:
-            print(f"Key error {e} in file: {file}")
-        except TypeError as e:
-            print(f"Type error {e} with file: {file}")
-
+        except Exception as e:
+            print(f"Failed processing file {file}: {e}")
+    
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
@@ -90,25 +83,28 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
 
 def extract_key_sections(text, section_keywords):
-    # Use regex to find sections that may contain important information
     sections = {}
     for keyword in section_keywords:
-        pattern = re.compile(rf'(?s)(\b{keyword}\b.*?)(?=\n\S|\Z)', re.IGNORECASE)
+        # Improved pattern to capture up to the next major section or end of content
+        pattern = re.compile(rf'(?s)\b{re.escape(keyword)}\b(.*?)(?=\n\w|\Z)', re.IGNORECASE)
         matches = pattern.findall(text)
         if matches:
-            # Just take the first match for simplicity
-            sections[keyword] = matches[0]
+            sections[keyword] = ' '.join(matches[0].splitlines())
     return sections
 
 def summarize_section(section_text):
-    # Summarize the section by extracting the first few lines
-    return '\n'.join(section_text.strip().split('\n')[:5])
+    # Summarize by extracting key sentences or the first paragraph
+    sentences = re.split(r'(?<=[.!?])\s+', section_text.strip(), maxsplit=4)
+    summary = ' '.join(sentences[:4])  # Limit summary to first 4 sentences
+    if len(summary) > 500:
+        return summary[:500] + "..."  # Limit length to 500 characters for brevity
+    return summary
 
 def estimate_budget(section_text):
-    # Find all monetary values and sum them
-    budget_pattern = re.compile(r'\$[\d,\.]+')
-    budgets = budget_pattern.findall(section_text)
-    budget_values = [float(b.replace('$', '').replace(',', '')) for b in budgets]
+    # Improved pattern to find all monetary values including those with commas and decimals
+    budget_pattern = re.compile(r'\$\s*[\d,]+\.?\d*')
+    budgets = budget_pattern.findall(section_text.replace(',', ''))
+    budget_values = [float(b.replace('$', '').replace(' ', '').replace(',', '')) for b in budgets]
     total_budget = sum(budget_values)
     return total_budget
 
@@ -135,12 +131,14 @@ def main():
             for key, section in key_sections.items():
                 st.write(f"**{key}:**")
                 st.write(summarize_section(section))
-
             if "Budget" in key_sections:
                 budget = estimate_budget(key_sections["Budget"])
                 st.write(f"**Estimated Total Budget: ${budget:,.2f}**")
+            else:
+                st.write("**Estimated Total Budget: $0.00**")
         else:
             st.write("No key sections found in the uploaded document.")
+            st.write("**Estimated Total Budget: $0.00**")
 
         combined_text = user_text + "\n" + get_pdf_text(get_github_pdfs(GITHUB_REPO_URL))
     else:
