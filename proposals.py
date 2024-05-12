@@ -3,7 +3,6 @@ import streamlit as st
 import requests
 from PyPDF2 import PdfReader
 from io import BytesIO
-import re
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -20,20 +19,12 @@ def get_github_pdfs(repo_url):
     response = requests.get(api_url, headers=headers)
     files = response.json()
     
-    if isinstance(files, dict):  # Handle potential error messages
-        st.write("Error fetching files:", files.get("message", "Unknown error"))
-        return []
-
     pdf_docs = []
     for file in files:
-        try:
-            if file.get('name', '').endswith('.pdf'):
-                pdf_url = file['download_url']
-                response = requests.get(pdf_url)
-                pdf_docs.append(BytesIO(response.content))
-        except Exception as e:
-            print(f"Failed processing file {file}: {e}")
-    
+        if file['name'].endswith('.pdf'):
+            pdf_url = file['download_url']
+            response = requests.get(pdf_url)
+            pdf_docs.append(BytesIO(response.content))
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
@@ -82,39 +73,13 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
 
-def extract_key_sections(text, section_keywords):
-    sections = {}
-    for keyword in section_keywords:
-        # Improved pattern to capture up to the next major section or end of content
-        pattern = re.compile(rf'(?s)\b{re.escape(keyword)}\b(.*?)(?=\n\w|\Z)', re.IGNORECASE)
-        matches = pattern.findall(text)
-        if matches:
-            sections[keyword] = ' '.join(matches[0].splitlines())
-    return sections
-
-def summarize_section(section_text):
-    # Summarize by extracting key sentences or the first paragraph
-    sentences = re.split(r'(?<=[.!?])\s+', section_text.strip(), maxsplit=4)
-    summary = ' '.join(sentences[:4])  # Limit summary to first 4 sentences
-    if len(summary) > 500:
-        return summary[:500] + "..."  # Limit length to 500 characters for brevity
-    return summary
-
-def estimate_budget(section_text):
-    # Improved pattern to find all monetary values including those with commas and decimals
-    budget_pattern = re.compile(r'\$\s*[\d,]+\.?\d*')
-    budgets = budget_pattern.findall(section_text.replace(',', ''))
-    budget_values = [float(b.replace('$', '').replace(' ', '').replace(',', '')) for b in budgets]
-    total_budget = sum(budget_values)
-    return total_budget
-
 def main():
     st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
 
     header_html = """
     <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
+        <h1 style="font-weight: bold;">Carnegie Artifical Intelligence - CAI</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
     </div>
     """
@@ -122,31 +87,19 @@ def main():
 
     uploaded_file = st.file_uploader("Upload a PDF file to add to the knowledge base", type=["pdf"])
     if uploaded_file:
-        user_pdf_docs = [BytesIO(uploaded_file.read())]
-        user_text = get_pdf_text(user_pdf_docs)
-        key_sections = extract_key_sections(user_text, ["Scope of Work", "Budget", "Objectives", "Requirements"])
-
-        if key_sections:
-            st.write("### Key Sections and Summaries")
-            for key, section in key_sections.items():
-                st.write(f"**{key}:**")
-                st.write(summarize_section(section))
-            if "Budget" in key_sections:
-                budget = estimate_budget(key_sections["Budget"])
-                st.write(f"**Estimated Total Budget: ${budget:,.2f}**")
-            else:
-                st.write("**Estimated Total Budget: $0.00**")
-        else:
-            st.write("No key sections found in the uploaded document.")
-            st.write("**Estimated Total Budget: $0.00**")
-
-        combined_text = user_text + "\n" + get_pdf_text(get_github_pdfs(GITHUB_REPO_URL))
+        pdf_docs = [BytesIO(uploaded_file.read())]
+        st.write("Uploaded file will be added to the knowledge base.")
     else:
-        github_pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
-        combined_text = get_pdf_text(github_pdf_docs)
+        pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
+        st.write(f"Fetched {len(pdf_docs)} documents from GitHub.")
 
-    if combined_text:
-        text_chunks = get_text_chunks(combined_text)
+    if pdf_docs:
+        raw_text = get_pdf_text(pdf_docs)
+        st.write(f"Extracted {len(raw_text)} characters from PDF documents.")
+
+        text_chunks = get_text_chunks(raw_text)
+        st.write(f"Generated {len(text_chunks)} text chunks from the raw text.")
+
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
