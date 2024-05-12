@@ -12,7 +12,29 @@ from htmlTemplates import css, bot_template, user_template
 from io import BytesIO
 import json
 
-# Utilize existing functions...
+def fetch_pdfs_from_github(github_url):
+    response = requests.get(github_url)
+    try:
+        data = response.json()
+        if isinstance(data, list):
+            pdf_urls = [file['download_url'] for file in data if file['name'].endswith('.pdf')]
+            return pdf_urls
+        else:
+            st.error("Unexpected response structure from GitHub API.")
+            print("Response from GitHub API:", json.dumps(data, indent=2))
+            return []
+    except json.JSONDecodeError:
+        st.error("Failed to decode the response from GitHub.")
+        print("Response content:", response.text)
+        return []
+
+def download_pdfs(pdf_urls):
+    pdf_docs = []
+    for url in pdf_urls:
+        response = requests.get(url)
+        pdf_docs.append(BytesIO(response.content))
+    return pdf_docs
+
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -34,7 +56,7 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def get_conversation_chain(vectorstore):
+def initialize_conversation(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
@@ -60,38 +82,37 @@ def main():
 
     st.header("Proposal Exploration Tool :books:")
 
-    # Fetch and process the existing PDFs from the GitHub 'rfps' directory
-    knowledge_pdfs = get_github_pdfs("https://github.com/scooter7/ask-multiple-pdfs")
+    github_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
+    pdf_urls = fetch_pdfs_from_github(github_url)
+    knowledge_pdfs = download_pdfs(pdf_urls)
     knowledge_text = get_pdf_text(knowledge_pdfs)
     knowledge_chunks = get_text_chunks(knowledge_text)
 
-    st.write(f"Loaded knowledge from **{len(knowledge_pdfs)}** RFP documents in the 'rfps' folder.")
-
-    # Process the user's new proposal requirements
     uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
     if uploaded_pdf:
         user_uploaded_text = get_pdf_text([uploaded_pdf])
         user_uploaded_chunks = get_text_chunks(user_uploaded_text)
 
-        # Combine contexts from both uploaded and existing knowledge
         combined_text = knowledge_text + "\n" + user_uploaded_text
         combined_chunks = get_text_chunks(combined_text)
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
 
         if combined_vectorstore:
-            combined_conversation_chain = get_conversation_chain(combined_vectorstore)
-
-            st.subheader("Ask About the Uploaded Document")
+            st.subheader("Ask a Question About the Uploaded Document")
             user_question = st.text_input("What do you want to know about the uploaded document?")
 
-            if user_question and combined_conversation_chain:
+            user_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
+            user_conversation_chain = initialize_conversation(user_vectorstore) if user_vectorstore else None
+
+            if user_question and user_conversation_chain:
                 st.subheader("Responses Based on the Uploaded Document")
-                handle_userinput(combined_conversation_chain, user_question)
+                handle_userinput(user_conversation_chain, user_question)
 
             st.subheader("Ask How Existing Knowledge Applies")
             knowledge_question = st.text_input("How can the existing knowledge be applied here?")
 
-            if knowledge_question and combined_conversation_chain:
+            if knowledge_question and combined_vectorstore:
+                combined_conversation_chain = initialize_conversation(combined_vectorstore)
                 st.subheader("Application of Existing Knowledge")
                 handle_userinput(combined_conversation_chain, knowledge_question)
         else:
