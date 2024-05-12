@@ -11,16 +11,35 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from io import BytesIO
 import json
-import spacy
+import nltk
+from nltk import ne_chunk, pos_tag, word_tokenize
+from nltk.tree import Tree
 
-# Load a small model for named entity recognition
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    print("Downloading language model for the spaCy POS tagger")
-    from spacy.cli import download
-    download("en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+def get_continuous_chunks(text):
+    chunked = ne_chunk(pos_tag(word_tokenize(text)))
+    continuous_chunk = []
+    current_chunk = []
+    for i in chunked:
+        if type(i) == Tree:
+            current_chunk.append(" ".join([token for token, pos in i.leaves()]))
+        elif current_chunk:
+            named_entity = " ".join(current_chunk)
+            if named_entity not in continuous_chunk:
+                continuous_chunk.append(named_entity)
+                current_chunk = []
+        else:
+            continue
+    if current_chunk:
+        named_entity = " ".join(current_chunk)
+        if named_entity not in continuous_chunk:
+            continuous_chunk.append(named_entity)
+
+    return continuous_chunk
+
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 
 def fetch_pdfs_from_github(github_url):
     response = requests.get(github_url)
@@ -86,14 +105,6 @@ def handle_userinput(conversation_chain, user_question):
         else:
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
-def summarize_text(text):
-    """Generate a brief summary of the given text."""
-    doc = nlp(text)
-    summary = []
-    for ent in doc.ents:
-        summary.append(ent.text)
-    return ' '.join(summary)
-
 def main():
     st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
@@ -111,10 +122,9 @@ def main():
         user_uploaded_text = get_pdf_text([uploaded_pdf])
         user_uploaded_chunks = get_text_chunks(user_uploaded_text)
 
-        # Summarize the user-uploaded document
-        user_doc_summary = summarize_text(user_uploaded_text)
-        
-        # Prepare the combined text with a clear directive
+        user_entities = get_continuous_chunks(user_uploaded_text)
+        user_doc_summary = ' '.join(user_entities)
+
         combined_text = f"Past proposals:\n{knowledge_text}\n\nUser-uploaded document summary:\n{user_doc_summary}\n\nFull text from the uploaded document:\n{user_uploaded_text}"
         combined_chunks = get_text_chunks(combined_text)
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
