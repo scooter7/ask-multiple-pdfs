@@ -3,6 +3,7 @@ import streamlit as st
 import requests
 from PyPDF2 import PdfReader
 from io import BytesIO
+import numpy as np
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -15,7 +16,6 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
-    # Adjust to fetch from the 'rfps' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
@@ -63,21 +63,22 @@ def modify_response_language(original_response):
     response = response.replace("Their ", "Our ")
     return response
 
-def handle_userinput(user_question, requirements_text, vectorstore):
-    # Prepare the conversation context using the requirements_text and the user's question
+def handle_userinput(user_question, requirements_text, vectorstore, text_chunks):
+    if 'conversation' not in st.session_state:
+        st.error("The conversational model is not initialized properly.")
+        return
+
     if requirements_text:
-        # Use the vector store to retrieve the most relevant sections from the 'rfps' documents
-        retrieved_texts = vectorstore.retrieve_texts([requirements_text], top_k=5)
-        combined_context = " ".join([text for text, _ in retrieved_texts])
+        requirements_embedding = vectorstore.embedding.embed([requirements_text])[0]
+        scores, indices = vectorstore.faiss_index.search(np.array([requirements_embedding]), k=5)
+        combined_context = " ".join([text_chunks[idx] for idx in indices[0]])
     else:
         combined_context = ""
     
-    # Formulate the prompt with combined contexts
     prompt = f"Context: {combined_context}\n\nQuestion: {user_question}"
     response = st.session_state.conversation({'question': prompt})
     st.session_state.chat_history = response['chat_history']
 
-    # Display the modified responses
     for i, message in enumerate(st.session_state.chat_history):
         modified_content = modify_response_language(message.content)
         if i % 2 == 0:
@@ -97,13 +98,11 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # Allow users to upload their "requirements" PDF
     uploaded_file = st.file_uploader("Upload your requirements PDF", type="pdf")
     requirements_text = ""
     if uploaded_file:
         requirements_text = get_pdf_text([uploaded_file])
 
-    # Retrieve PDFs from GitHub's 'rfps' folder
     pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
     if pdf_docs:
         raw_text = get_pdf_text(pdf_docs)
@@ -118,7 +117,7 @@ def main():
 
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
-        handle_userinput(user_question, requirements_text, vectorstore)
+        handle_userinput(user_question, requirements_text, vectorstore, text_chunks)
 
 if __name__ == '__main__':
     main()
