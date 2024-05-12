@@ -121,10 +121,14 @@ def main():
         rfps_text = get_pdf_text(rfps_docs)
         rfps_chunks = get_text_chunks(rfps_text)
         rfps_vectorstore = get_vectorstore(rfps_chunks)
-        st.session_state.conversation = get_conversation_chain(rfps_vectorstore)
+        if 'conversation' not in st.session_state:
+            st.session_state.conversation = get_conversation_chain(rfps_vectorstore)
     else:
         # If no documents are retrieved, print a message or handle the case as needed
         st.write("No RFP documents were retrieved from the repository.")
+        # Ensure conversation is initialized even if no RFPs are retrieved
+        if 'conversation' not in st.session_state:
+            st.session_state.conversation = lambda x: {"chat_history": []}
 
     uploaded_file = st.file_uploader("Upload a requirements PDF", type="pdf")
     if uploaded_file and rfps_vectorstore:
@@ -139,7 +143,15 @@ def main():
 
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
-        handle_userinput(user_question)
+        # Initialize chat_history if it doesn't exist
+        if 'chat_history' not in st.session_state:
+            st.session_state.chat_history = []
+        
+        # Check if 'conversation' is properly initialized before using it
+        if 'conversation' in st.session_state:
+            handle_userinput(user_question)
+        else:
+            st.write("The conversation model is not initialized due to missing RFP data.")
 
 if __name__ == '__main__':
     main()
