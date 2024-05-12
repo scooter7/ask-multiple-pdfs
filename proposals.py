@@ -15,17 +15,35 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
+    # Correctly format the API URL to list files under the 'rfps' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
+    
+    # Check if the response is successful
+    if response.status_code != 200:
+        print(f"Failed to get files from GitHub: {response.status_code}")
+        return []
+    
     files = response.json()
+    
+    # Debug: Print the type and content of the files variable
+    print(f"Type of files: {type(files)}")
+    if isinstance(files, list):
+        print(f"First element of files: {files[0]}")
+    else:
+        print(f"Content of files: {files}")
     
     pdf_docs = []
     for file in files:
-        if file['name'].endswith('.pdf'):
-            pdf_url = file['download_url']
-            response = requests.get(pdf_url)
-            pdf_docs.append(BytesIO(response.content))
+        try:
+            if file['name'].endswith('.pdf'):
+                pdf_url = file['download_url']
+                response = requests.get(pdf_url)
+                pdf_docs.append(BytesIO(response.content))
+        except TypeError as e:
+            print(f"TypeError: {e} with file: {file}")
+    
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
