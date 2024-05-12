@@ -92,7 +92,9 @@ def main():
     requirements_file = st.file_uploader("Upload your requirements PDF file")
     
     # Retrieve PDFs from GitHub "rfps" folder
+    print("Fetching PDFs from rfps folder...")
     rfps_pdf_docs = get_github_pdfs(RFPS_REPO_URL)
+    print("PDFs fetched from rfps folder:", rfps_pdf_docs)
     all_pdf_docs = []
 
     if requirements_file:
@@ -100,13 +102,16 @@ def main():
         requirements_content = requirements_file.read()
         requirements_file.seek(0)  # Reset file pointer
         all_pdf_docs.append(requirements_file)
+        print("Uploaded requirements file processed.")
 
     if rfps_pdf_docs:
         all_pdf_docs.extend(rfps_pdf_docs)
+        print("PDFs from rfps folder included in analysis.")
 
     if all_pdf_docs:
         raw_text = get_pdf_text(all_pdf_docs)
         text_chunks = get_text_chunks(raw_text)
+        print("Text chunks extracted from PDFs:", text_chunks)
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
