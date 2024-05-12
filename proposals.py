@@ -11,22 +11,37 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 
-# Point to the 'rfps' folder instead of 'docs'
+# Point to the 'rfps' folder
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
-    # Point to the 'rfps' directory under the repository
+    # Correctly format the API URL to list files under the 'rfps' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
+    
+    # Check the response status and print debug information
+    if response.status_code != 200:
+        print(f"Failed to get data from GitHub API: {response.status_code}")
+        print("Response:", response.text)
+        return []
+    
     files = response.json()
     
+    # Ensure that files is a list of dictionaries
+    if not isinstance(files, list) or not all(isinstance(file, dict) for file in files):
+        print("Error: Unexpected format of files:", files)
+        return []
+
     pdf_docs = []
     for file in files:
-        if file['name'].endswith('.pdf'):
-            pdf_url = file['download_url']
-            response = requests.get(pdf_url)
-            pdf_docs.append(BytesIO(response.content))
+        if file.get('name', '').endswith('.pdf'):
+            pdf_url = file.get('download_url', '')
+            if pdf_url:
+                response = requests.get(pdf_url)
+                pdf_docs.append(BytesIO(response.content))
+            else:
+                print(f"Missing 'download_url' in file: {file}")
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
