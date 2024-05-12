@@ -12,27 +12,21 @@ from htmlTemplates import css, bot_template, user_template
 from io import BytesIO
 import json
 
-def fetch_pdfs_from_github(github_url):
-    response = requests.get(github_url)
-    try:
-        data = response.json()
-        if isinstance(data, list):
-            pdf_urls = [file['download_url'] for file in data if file['name'].endswith('.pdf')]
-            return pdf_urls
-        else:
-            st.error("Unexpected response structure from GitHub API.")
-            print("Response from GitHub API:", json.dumps(data, indent=2))
-            return []
-    except json.JSONDecodeError:
-        st.error("Failed to decode the response from GitHub.")
-        print("Response content:", response.text)
-        return []
+# Existing function definitions or imports here...
 
-def download_pdfs(pdf_urls):
+def get_github_pdfs(repo_url):
+    # Correctly format the API URL to list files under the 'docs' directory
+    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    response = requests.get(api_url, headers=headers)
+    files = response.json()
+    
     pdf_docs = []
-    for url in pdf_urls:
-        response = requests.get(url)
-        pdf_docs.append(BytesIO(response.content))
+    for file in files:
+        if file['name'].endswith('.pdf'):
+            pdf_url = file['download_url']
+            response = requests.get(pdf_url)
+            pdf_docs.append(BytesIO(response.content))
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
@@ -43,8 +37,8 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-def get_text_chunks(text, chunk_size=1000, chunk_overlap=200):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len)
+def get_text_chunks(text):
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
 
@@ -56,25 +50,11 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def initialize_conversation(vectorstore):
+def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
-
-def handle_userinput(conversation_chain, user_question):
-    if not conversation_chain:
-        st.error("The conversation model is not initialized.")
-        return
-
-    response = conversation_chain({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
-
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
-            st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
     st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
@@ -82,12 +62,13 @@ def main():
 
     st.header("Proposal Exploration Tool :books:")
 
-    # Load and process the existing PDFs from GitHub as part of the knowledge base
-    github_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
-    pdf_urls = fetch_pdfs_from_github(github_url)
-    knowledge_pdfs = download_pdfs(pdf_urls)
+    # Use the get_github_pdfs function to load PDFs from the 'rfps' folder
+    knowledge_pdfs = get_github_pdfs("https://github.com/scooter7/ask-multiple-pdfs/contents/rfps")
     knowledge_text = get_pdf_text(knowledge_pdfs)
     knowledge_chunks = get_text_chunks(knowledge_text)
+
+    # Display the knowledge base size
+    st.write(f"Loaded knowledge from **{len(knowledge_pdfs)}** RFP documents in the 'rfps' folder.")
 
     # Upload and process the user's new proposal requirements
     uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
@@ -101,23 +82,22 @@ def main():
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
 
         if combined_vectorstore:
-            st.subheader("Ask a Question About the Uploaded Document")
+            # Initialize the conversation chain with the combined context
+            combined_conversation_chain = get_conversation_chain(combined_vectorstore)
+
+            st.subheader("Ask About the Uploaded Document")
             user_question = st.text_input("What do you want to know about the uploaded document?")
 
             # Directly use uploaded document's context for specific questions
-            user_vectorstore = get_vectorstore(user_uploaded_chunks) if user_uploaded_chunks else None
-            user_conversation_chain = initialize_conversation(user_vectorstore) if user_vectorstore else None
-
-            if user_question and user_conversation_chain:
+            if user_question and combined_conversation_chain:
                 st.subheader("Responses Based on the Uploaded Document")
-                handle_userinput(user_conversation_chain, user_question)
+                handle_userinput(combined_conversation_chain, user_question)
 
             st.subheader("Ask How Existing Knowledge Applies")
             knowledge_question = st.text_input("How can the existing knowledge be applied here?")
 
             # Use the combined context to answer how existing knowledge can be applied
-            if knowledge_question and combined_vectorstore:
-                combined_conversation_chain = initialize_conversation(combined_vectorstore)
+            if knowledge_question and combined_conversation_chain:
                 st.subheader("Application of Existing Knowledge")
                 handle_userinput(combined_conversation_chain, knowledge_question)
         else:
