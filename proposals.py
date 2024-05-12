@@ -32,7 +32,8 @@ def get_pdf_text(pdf_docs):
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
-            text += page.extract_text() or ""
+            page_text = page.extract_text() or ""
+            text += page_text
     return text
 
 def get_text_chunks(text):
@@ -87,15 +88,26 @@ def main():
     uploaded_file = st.file_uploader("Upload a PDF file to add to the knowledge base", type=["pdf"])
     if uploaded_file:
         pdf_docs = [BytesIO(uploaded_file.read())]
+        st.write("Uploaded file will be added to the knowledge base.")
     else:
         pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
-    
+        st.write(f"Fetched {len(pdf_docs)} documents from GitHub.")
+
     if pdf_docs:
         raw_text = get_pdf_text(pdf_docs)
+        st.write(f"Extracted {len(raw_text)} characters from PDF documents.")
+
         text_chunks = get_text_chunks(raw_text)
+        st.write(f"Generated {len(text_chunks)} text chunks from the raw text.")
+
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
+            st.write("Conversation model is ready to answer questions.")
+        else:
+            st.write("No text chunks found. Please check the content of your PDFs.")
+    else:
+        st.write("No PDF documents found. Please upload a file or check the GitHub repo.")
 
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
