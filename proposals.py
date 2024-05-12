@@ -3,6 +3,7 @@ import streamlit as st
 import requests
 from PyPDF2 import PdfReader
 from io import BytesIO
+import re
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -10,6 +11,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
+from transformers import pipeline
 
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
@@ -73,13 +75,33 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
 
+def extract_key_information(text):
+    # Use regex to extract sections
+    sections = re.split(r'Section \d+:', text)
+    section_info = {}
+    for section in sections[1:]:  # Skip the first split part which is usually header or empty
+        title_match = re.match(r'(.+?)\n', section)
+        if title_match:
+            title = title_match.group(1).strip()
+            content = section[len(title):].strip()
+            section_info[title] = content
+    return section_info
+
+def summarize_scope_and_budget(text):
+    summarizer = pipeline("summarization")
+    scope_summary = summarizer(text, max_length=130, min_length=30, do_sample=False)
+    budget_pattern = r'\$[\d,\.]+'
+    budgets = re.findall(budget_pattern, text)
+    total_budget = sum(map(lambda x: float(x.replace('$', '').replace(',', '')), budgets))
+    return scope_summary[0]['summary_text'], total_budget
+
 def main():
     st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
 
     header_html = """
     <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Carnegie Artifical Intelligence - CAI</h1>
+        <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
     </div>
     """
@@ -87,18 +109,30 @@ def main():
 
     uploaded_file = st.file_uploader("Upload a PDF file to add to the knowledge base", type=["pdf"])
     if uploaded_file:
-        pdf_docs = [BytesIO(uploaded_file.read())]
+        user_pdf_docs = [BytesIO(uploaded_file.read())]
         st.write("Uploaded file will be added to the knowledge base.")
+        user_text = get_pdf_text(user_pdf_docs)
+        key_info = extract_key_information(user_text)
+        st.write("Key Sections and their content:")
+        for title, content in key_info.items():
+            st.write(f"**{title}**")
+            st.write(content[:500] + "...")  # Displaying a snippet for brevity
+
+        scope_summary, total_budget = summarize_scope_and_budget(user_text)
+        st.write("**Summary of Scope of Work:**", scope_summary)
+        st.write("**Estimated Total Budget:**", f"${total_budget:,.2f}")
+
+        st.write("Processing existing RFPs to inform responses...")
+        github_pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
+        combined_text = user_text + "\n" + get_pdf_text(github_pdf_docs)
     else:
-        pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
-        st.write(f"Fetched {len(pdf_docs)} documents from GitHub.")
+        github_pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
+        st.write(f"Fetched {len(github_pdf_docs)} documents from GitHub.")
+        combined_text = get_pdf_text(github_pdf_docs)
 
-    if pdf_docs:
-        raw_text = get_pdf_text(pdf_docs)
-        st.write(f"Extracted {len(raw_text)} characters from PDF documents.")
-
-        text_chunks = get_text_chunks(raw_text)
-        st.write(f"Generated {len(text_chunks)} text chunks from the raw text.")
+    if combined_text:
+        text_chunks = get_text_chunks(combined_text)
+        st.write(f"Generated {len(text_chunks)} text chunks from the combined text.")
 
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
