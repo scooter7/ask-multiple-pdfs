@@ -12,15 +12,13 @@ from htmlTemplates import css, bot_template, user_template
 from io import BytesIO
 import json
 
-# Existing function definitions or imports here...
-
+# Function to fetch PDFs from a GitHub repository
 def get_github_pdfs(repo_url):
-    # Correctly format the API URL to list files under the 'docs' directory
-    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
+    api_url = repo_url.replace("https://github.com", "https://api.github.com/repos") + "/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
     files = response.json()
-    
+
     pdf_docs = []
     for file in files:
         if file['name'].endswith('.pdf'):
@@ -29,6 +27,7 @@ def get_github_pdfs(repo_url):
             pdf_docs.append(BytesIO(response.content))
     return pdf_docs
 
+# Function to extract text from PDF documents
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -37,11 +36,13 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+# Function to split text into chunks
+def get_text_chunks(text, chunk_size=1000, chunk_overlap=200):
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
 
+# Function to create a vector store from text chunks
 def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
@@ -50,11 +51,27 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
+# Function to initialize the conversational retrieval chain
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
+
+# Function to handle user input and generate responses using the conversation chain
+def handle_userinput(conversation_chain, user_question):
+    if not conversation_chain:
+        st.error("The conversation model is not initialized.")
+        return
+
+    response = conversation_chain({'question': user_question})
+    st.session_state.chat_history = response['chat_history']
+
+    for i, message in enumerate(st.session_state.chat_history):
+        if i % 2 == 0:
+            st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+        else:
+            st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
     st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
@@ -63,7 +80,7 @@ def main():
     st.header("Proposal Exploration Tool :books:")
 
     # Use the get_github_pdfs function to load PDFs from the 'rfps' folder
-    knowledge_pdfs = get_github_pdfs("https://github.com/scooter7/ask-multiple-pdfs/contents/rfps")
+    knowledge_pdfs = get_github_pdfs("https://github.com/scooter7/ask-multiple-pdfs")
     knowledge_text = get_pdf_text(knowledge_pdfs)
     knowledge_chunks = get_text_chunks(knowledge_text)
 
