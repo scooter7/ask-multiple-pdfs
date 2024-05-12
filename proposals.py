@@ -91,12 +91,15 @@ def main():
     # Allow user to upload a requirements PDF file
     requirements_file = st.file_uploader("Upload your requirements PDF file")
     
-    # Retrieve PDFs from GitHub
-    pdf_docs = []
+    # Retrieve PDFs from GitHub "rfps" folder
+    pdf_docs = get_github_pdfs(RFPS_REPO_URL)
+
     if requirements_file:
+        # Process uploaded requirements file
+        requirements_content = requirements_file.read()
+        requirements_file.seek(0)  # Reset file pointer
         pdf_docs.append(requirements_file)
-    pdf_docs += get_github_pdfs(RFPS_REPO_URL)
-    
+
     if pdf_docs:
         raw_text = get_pdf_text(pdf_docs)
         text_chunks = get_text_chunks(raw_text)
