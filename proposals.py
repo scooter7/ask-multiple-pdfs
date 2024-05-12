@@ -1,7 +1,8 @@
 import os
-import requests
 import streamlit as st
+import requests
 from PyPDF2 import PdfReader
+from io import BytesIO
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -9,59 +10,21 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
-from io import BytesIO
-import json
-import nltk
-from nltk import ne_chunk, pos_tag, word_tokenize
-from nltk.tree import Tree
 
-def get_continuous_chunks(text):
-    chunked = ne_chunk(pos_tag(word_tokenize(text)))
-    continuous_chunk = []
-    current_chunk = []
-    for i in chunked:
-        if type(i) == Tree:
-            current_chunk.append(" ".join([token for token, pos in i.leaves()]))
-        elif current_chunk:
-            named_entity = " ".join(current_chunk)
-            if named_entity not in continuous_chunk:
-                continuous_chunk.append(named_entity)
-                current_chunk = []
-        else:
-            continue
-    if current_chunk:
-        named_entity = " ".join(current_chunk)
-        if named_entity not in continuous_chunk:
-            continuous_chunk.append(named_entity)
+GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
-    return continuous_chunk
-
-nltk.download('maxent_ne_chunker')
-nltk.download('words')
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-
-def fetch_pdfs_from_github(github_url):
-    response = requests.get(github_url)
-    try:
-        data = response.json()
-        if isinstance(data, list):
-            pdf_urls = [file['download_url'] for file in data if file['name'].endswith('.pdf')]
-            return pdf_urls
-        else:
-            st.error("Unexpected response structure from GitHub API.")
-            print("Response from GitHub API:", json.dumps(data, indent=2))
-            return []
-    except json.JSONDecodeError:
-        st.error("Failed to decode the response from GitHub.")
-        print("Response content:", response.text)
-        return []
-
-def download_pdfs(pdf_urls):
+def get_github_pdfs(repo_url):
+    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    response = requests.get(api_url, headers=headers)
+    files = response.json()
+    
     pdf_docs = []
-    for url in pdf_urls:
-        response = requests.get(url)
-        pdf_docs.append(BytesIO(response.content))
+    for file in files:
+        if file['name'].endswith('.pdf'):
+            pdf_url = file['download_url']
+            response = requests.get(pdf_url)
+            pdf_docs.append(BytesIO(response.content))
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
@@ -72,8 +35,8 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-def get_text_chunks(text, chunk_size=1500, chunk_overlap=300):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len)
+def get_text_chunks(text):
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
 
@@ -85,63 +48,58 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def initialize_conversation(vectorstore):
+def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
 
-def handle_userinput(conversation_chain, user_question):
-    if not conversation_chain:
-        st.error("The conversation model is not initialized.")
-        return
+def modify_response_language(original_response):
+    response = original_response.replace(" they ", " we ")
+    response = response.replace("They ", "We ")
+    response = response.replace(" their ", " our ")
+    response = response.replace("Their ", "Our ")
+    return response
 
-    response = conversation_chain({'question': user_question})
+def handle_userinput(user_question):
+    response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
     for i, message in enumerate(st.session_state.chat_history):
+        modified_content = modify_response_language(message.content)
         if i % 2 == 0:
-            st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
         else:
-            st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
 
 def main():
-    st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
+    st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
 
-    st.header("Proposal Exploration Tool :books:")
+    header_html = """
+    <div style="text-align: center;">
+        <h1 style="font-weight: bold;">Carnegie Artifical Intelligence - CAI</h1>
+        <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+    </div>
+    """
+    st.markdown(header_html, unsafe_allow_html=True)
 
-    github_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
-    pdf_urls = fetch_pdfs_from_github(github_url)
-    knowledge_pdfs = download_pdfs(pdf_urls)
-    knowledge_text = get_pdf_text(knowledge_pdfs)
-    knowledge_chunks = get_text_chunks(knowledge_text)
-
-    uploaded_pdf = st.file_uploader("Upload your PDF to define new proposal requirements", type=['pdf'])
-    if uploaded_pdf:
-        user_uploaded_text = get_pdf_text([uploaded_pdf])
-        user_uploaded_chunks = get_text_chunks(user_uploaded_text)
-
-        user_entities = get_continuous_chunks(user_uploaded_text)
-        user_doc_summary = ' '.join(user_entities)
-
-        combined_text = f"Past proposals:\n{knowledge_text}\n\nUser-uploaded document summary:\n{user_doc_summary}\n\nFull text from the uploaded document:\n{user_uploaded_text}"
-        combined_chunks = get_text_chunks(combined_text)
-        combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
-
-        if combined_vectorstore:
-            conversation_chain = initialize_conversation(combined_vectorstore)
-
-            st.subheader("Ask a Question About How to Address New Requirements Using Past Proposals")
-            user_question = st.text_input("Enter your question about how to address new requirements using past proposals:")
-
-            if user_question:
-                st.subheader("Responses Based on Combined Knowledge")
-                handle_userinput(conversation_chain, user_question)
-        else:
-            st.error("No valid text extracted from the uploaded PDF. Please check your document.")
+    uploaded_file = st.file_uploader("Upload a PDF file to add to the knowledge base", type=["pdf"])
+    if uploaded_file:
+        pdf_docs = [BytesIO(uploaded_file.read())]
     else:
-        st.warning("Please upload a document to start the analysis.")
+        pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
+    
+    if pdf_docs:
+        raw_text = get_pdf_text(pdf_docs)
+        text_chunks = get_text_chunks(raw_text)
+        if text_chunks:
+            vectorstore = get_vectorstore(text_chunks)
+            st.session_state.conversation = get_conversation_chain(vectorstore)
+
+    user_question = st.text_input("Ask CAI about anything Carnegie:")
+    if user_question:
+        handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
