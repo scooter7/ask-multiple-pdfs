@@ -112,6 +112,9 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
     
+    # Initialize rfps_vectorstore to None or an appropriate default
+    rfps_vectorstore = None
+    
     # Retrieve PDFs from GitHub's 'rfps' folder
     rfps_docs = get_github_pdfs(GITHUB_REPO_URL)
     if rfps_docs:
@@ -119,15 +122,20 @@ def main():
         rfps_chunks = get_text_chunks(rfps_text)
         rfps_vectorstore = get_vectorstore(rfps_chunks)
         st.session_state.conversation = get_conversation_chain(rfps_vectorstore)
+    else:
+        # If no documents are retrieved, print a message or handle the case as needed
+        st.write("No RFP documents were retrieved from the repository.")
 
     uploaded_file = st.file_uploader("Upload a requirements PDF", type="pdf")
-    if uploaded_file:
+    if uploaded_file and rfps_vectorstore:
         uploaded_pdf = BytesIO(uploaded_file.getvalue())
-        if rfps_vectorstore:
-            results = analyze_requirements(uploaded_pdf, rfps_vectorstore)
-            st.write("### Matching Content from RFPs:")
-            for result in results:
-                st.write(result)
+        results = analyze_requirements(uploaded_pdf, rfps_vectorstore)
+        st.write("### Matching Content from RFPs:")
+        for result in results:
+            st.write(result)
+    elif uploaded_file:
+        # Handle the case where there is no vectorstore to compare against
+        st.write("Unable to analyze requirements; no RFP data is available.")
 
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
