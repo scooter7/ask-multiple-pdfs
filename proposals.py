@@ -97,6 +97,9 @@ def main():
         combined_chunks = get_text_chunks(combined_text)
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
 
+        knowledge_vectorstore = get_vectorstore(knowledge_chunks) if knowledge_chunks else None
+        knowledge_conversation_chain = initialize_conversation(knowledge_vectorstore) if knowledge_vectorstore else None
+
         if combined_vectorstore:
             st.subheader("Ask a Question About the Uploaded Document")
             user_question = st.text_input("What do you want to know about the uploaded document?")
@@ -111,10 +114,9 @@ def main():
             st.subheader("Ask How Existing Knowledge Applies")
             knowledge_question = st.text_input("How can the existing knowledge be applied here?")
 
-            if knowledge_question and combined_vectorstore:
-                combined_conversation_chain = initialize_conversation(combined_vectorstore)
+            if knowledge_question and knowledge_conversation_chain:
                 st.subheader("Application of Existing Knowledge")
-                handle_userinput(combined_conversation_chain, knowledge_question)
+                handle_userinput(knowledge_conversation_chain, knowledge_question)
         else:
             st.error("No valid text extracted from the uploaded PDF. Please check your document.")
 
