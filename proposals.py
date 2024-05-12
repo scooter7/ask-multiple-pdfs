@@ -93,15 +93,16 @@ def main():
         user_uploaded_text = get_pdf_text([uploaded_pdf])
         user_uploaded_chunks = get_text_chunks(user_uploaded_text)
 
-        combined_text = knowledge_text + "\n" + user_uploaded_text
+        # Ensure the knowledge text is leading the combined text to give it a base context
+        combined_text = knowledge_text + "\n\n" + "Additional Context from the Uploaded Document:\n" + user_uploaded_text
         combined_chunks = get_text_chunks(combined_text)
         combined_vectorstore = get_vectorstore(combined_chunks) if combined_chunks else None
 
         if combined_vectorstore:
             conversation_chain = initialize_conversation(combined_vectorstore)
 
-            st.subheader("Ask a Question About the Uploaded Document and Existing Knowledge")
-            user_question = st.text_input("What do you want to know about the uploaded document?")
+            st.subheader("Ask a Question About How to Address New Requirements Using Past Proposals")
+            user_question = st.text_input("Enter your question about how to address new requirements:")
 
             if user_question:
                 st.subheader("Responses Based on Combined Knowledge")
