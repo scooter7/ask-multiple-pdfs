@@ -15,35 +15,17 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
-    # Correctly format the API URL to list files under the 'rfps' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
-    
-    # Check if the response is successful
-    if response.status_code != 200:
-        print(f"Failed to get files from GitHub: {response.status_code}")
-        return []
-    
     files = response.json()
-    
-    # Debug: Print the type and content of the files variable
-    print(f"Type of files: {type(files)}")
-    if isinstance(files, list):
-        print(f"First element of files: {files[0]}")
-    else:
-        print(f"Content of files: {files}")
     
     pdf_docs = []
     for file in files:
-        try:
-            if file['name'].endswith('.pdf'):
-                pdf_url = file['download_url']
-                response = requests.get(pdf_url)
-                pdf_docs.append(BytesIO(response.content))
-        except TypeError as e:
-            print(f"TypeError: {e} with file: {file}")
-    
+        if file['name'].endswith('.pdf'):
+            pdf_url = file['download_url']
+            response = requests.get(pdf_url)
+            pdf_docs.append(BytesIO(response.content))
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
@@ -92,29 +74,27 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
 
-def extract_key_information(text):
-    sections = re.split(r'Section \d+:', text)
-    section_info = {}
-    for section in sections[1:]:
-        title_match = re.match(r'(.+?)\n', section)
-        if title_match:
-            title = title_match.group(1).strip()
-            content = section[len(title):].strip()
-            section_info[title] = content
-    return section_info
+def extract_key_sections(text, section_keywords):
+    # Use regex to find sections that may contain important information
+    sections = {}
+    for keyword in section_keywords:
+        pattern = re.compile(rf'(?s)(\b{keyword}\b.*?)(?=\n\S|\Z)', re.IGNORECASE)
+        matches = pattern.findall(text)
+        if matches:
+            # Just take the first match for simplicity
+            sections[keyword] = matches[0]
+    return sections
 
-def summarize_text(text, max_length=100):
-    embeddings = OpenAIEmbeddings()
-    text_chunks = get_text_chunks(text)
-    chunk_embeddings = embeddings.embed_texts(text_chunks)
-    summary_vector = chunk_embeddings.mean(axis=0)
-    closest_chunk_index = ((chunk_embeddings - summary_vector) ** 2).sum(axis=1).argmin()
-    return text_chunks[closest_chunk_index][:max_length]
+def summarize_section(section_text):
+    # Summarize the section by extracting the first few lines
+    return '\n'.join(section_text.strip().split('\n')[:5])
 
-def estimate_total_budget(text):
-    budget_pattern = r'\$[\d,\.]+'
-    budgets = re.findall(budget_pattern, text)
-    total_budget = sum(map(lambda x: float(x.replace('$', '').replace(',', '')), budgets))
+def estimate_budget(section_text):
+    # Find all monetary values and sum them
+    budget_pattern = re.compile(r'\$[\d,\.]+')
+    budgets = budget_pattern.findall(section_text)
+    budget_values = [float(b.replace('$', '').replace(',', '')) for b in budgets]
+    total_budget = sum(budget_values)
     return total_budget
 
 def main():
@@ -133,20 +113,21 @@ def main():
     if uploaded_file:
         user_pdf_docs = [BytesIO(uploaded_file.read())]
         user_text = get_pdf_text(user_pdf_docs)
-        key_info = extract_key_information(user_text)
-        st.write("Key Sections and their content:")
-        for title, content in key_info.items():
-            st.write(f"**{title}**")
-            st.write(content[:500] + "...")
+        key_sections = extract_key_sections(user_text, ["Scope of Work", "Budget", "Objectives", "Requirements"])
 
-        scope_summary = summarize_text(user_text)
-        st.write("**Summary of Scope of Work:**", scope_summary)
-        total_budget = estimate_total_budget(user_text)
-        st.write("**Estimated Total Budget:**", f"${total_budget:,.2f}")
+        if key_sections:
+            st.write("### Key Sections and Summaries")
+            for key, section in key_sections.items():
+                st.write(f"**{key}:**")
+                st.write(summarize_section(section))
 
-        st.write("Processing existing RFPs to inform responses...")
-        github_pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
-        combined_text = user_text + "\n" + get_pdf_text(github_pdf_docs)
+            if "Budget" in key_sections:
+                budget = estimate_budget(key_sections["Budget"])
+                st.write(f"**Estimated Total Budget: ${budget:,.2f}**")
+        else:
+            st.write("No key sections found in the uploaded document.")
+
+        combined_text = user_text + "\n" + get_pdf_text(get_github_pdfs(GITHUB_REPO_URL))
     else:
         github_pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
         combined_text = get_pdf_text(github_pdf_docs)
