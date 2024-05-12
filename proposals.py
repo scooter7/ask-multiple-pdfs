@@ -20,12 +20,27 @@ def get_github_pdfs(repo_url):
     response = requests.get(api_url, headers=headers)
     files = response.json()
     
+    # Debug: Print the type and content of files to understand the structure
+    print(f"Type of files: {type(files)}")
+    if isinstance(files, dict):
+        print("files is a dictionary, possibly an error message:", files)
+        return []
+    if not isinstance(files, list):
+        print("Unexpected type for files:", files)
+        return []
+
     pdf_docs = []
     for file in files:
-        if file['name'].endswith('.pdf'):
-            pdf_url = file['download_url']
-            response = requests.get(pdf_url)
-            pdf_docs.append(BytesIO(response.content))
+        try:
+            if 'name' in file and file['name'].endswith('.pdf'):
+                pdf_url = file['download_url']
+                response = requests.get(pdf_url)
+                pdf_docs.append(BytesIO(response.content))
+        except KeyError as e:
+            print(f"Key error {e} in file: {file}")
+        except TypeError as e:
+            print(f"Type error {e} with file: {file}")
+
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
