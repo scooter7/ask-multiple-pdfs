@@ -15,10 +15,23 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/rfps/"
 
 def get_github_pdfs(repo_url):
-    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/rfps"
-    headers = {'Accept': 'application/vnd.github.v3+json'}
-    response = requests.get(api_url, headers=headers)
+    # Extract the owner and repo from the repo_url
+    import re
+    match = re.match(r"https://github.com/([^/]+)/([^/]+)/.*", repo_url)
+    if not match:
+        print("Failed to parse the GitHub repository URL")
+        return []
     
+    owner, repo = match.groups()
+    api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/rfps"
+
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {st.secrets["GITHUB_TOKEN"]}'  # Ensure you have this token in your secrets if the repo is private
+    }
+
+    response = requests.get(api_url, headers=headers)
+
     if response.status_code != 200:
         print(f"Failed to get files from GitHub API. Status code: {response.status_code}")
         print("Response:", response.text)
@@ -26,23 +39,24 @@ def get_github_pdfs(repo_url):
     
     files = response.json()
     
-    print("API Response:", files)
-    
     if not isinstance(files, list):
-        print(f"Expected a list but got {type(files)}.")
+        print("Expected a list but got:", type(files))
         return []
-    
+
     pdf_docs = []
     for file in files:
-        try:
-            if file['name'].endswith('.pdf'):
-                pdf_url = file['download_url']
+        if file.get('name', '').endswith('.pdf'):
+            pdf_url = file.get('download_url')
+            if pdf_url:
                 response = requests.get(pdf_url)
-                pdf_docs.append(BytesIO(response.content))
-        except TypeError as e:
-            print(f"TypeError accessing file attributes: {e}")
-        except KeyError as e:
-            print(f"KeyError accessing file attributes: {e}")
+                if response.status_code == 200:
+                    pdf_docs.append(BytesIO(response.content))
+                else:
+                    print(f"Failed to download {pdf_url}")
+            else:
+                print(f"No download URL for {file.get('name')}")
+        else:
+            print(f"Skipping non-PDF file: {file.get('name')}")
 
     return pdf_docs
 
@@ -103,6 +117,7 @@ def handle_userinput(user_question, requirements_text, vectorstore, text_chunks)
         else:
             st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
 
+def main():
 def main():
     st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
