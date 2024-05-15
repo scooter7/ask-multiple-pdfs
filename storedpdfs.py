@@ -11,6 +11,11 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 
+# Quick patch to prevent '_get_verbosity' error if 'langchain.verbose' is missing
+import langchain
+if not hasattr(langchain, 'verbose'):
+    setattr(langchain, 'verbose', False)
+
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/docs/"
 
 def get_github_pdfs(repo_url):
