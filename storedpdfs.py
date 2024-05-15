@@ -81,15 +81,18 @@ def modify_response_language(original_response):
     return response
 
 def handle_userinput(user_question):
-    response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
+    if st.session_state.conversation is not None:
+        response = st.session_state.conversation({'question': user_question})
+        st.session_state.chat_history = response['chat_history']
 
-    for i, message in enumerate(st.session_state.chat_history):
-        modified_content = modify_response_language(message.content)
-        if i % 2 == 0:
-            st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        for i, message in enumerate(st.session_state.chat_history):
+            modified_content = modify_response_language(message.content)
+            if i % 2 == 0:
+                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+    else:
+        st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
     st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
@@ -97,11 +100,15 @@ def main():
 
     header_html = """
     <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Carnegie Artifical Intelligence - CAI</h1>
+        <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
+    
+    # Ensure session state is initialized for conversation
+    if 'conversation' not in st.session_state:
+        st.session_state.conversation = None
     
     # Retrieve PDFs from GitHub
     pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
@@ -118,3 +125,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
