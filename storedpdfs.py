@@ -14,23 +14,16 @@ from htmlTemplates import css, bot_template, user_template
 GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/docs/"
 
 def get_github_pdfs(repo_url):
-    # Correctly format the API URL to list files under the 'docs' directory
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
-    
-    # Check if the response is successful
     if response.status_code != 200:
         st.error(f"Failed to get files from GitHub: {response.text}")
         return []
-    
     files = response.json()
-    
-    # Debugging: Check what the API returned
     if not isinstance(files, list):
         st.error("Expected a list of files from GitHub, but got something else.")
         return []
-    
     pdf_docs = []
     for file in files:
         if isinstance(file, dict) and file.get('name', '').endswith('.pdf'):
@@ -70,7 +63,6 @@ def get_conversation_chain(vectorstore):
     return conversation_chain
 
 def modify_response_language(original_response):
-    # Simple replacements; could be expanded based on actual usage
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
@@ -80,7 +72,6 @@ def modify_response_language(original_response):
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
-
     for i, message in enumerate(st.session_state.chat_history):
         modified_content = modify_response_language(message.content)
         if i % 2 == 0:
@@ -91,7 +82,6 @@ def handle_userinput(user_question):
 def main():
     st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
-
     header_html = """
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Carnegie Artifical Intelligence - CAI</h1>
@@ -99,8 +89,6 @@ def main():
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
-    
-    # Retrieve PDFs from GitHub
     pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
     if pdf_docs:
         raw_text = get_pdf_text(pdf_docs)
@@ -108,7 +96,6 @@ def main():
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
-
     user_question = st.text_input("Ask CAI about anything Carnegie:")
     if user_question:
         handle_userinput(user_question)
