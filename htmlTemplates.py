@@ -28,7 +28,7 @@ css = '''
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="https://github.com/scooter7/ask-multiple-pdfs/blob/main/IMG_1737.png?raw=true" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
+        <img src="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/CAI_93x92.png" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
@@ -37,7 +37,7 @@ bot_template = '''
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="https://app.shmooze.io/assets/images/robots/robot_28.jpeg">
+        <img src="https://github.com/scooter7/ask-multiple-pdfs/blob/main/IMG_1737.png?raw=true">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>
