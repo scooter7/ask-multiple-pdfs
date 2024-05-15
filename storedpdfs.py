@@ -18,14 +18,28 @@ def get_github_pdfs(repo_url):
     api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     response = requests.get(api_url, headers=headers)
+    
+    # Check if the response is successful
+    if response.status_code != 200:
+        st.error(f"Failed to get files from GitHub: {response.text}")
+        return []
+    
     files = response.json()
+    
+    # Debugging: Check what the API returned
+    if not isinstance(files, list):
+        st.error("Expected a list of files from GitHub, but got something else.")
+        return []
     
     pdf_docs = []
     for file in files:
-        if file['name'].endswith('.pdf'):
+        if isinstance(file, dict) and file.get('name', '').endswith('.pdf'):
             pdf_url = file['download_url']
             response = requests.get(pdf_url)
-            pdf_docs.append(BytesIO(response.content))
+            if response.status_code == 200:
+                pdf_docs.append(BytesIO(response.content))
+            else:
+                st.error(f"Failed to download PDF: {pdf_url}")
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
