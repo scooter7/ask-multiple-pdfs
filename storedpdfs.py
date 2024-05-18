@@ -11,24 +11,21 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 
-GITHUB_REPO_URL = "https://github.com/scooter7/ask-multiple-pdfs/tree/main/docs/"
+GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
-def get_github_pdfs(repo_url):
-    # Correctly format the API URL to list files under the 'docs' directory
-    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
+def get_github_pdfs():
     headers = {'Accept': 'application/vnd.github.v3+json'}
     
     try:
-        response = requests.get(api_url, headers=headers)
-        # Check if the response was successful
+        response = requests.get(GITHUB_REPO_URL, headers=headers)
         if response.status_code != 200:
-            print(f"Failed to fetch files: {response.status_code}, {response.text}")
+            st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
             return []
         
         files = response.json()
         
         if not isinstance(files, list):
-            print(f"Unexpected response format: {files}")
+            st.error(f"Unexpected response format: {files}")
             return []
         
         pdf_docs = []
@@ -40,7 +37,7 @@ def get_github_pdfs(repo_url):
                     pdf_docs.append(BytesIO(response.content))
         
     except Exception as e:
-        print(f"An error occurred: {e}")
+        st.error(f"An error occurred: {e}")
         return []
     
     return pdf_docs
@@ -67,21 +64,26 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
-    return conversation_chain
+    try:
+        llm = ChatOpenAI()
+        memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+        conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+        return conversation_chain
+    except Exception as e:
+        st.error(f"Failed to initialize conversation chain: {e}")
+        return None
 
 def modify_response_language(original_response):
-    # Simple replacements; could be expanded based on actual usage
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
     return response
 
 def handle_userinput(user_question):
-    if st.session_state.conversation is not None:
+    if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
         st.session_state.chat_history = response['chat_history']
 
@@ -95,7 +97,7 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
-    st.set_page_config(page_title="CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
+    st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
 
     header_html = """
@@ -107,12 +109,12 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
     
-    # Ensure session state is initialized for conversation
     if 'conversation' not in st.session_state:
         st.session_state.conversation = None
-    
-    # Retrieve PDFs from GitHub
-    pdf_docs = get_github_pdfs(GITHUB_REPO_URL)
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+
+    pdf_docs = get_github_pdfs()
     if pdf_docs:
         raw_text = get_pdf_text(pdf_docs)
         text_chunks = get_text_chunks(raw_text)
@@ -126,4 +128,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
