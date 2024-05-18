@@ -119,7 +119,7 @@ def main():
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
 
-    user_question = st.text_input("Ask CAI about anything Carnegie:")
+    user_question = st.text_input("Ask CCXBot anything about finding and applying to the right colleges and universities:")
     if user_question:
         handle_userinput(user_question)
 
