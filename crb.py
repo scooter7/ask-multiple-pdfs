@@ -47,13 +47,11 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
-    hide_toolbar_css = """
-<style>
-    header[data-testid="stHeader"] .css-14xtw13.e8zbici0 {
-        display: none !important;
-    }
-</style>
-"""
+hide_toolbar_css = """
+        <style>
+            .css-14xtw13.e8zbici0 { display: none !important; }
+        </style>
+    """
 
 st.markdown(hide_toolbar_css, unsafe_allow_html=True)
 
