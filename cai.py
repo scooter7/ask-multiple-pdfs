@@ -105,13 +105,8 @@ def main():
     if not authenticate(password):
         st.warning("Incorrect password. Please try again.")
         st.stop()  # Stop execution if password is incorrect
-    
-    hide_streamlit_style = """
-    <style>
-    [data-testid="stHeader"] {display: none;}
-    </style>
-    """
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+    st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>""", unsafe_allow_html=True)
 
     if 'conversation' not in st.session_state:
         st.session_state.conversation = None
