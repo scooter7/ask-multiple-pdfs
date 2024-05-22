@@ -48,10 +48,15 @@ def handle_userinput(user_question):
 
 def main():
     hide_toolbar_css = """
-        <style>
-            .css-14xtw13.e8zbici0 { display: none !important; }
-        </style>
-    """
+<style>
+    header[data-testid="stHeader"] .css-14xtw13.e8zbici0 {
+        display: none !important;
+    }
+</style>
+"""
+
+st.markdown(hide_toolbar_css, unsafe_allow_html=True)
+
     # Set the configuration for the page, including a custom icon
     st.set_page_config(page_title="Ask Whatever My Name Will Be", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
