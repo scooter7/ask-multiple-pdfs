@@ -47,12 +47,6 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
-    hide_toolbar_css = """
-        <style>
-            .css-18ni7ap.e8zbici2 { display: none !important; }
-        </style>
-    """
-    
     # Set the configuration for the page, including a custom icon
     st.set_page_config(page_title="Ask Whatever My Name Will Be", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
