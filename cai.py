@@ -108,7 +108,7 @@ def main():
     
     hide_streamlit_style = """
     <style>
-    .stActionButton {display: none;}
+    [data-testid="stToolbar"] .stActionButton {display: none;}
     </style>
     """
     st.markdown(hide_streamlit_style, unsafe_allow_html=True)
