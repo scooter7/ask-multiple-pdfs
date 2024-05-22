@@ -106,13 +106,11 @@ def main():
         st.warning("Incorrect password. Please try again.")
         st.stop()  # Stop execution if password is incorrect
     
-    hide_streamlit_style = """
+    hide_footer_style = """
     <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style>
+    .reportview-container .main footer {visibility: hidden;}    
     """
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+    st.markdown(hide_footer_style, unsafe_allow_html=True)
 
     if 'conversation' not in st.session_state:
         st.session_state.conversation = None
