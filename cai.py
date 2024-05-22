@@ -90,20 +90,15 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
-    hide_toolbar_script = """
-        <script>
-            window.onload = function() {
-                var toolbar = document.getElementsByClassName("css-14xtw13 e8zbici0")[0];
-                if (toolbar) {
-                    toolbar.style.display = "none";
-                }
-            }
-        </script>
+    hide_toolbar_css = """
+        <style>
+            .css-14xtw13.e8zbici0 { display: none !important; }
+        </style>
     """
     
     st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
     st.write(css, unsafe_allow_html=True)
-    st.markdown(hide_toolbar_script, unsafe_allow_html=True)
+    st.markdown(hide_toolbar_css, unsafe_allow_html=True)
 
     password = st.text_input("Enter password:", type="password")
     if not authenticate(password):
