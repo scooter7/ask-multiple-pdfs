@@ -108,8 +108,8 @@ def main():
         """
         <script>
         window.onload = function() {
-            const navbar = document.querySelector(".element-container.css-1u6khts");
-            navbar.style.display = "none";
+            const navbarLinks = document.querySelectorAll(".element-container.css-1u6khts a");
+            navbarLinks.forEach(link => link.style.display = "none");
         }
         </script>
         """,
