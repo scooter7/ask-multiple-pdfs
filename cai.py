@@ -90,7 +90,11 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
-    st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
+    st.set_page_config(
+        page_title="Carnegie Artificial Intelligence - CAI", 
+        page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png",
+        layout="wide"
+    )
     st.write(css, unsafe_allow_html=True)
     header_html = """
     <div style="text-align: center;">
@@ -105,8 +109,6 @@ def main():
     if not authenticate(password):
         st.warning("Incorrect password. Please try again.")
         st.stop()  # Stop execution if password is incorrect
-
-    st.markdown("""<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>""", unsafe_allow_html=True)
 
     if 'conversation' not in st.session_state:
         st.session_state.conversation = None
