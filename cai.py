@@ -94,11 +94,14 @@ def main():
     st.write(css, unsafe_allow_html=True)
     st.markdown(
         """
-        <style>
-        .streamlit-topbar a {
-            display: none !important;
+        <script>
+        window.onload = function() {
+            const navbarLinks = document.querySelectorAll(".streamlit-topbar a");
+            navbarLinks.forEach(link => {
+                link.style.display = "none";
+            });
         }
-        </style>
+        </script>
         """,
         unsafe_allow_html=True
     )
