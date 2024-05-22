@@ -90,26 +90,26 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
-    st.set_page_config(
-        page_title="Carnegie Artificial Intelligence - CAI", 
-        page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png",
-        layout="wide"
-    )
-    st.write(css, unsafe_allow_html=True)
-    header_html = """
-    <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
-        <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your awesome manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl!</p>
-    </div>
+    hide_toolbar_script = """
+        <script>
+            window.onload = function() {
+                var toolbar = document.getElementsByClassName("css-14xtw13 e8zbici0")[0];
+                if (toolbar) {
+                    toolbar.style.display = "none";
+                }
+            }
+        </script>
     """
-    st.markdown(header_html, unsafe_allow_html=True)
     
+    st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
+    st.write(css, unsafe_allow_html=True)
+    st.markdown(hide_toolbar_script, unsafe_allow_html=True)
+
     password = st.text_input("Enter password:", type="password")
     if not authenticate(password):
         st.warning("Incorrect password. Please try again.")
         st.stop()  # Stop execution if password is incorrect
-
+    
     if 'conversation' not in st.session_state:
         st.session_state.conversation = None
     if 'chat_history' not in st.session_state:
