@@ -49,7 +49,7 @@ def handle_userinput(user_question):
 def main():
     hide_toolbar_css = """
         <style>
-            .css-14xtw13.e8zbici0 { display: none !important; }
+            .css-18ni7ap.e8zbici2 { display: none !important; }
         </style>
     """
     
