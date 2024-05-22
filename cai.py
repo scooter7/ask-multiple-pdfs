@@ -95,23 +95,10 @@ def main():
     st.markdown(
         """
         <style>
-        .css-1sww81h, .e1kqsv9p1, .viewerBadge_container__1QSob,
-        .styles_viewerBadge__1yB5_, .viewerBadge_link__1S137,
-        .viewerBadge_text__1JaDK {
-            display: none;
+        .streamlit-topbar a {
+            display: none !important;
         }
         </style>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        """
-        <script>
-        window.onload = function() {
-            const navbarLink = document.querySelector(".css-30do4w.e10z71040");
-            navbarLink.style.display = "none";
-        }
-        </script>
         """,
         unsafe_allow_html=True
     )
