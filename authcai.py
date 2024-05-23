@@ -91,7 +91,7 @@ def main():
         secret_credentials_path='client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
         cookie_name='my_cookie_name',
         cookie_key='this_is_secret',
-        redirect_uri='https://storedpdfspy-iynseyrfqbaplxt9fmrkor.streamlit.app/',
+        redirect_uri='https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',
     )
 
     # Check if the user is already authenticated
