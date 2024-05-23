@@ -89,6 +89,9 @@ def handle_userinput(user_question):
 def main():
     st.title('Carnegie Artificial Intelligence - CAI')
 
+    if 'connected' not in st.session_state:
+        st.session_state.connected = False
+
     authenticator = Authenticate(
         secret_credentials_path='client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
         cookie_name='my_cookie_name',
