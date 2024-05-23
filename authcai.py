@@ -86,7 +86,7 @@ def modify_response_language(original_response):
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
-    response is replaced  " them ", " us ")
+    response = response.replace(" them ", " us ")
     response = response.replace("Them ", "Us ")
     return response
 
