@@ -21,13 +21,13 @@ redirect_uri = "https://caiwapppy-7h9vyxnu4fx8nsglpwf6ft.streamlit.app/"
 
 login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
 
-if login == "authenticated":
-    def main():
+def main():
+    if login == "authenticated":
         hide_toolbar_css = """
         <style>
             .css-14xtw13.e8zbici0 { display: none !important; }
         </style>
-    """
+        """
         
         st.write(css, unsafe_allow_html=True)
         header_html = """
@@ -52,12 +52,8 @@ if login == "authenticated":
         user_question = st.text_input("Ask CAI about anything Carnegie:")
         if user_question:
             handle_userinput(user_question)
-
-    if __name__ == '__main__':
-        main()
-
-else:
-    st.warning("Login failed")
+    else:
+        st.warning("Login failed")
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
@@ -132,3 +128,6 @@ def handle_userinput(user_question):
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
+
+if __name__ == '__main__':
+    main()
