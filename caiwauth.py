@@ -19,6 +19,10 @@ client_id = "607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleuserconten
 client_secret = "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"
 redirect_uri = "https://caiwapppy-7h9vyxnu4fx8nsglpwf6ft.streamlit.app/"
 
+# Initialize session state for login
+if 'login' not in st.session_state:
+    st.session_state['login'] = None
+
 def get_google_auth():
     try:
         login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
@@ -28,7 +32,8 @@ def get_google_auth():
         st.error(f"Authentication failed: {e}")
         return None
 
-login = get_google_auth()
+if st.session_state['login'] is None:
+    st.session_state['login'] = get_google_auth()
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
@@ -105,6 +110,7 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
+    login = st.session_state['login']
     st.write(f"Login object: {login}")
     if login and login[1] == "authenticated":
         st.success("Logged in successfully!")
