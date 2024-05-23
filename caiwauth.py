@@ -11,6 +11,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from StreamlitGauth.google_auth import Google_auth
+import logging
 
 # Set page configuration at the beginning
 st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
@@ -23,16 +24,19 @@ redirect_uri = "https://caiwapppy-7h9vyxnu4fx8nsglpwf6ft.streamlit.app/"
 if 'login' not in st.session_state:
     st.session_state['login'] = None
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
 def get_google_auth():
     try:
         login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
         if login and isinstance(login, tuple) and len(login) == 2 and login[1] == "authenticated":
             return login
         else:
-            st.error("Authentication failed: Invalid response from Google authentication.")
+            logging.error("Authentication failed: Invalid response from Google authentication.")
             return None
     except Exception as e:
-        st.error(f"Authentication failed: {e}")
+        logging.error(f"Authentication failed: {e}")
         return None
 
 if st.session_state['login'] is None:
@@ -144,7 +148,7 @@ def main():
         if user_question:
             handle_userinput(user_question)
     else:
-        st.warning("Login failed or not authenticated.")
+        st.warning("Please log in to use the application.")
 
 if __name__ == '__main__':
     main()
