@@ -95,12 +95,19 @@ def main():
     )
 
     # Check if the user is already authenticated
-    authenticator.check_authentification()
+    if 'connected' not in st.session_state:
+        st.session_state.connected = False
 
-    # Display the login button if the user is not authenticated
-    authenticator.login()
+    query_params = st.experimental_get_query_params()
+    auth_code = query_params.get("code")
 
-    if st.session_state.get('connected'):
+    if not st.session_state.connected and auth_code:
+        st.experimental_set_query_params()
+        authenticator.handle_authentication(auth_code)
+        st.session_state.connected = True
+        st.experimental_rerun()
+
+    if st.session_state.connected:
         st.image(st.session_state['user_info'].get('picture'))
         st.write(f"Hello, {st.session_state['user_info'].get('name')}")
         st.write(f"Your email is {st.session_state['user_info'].get('email')}")
@@ -108,6 +115,9 @@ def main():
             authenticator.logout()
             st.experimental_rerun()
     else:
+        authenticator.login()
+
+    if st.session_state.connected:
         st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
         st.write(css, unsafe_allow_html=True)
         header_html = """
