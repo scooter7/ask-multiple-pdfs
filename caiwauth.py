@@ -15,7 +15,7 @@ from StreamlitGauth.google_auth import Google_auth
 
 client_id = "607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com"
 client_secret = "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"
-redirect_uri = "http://localhost:8501"
+redirect_uri = "https://caiwapppy-7h9vyxnu4fx8nsglpwf6ft.streamlit.app/"
 
 login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
 
