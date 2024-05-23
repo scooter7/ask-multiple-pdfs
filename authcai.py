@@ -15,10 +15,10 @@ from streamlit_google_auth import Authenticate
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
 authenticator = Authenticate(
-    secret_credentials_path = 'google_credentials.json',
+    secret_credentials_path = 'client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
     cookie_name='my_cookie_name',
     cookie_key='this_is_secret',
-    redirect_uri = 'http://localhost:8501',
+    redirect_uri = 'https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',
 )
 
 # Catch the login event
