@@ -117,6 +117,16 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
+    # Hide the Streamlit toolbar
+    hide_toolbar_css = """
+    <style>
+        .css-18ni7ap.e8zbici2 {
+            display: none !important;
+        }
+    </style>
+    """
+    st.markdown(hide_toolbar_css, unsafe_allow_html=True)
+
     login = st.session_state['login']
     st.write(f"Login object: {login}")
     if login and login[1] == "authenticated":
