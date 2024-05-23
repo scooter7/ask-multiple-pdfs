@@ -105,6 +105,7 @@ def handle_userinput(user_question):
 
 def main():
     if login == "authenticated":
+        st.success("Logged in successfully!")
         st.write(css, unsafe_allow_html=True)
         header_html = """
         <div style="text-align: center;">
@@ -132,7 +133,7 @@ def main():
         if user_question:
             handle_userinput(user_question)
     else:
-        st.warning("Login failed")
+        st.warning("Login failed or not authenticated.")
 
 if __name__ == '__main__':
     main()
