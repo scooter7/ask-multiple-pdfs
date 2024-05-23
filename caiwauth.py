@@ -19,7 +19,17 @@ client_id = "607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleuserconten
 client_secret = "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"
 redirect_uri = "https://caiwapppy-7h9vyxnu4fx8nsglpwf6ft.streamlit.app/"
 
-login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
+def get_google_auth():
+    try:
+        login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
+        return login
+    except Exception as e:
+        st.error(f"Authentication failed: {e}")
+        return None
+
+login = get_google_auth()
+
+GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
 def get_github_pdfs():
     github_token = st.secrets["github"]["access_token"]
