@@ -23,6 +23,12 @@ login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri
 
 if login == "authenticated":
     def main():
+        hide_toolbar_css = """
+        <style>
+            .css-14xtw13.e8zbici0 { display: none !important; }
+        </style>
+    """
+        
         st.write(css, unsafe_allow_html=True)
         header_html = """
         <div style="text-align: center;">
