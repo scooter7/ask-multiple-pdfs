@@ -22,6 +22,7 @@ redirect_uri = "https://caiwapppy-7h9vyxnu4fx8nsglpwf6ft.streamlit.app/"
 def get_google_auth():
     try:
         login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
+        st.write(f"Login status: {login}")
         return login
     except Exception as e:
         st.error(f"Authentication failed: {e}")
@@ -104,7 +105,8 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
-    if login == "authenticated":
+    st.write(f"Login object: {login}")
+    if login and login == "authenticated":
         st.success("Logged in successfully!")
         st.write(css, unsafe_allow_html=True)
         header_html = """
