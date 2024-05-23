@@ -21,8 +21,6 @@ redirect_uri = "https://caiwapppy-7h9vyxnu4fx8nsglpwf6ft.streamlit.app/"
 
 login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
 
-GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
-
 def get_github_pdfs():
     github_token = st.secrets["github"]["access_token"]
     headers = {
@@ -106,10 +104,12 @@ def main():
         </div>
         """
         st.markdown(header_html, unsafe_allow_html=True)
+        
         if 'conversation' not in st.session_state:
             st.session_state.conversation = None
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
+        
         pdf_docs = get_github_pdfs()
         if pdf_docs:
             raw_text = get_pdf_text(pdf_docs)
@@ -117,6 +117,7 @@ def main():
             if text_chunks:
                 vectorstore = get_vectorstore(text_chunks)
                 st.session_state.conversation = get_conversation_chain(vectorstore)
+        
         user_question = st.text_input("Ask CAI about anything Carnegie:")
         if user_question:
             handle_userinput(user_question)
