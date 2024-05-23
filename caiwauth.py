@@ -13,6 +13,19 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from StreamlitGauth.google_auth import Google_auth
 
+client_id = "607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com"
+client_secret = "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"
+redirect_uri = "http://localhost:8501"
+
+login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
+
+if login == "authenticated":
+    # your streamlit applciation
+    pass
+
+else:
+    st.warning("login failed")
+
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
 def get_github_pdfs():
