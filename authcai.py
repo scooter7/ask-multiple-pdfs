@@ -18,11 +18,11 @@ authenticator = Authenticate(
     secret_credentials_path='client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
     cookie_name='my_cookie_name',
     cookie_key='this_is_secret',
-    redirect_uri='https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',
+    redirect_uri='https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',  # Ensure this matches exactly with Google Cloud Console
 )
 
 def main():
-    # Catch the login event
+    # Check if the user is authenticated
     query_params = st.experimental_get_query_params()
     if 'connected' not in st.session_state:
         st.session_state.connected = False
