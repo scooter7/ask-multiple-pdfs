@@ -15,24 +15,59 @@ from streamlit_google_auth import Authenticate
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
 authenticator = Authenticate(
-    secret_credentials_path = 'client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
+    secret_credentials_path='client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
     cookie_name='my_cookie_name',
     cookie_key='this_is_secret',
-    redirect_uri = 'https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',
+    redirect_uri='https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',
 )
 
-# Catch the login event
-authenticator.check_authentification()
+def main():
+    # Catch the login event
+    query_params = st.experimental_get_query_params()
+    if 'connected' not in st.session_state:
+        st.session_state.connected = False
 
-# Create the login button
-authenticator.login()
+    auth_code = query_params.get("code")
+    if auth_code:
+        authenticator.handle_authentication(auth_code[0])
+        st.experimental_set_query_params()
+        st.session_state.connected = True
+        st.experimental_rerun()
 
-if st.session_state['connected']:
-    st.image(st.session_state['user_info'].get('picture'))
-    st.write('Hello, '+ st.session_state['user_info'].get('name'))
-    st.write('Your email is '+ st.session_state['user_info'].get('email'))
-    if st.button('Log out'):
-        authenticator.logout()
+    authenticator.login()
+
+    if st.session_state.connected:
+        st.image(st.session_state['user_info'].get('picture'))
+        st.write('Hello, ' + st.session_state['user_info'].get('name'))
+        st.write('Your email is ' + st.session_state['user_info'].get('email'))
+        if st.button('Log out'):
+            authenticator.logout()
+            st.experimental_rerun()
+
+        st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
+        st.write(css, unsafe_allow_html=True)
+        header_html = """
+        <div style="text-align: center;">
+            <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
+            <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+            <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your awesome manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl!</p>
+        </div>
+        """
+        st.markdown(header_html, unsafe_allow_html=True)
+        if 'conversation' not in st.session_state:
+            st.session_state.conversation = None
+        if 'chat_history' not in st.session_state:
+            st.session_state.chat_history = []
+        pdf_docs = get_github_pdfs()
+        if pdf_docs:
+            raw_text = get_pdf_text(pdf_docs)
+            text_chunks = get_text_chunks(raw_text)
+            if text_chunks:
+                vectorstore = get_vectorstore(text_chunks)
+                st.session_state.conversation = get_conversation_chain(vectorstore)
+        user_question = st.text_input("Ask CAI about anything Carnegie:")
+        if user_question:
+            handle_userinput(user_question)
 
 def get_github_pdfs():
     github_token = st.secrets["github"]["access_token"]
@@ -87,9 +122,9 @@ def get_conversation_chain(vectorstore):
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
-    response = response.replace(" their ", " our ")
+    response is replaced  " their ", " our ")
     response = response.replace("Their ", "Our ")
-    response = response.replace(" them ", " us ")
+    response is replaced  " them ", " us ")
     response = response.replace("Them ", "Us ")
     return response
 
@@ -105,32 +140,6 @@ def handle_userinput(user_question):
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
-
-def main():
-    st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
-    st.write(css, unsafe_allow_html=True)
-    header_html = """
-    <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
-        <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your awesome manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl!</p>
-    </div>
-    """
-    st.markdown(header_html, unsafe_allow_html=True)
-    if 'conversation' not in st.session_state:
-        st.session_state.conversation = None
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
-    pdf_docs = get_github_pdfs()
-    if pdf_docs:
-        raw_text = get_pdf_text(pdf_docs)
-        text_chunks = get_text_chunks(raw_text)
-        if text_chunks:
-            vectorstore = get_vectorstore(text_chunks)
-            st.session_state.conversation = get_conversation_chain(vectorstore)
-    user_question = st.text_input("Ask CAI about anything Carnegie:")
-    if user_question:
-        handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
