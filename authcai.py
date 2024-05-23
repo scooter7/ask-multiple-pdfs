@@ -121,11 +121,11 @@ def get_conversation_chain(vectorstore):
 
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
-    response = response.replace("They ", "We ")
-    response is replaced  " their ", " our ")
-    response = response.replace("Their ", "Our ")
-    response is replaced  " them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response = original_response.replace("They ", "We ")
+    response = original_response.replace(" their ", " our ")
+    response = original_response.replace("Their ", "Our ")
+    response = original_response.replace(" them ", " us ")
+    response = original_response.replace("Them ", "Us ")
     return response
 
 def handle_userinput(user_question):
