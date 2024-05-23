@@ -26,8 +26,11 @@ if 'login' not in st.session_state:
 def get_google_auth():
     try:
         login = Google_auth(clientId=client_id, clientSecret=client_secret, redirect_uri=redirect_uri)
-        st.write(f"Login status: {login}")
-        return login
+        if login and isinstance(login, tuple) and len(login) == 2 and login[1] == "authenticated":
+            return login
+        else:
+            st.error("Authentication failed: Invalid response from Google authentication.")
+            return None
     except Exception as e:
         st.error(f"Authentication failed: {e}")
         return None
