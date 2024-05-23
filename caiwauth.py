@@ -106,7 +106,7 @@ def handle_userinput(user_question):
 
 def main():
     st.write(f"Login object: {login}")
-    if login and login == "authenticated":
+    if login and login[1] == "authenticated":
         st.success("Logged in successfully!")
         st.write(css, unsafe_allow_html=True)
         header_html = """
