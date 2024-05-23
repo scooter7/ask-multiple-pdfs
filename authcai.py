@@ -87,6 +87,8 @@ def handle_userinput(user_question):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
+    st.title('Carnegie Artificial Intelligence - CAI')
+
     authenticator = Authenticate(
         secret_credentials_path='client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
         cookie_name='my_cookie_name',
@@ -94,31 +96,20 @@ def main():
         redirect_uri='https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',
     )
 
-    # Check if the user is already authenticated
-    if 'connected' not in st.session_state:
-        st.session_state.connected = False
+    # Catch the login event
+    authenticator.check_authentification()
 
-    query_params = st.experimental_get_query_params()
-    auth_code = query_params.get("code")
+    # Create the login button
+    authenticator.login()
 
-    if not st.session_state.connected and auth_code:
-        st.experimental_set_query_params()
-        authenticator.handle_authentication(auth_code)
-        st.session_state.connected = True
-        st.experimental_rerun()
-
-    if st.session_state.connected:
+    if st.session_state['connected']:
         st.image(st.session_state['user_info'].get('picture'))
-        st.write(f"Hello, {st.session_state['user_info'].get('name')}")
-        st.write(f"Your email is {st.session_state['user_info'].get('email')}")
+        st.write('Hello, ' + st.session_state['user_info'].get('name'))
+        st.write('Your email is ' + st.session_state['user_info'].get('email'))
         if st.button('Log out'):
             authenticator.logout()
             st.experimental_rerun()
-    else:
-        authenticator.login()
-
-    if st.session_state.connected:
-        st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
+        
         st.write(css, unsafe_allow_html=True)
         header_html = """
         <div style="text-align: center;">
@@ -128,10 +119,12 @@ def main():
         </div>
         """
         st.markdown(header_html, unsafe_allow_html=True)
+        
         if 'conversation' not in st.session_state:
             st.session_state.conversation = None
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
+
         pdf_docs = get_github_pdfs()
         if pdf_docs:
             raw_text = get_pdf_text(pdf_docs)
