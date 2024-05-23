@@ -128,7 +128,6 @@ def main():
     st.markdown(hide_toolbar_css, unsafe_allow_html=True)
 
     login = st.session_state['login']
-    st.write(f"Login object: {login}")
     if login and login[1] == "authenticated":
         st.success("Logged in successfully!")
         st.write(css, unsafe_allow_html=True)
