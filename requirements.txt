@@ -9,6 +9,7 @@ tiktoken==0.4.0
 nltk
 streamlit-google-auth
 StreamlitGAuth
+streamlit-oauth
 # uncomment to use huggingface llms
 # huggingface-hub==0.14.1
 
