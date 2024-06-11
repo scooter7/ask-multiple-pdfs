@@ -11,14 +11,37 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from streamlit_google_auth import Authenticate
+import secrets
+import json
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
+# Load Google Auth credentials from Streamlit secrets
+google_auth = {
+    "web": {
+        "client_id": st.secrets["google_auth"]["client_id"],
+        "project_id": st.secrets["google_auth"]["project_id"],
+        "auth_uri": st.secrets["google_auth"]["auth_uri"],
+        "token_uri": st.secrets["google_auth"]["token_uri"],
+        "auth_provider_x509_cert_url": st.secrets["google_auth"]["auth_provider_x509_cert_url"],
+        "client_secret": st.secrets["google_auth"]["client_secret"],
+        "redirect_uris": st.secrets["google_auth"]["redirect_uris"]
+    }
+}
+
+# Save Google Auth credentials to a local JSON file
+LOCAL_JSON_PATH = 'client_secret.json'
+with open(LOCAL_JSON_PATH, 'w') as file:
+    json.dump(google_auth, file)
+
+# Generate a secure cookie key
+cookie_key = secrets.token_hex(16)
+
 authenticator = Authenticate(
-    secret_credentials_path='client_secret_607666979506-c6u97a5ufcpbortp1q8qb0kkgttvqdjo.apps.googleusercontent.com.json',
-    cookie_name='my_cookie_name',
-    cookie_key='this_is_secret',
-    redirect_uri='https://appcaipy-fmoudq2eknhlaznomdklyb.streamlit.app/',  # Ensure this matches exactly with Google Cloud Console
+    secret_credentials_path=LOCAL_JSON_PATH,  # Use the local JSON file
+    cookie_name='carnegie_ai_auth_cookie',  # Use a unique name for your cookie
+    cookie_key=cookie_key,  # Use the generated secure cookie key
+    redirect_uri=google_auth["web"]["redirect_uris"][0]  # Ensure this matches exactly with Google Cloud Console
 )
 
 def main():
