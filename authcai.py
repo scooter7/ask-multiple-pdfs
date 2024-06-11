@@ -1,8 +1,9 @@
 import os
 import streamlit as st
+from streamlit_oauth import OAuth2Component
 import requests
-from PyPDF2 import PdfReader
 from io import BytesIO
+from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -10,64 +11,62 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
-from streamlit_google_auth import Authenticate
-import secrets
-import json
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 
 # Load Google Auth credentials from Streamlit secrets
 google_auth = {
-    "web": {
-        "client_id": st.secrets["google_auth"]["client_id"],
-        "project_id": st.secrets["google_auth"]["project_id"],
-        "auth_uri": st.secrets["google_auth"]["auth_uri"],
-        "token_uri": st.secrets["google_auth"]["token_uri"],
-        "auth_provider_x509_cert_url": st.secrets["google_auth"]["auth_provider_x509_cert_url"],
-        "client_secret": st.secrets["google_auth"]["client_secret"],
-        "redirect_uris": st.secrets["google_auth"]["redirect_uris"]
-    }
+    "client_id": st.secrets["google_auth"]["client_id"],
+    "project_id": st.secrets["google_auth"]["project_id"],
+    "auth_uri": st.secrets["google_auth"]["auth_uri"],
+    "token_uri": st.secrets["google_auth"]["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets["google_auth"]["auth_provider_x509_cert_url"],
+    "client_secret": st.secrets["google_auth"]["client_secret"],
+    "redirect_uris": st.secrets["google_auth"]["redirect_uris"]
 }
 
-# Save Google Auth credentials to a local JSON file
-LOCAL_JSON_PATH = 'client_secret.json'
-with open(LOCAL_JSON_PATH, 'w') as file:
-    json.dump(google_auth, file)
+AUTHORIZE_URL = google_auth["auth_uri"]
+TOKEN_URL = google_auth["token_uri"]
+REFRESH_TOKEN_URL = google_auth["token_uri"]
+REVOKE_TOKEN_URL = "https://accounts.google.com/o/oauth2/revoke"
+CLIENT_ID = google_auth["client_id"]
+CLIENT_SECRET = google_auth["client_secret"]
+REDIRECT_URI = google_auth["redirect_uris"][0]
+SCOPE = "email profile"
 
-# Generate a secure cookie key
-cookie_key = secrets.token_hex(16)
-
-authenticator = Authenticate(
-    secret_credentials_path=LOCAL_JSON_PATH,  # Use the local JSON file
-    cookie_name='carnegie_ai_auth_cookie',  # Use a unique name for your cookie
-    cookie_key=cookie_key,  # Use the generated secure cookie key
-    redirect_uri=google_auth["web"]["redirect_uris"][0]  # Ensure this matches exactly with Google Cloud Console
-)
+# Create OAuth2Component instance
+oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, REFRESH_TOKEN_URL, REVOKE_TOKEN_URL)
 
 def main():
-    # Check if the user is authenticated
-    query_params = st.experimental_get_query_params()
-    if 'connected' not in st.session_state:
-        st.session_state.connected = False
+    # Set page config
+    st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
 
-    auth_code = query_params.get("code")
-    if auth_code:
-        authenticator.handle_authentication(auth_code[0])
-        st.experimental_set_query_params()
-        st.session_state.connected = True
-        st.experimental_rerun()
+    # Check if token exists in session state
+    if 'token' not in st.session_state:
+        # If not, show authorize button
+        result = oauth2.authorize_button("Authorize", REDIRECT_URI, SCOPE)
+        if result and 'token' in result:
+            # If authorization successful, save token in session state
+            st.session_state.token = result.get('token')
+            st.rerun()
+    else:
+        # If token exists in session state, show the token
+        token = st.session_state['token']
+        st.json(token)
+        if st.button("Refresh Token"):
+            # If refresh token button is clicked, refresh the token
+            token = oauth2.refresh_token(token)
+            st.session_state.token = token
+            st.rerun()
 
-    authenticator.login()
-
-    if st.session_state.connected:
+        # Add your main application logic here
         st.image(st.session_state['user_info'].get('picture'))
         st.write('Hello, ' + st.session_state['user_info'].get('name'))
         st.write('Your email is ' + st.session_state['user_info'].get('email'))
         if st.button('Log out'):
-            authenticator.logout()
+            del st.session_state.token
             st.experimental_rerun()
 
-        st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
         st.write(css, unsafe_allow_html=True)
         header_html = """
         <div style="text-align: center;">
