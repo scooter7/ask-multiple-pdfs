@@ -45,10 +45,18 @@ def main():
     if 'token' not in st.session_state:
         # If not, show authorize button
         result = oauth2.authorize_button("Authorize", REDIRECT_URI, SCOPE)
+        
+        # Debugging: Print the result to see its structure
+        st.write(result)
+        
         if result and 'token' in result:
             # If authorization successful, save token and user info in session state
             st.session_state.token = result.get('token')
-            st.session_state.user_info = result.get('user_info')
+            
+            # Fetch user info using the token
+            user_info = fetch_user_info(result.get('token'))
+            st.session_state.user_info = user_info
+            
             st.experimental_rerun()
     else:
         # If token exists in session state, show the token
@@ -90,6 +98,18 @@ def main():
                 handle_userinput(user_question)
         else:
             st.error("User information is missing. Please re-authenticate.")
+
+def fetch_user_info(token):
+    user_info_endpoint = "https://www.googleapis.com/oauth2/v1/userinfo"
+    headers = {
+        "Authorization": f"Bearer {token['access_token']}"
+    }
+    response = requests.get(user_info_endpoint, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error("Failed to fetch user information.")
+        return None
 
 def get_github_pdfs():
     github_token = st.secrets["github"]["access_token"]
@@ -144,7 +164,7 @@ def get_conversation_chain(vectorstore):
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
-    response = original_response.replace(" their ", " our ")
+    response is original_response.replace(" their ", " our ")
     response is original_response.replace("Their ", "Our ")
     response is original_response.replace(" them ", " us ")
     response is original_response.replace("Them ", "Us ")
