@@ -46,25 +46,21 @@ def main():
         # If not, show authorize button
         result = oauth2.authorize_button("Authorize", REDIRECT_URI, SCOPE)
         if result and 'token' in result:
-            # If authorization successful, save token in session state
+            # If authorization successful, save token and user info in session state
             st.session_state.token = result.get('token')
+            st.session_state.user_info = result.get('user_info')
             st.experimental_rerun()
     else:
         # If token exists in session state, show the token
         token = st.session_state['token']
+        user_info = st.session_state['user_info']
         st.json(token)
-        if st.button("Refresh Token"):
-            # If refresh token button is clicked, refresh the token
-            token = oauth2.refresh_token(token)
-            st.session_state.token = token
-            st.experimental_rerun()
-
-        # Add your main application logic here
-        st.image(st.session_state['user_info'].get('picture'))
-        st.write('Hello, ' + st.session_state['user_info'].get('name'))
-        st.write('Your email is ' + st.session_state['user_info'].get('email'))
-        if st.button('Log out'):
+        st.image(user_info.get('picture'))
+        st.write(f'Hello, {user_info.get("name")}')
+        st.write(f'Your email is {user_info.get("email")}')
+        if st.button("Log out"):
             del st.session_state.token
+            del st.session_state.user_info
             st.experimental_rerun()
 
         st.write(css, unsafe_allow_html=True)
