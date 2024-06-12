@@ -38,6 +38,12 @@ SCOPE = "email profile"
 oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, REFRESH_TOKEN_URL, REVOKE_TOKEN_URL)
 
 def main():
+    # Set page config
+    st.set_page_config(
+        page_title="Carnegie Artificial Intelligence - CAI",
+        page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png"
+    )
+    
     # Hide the Streamlit toolbar
     hide_toolbar_css = """
     <style>
@@ -46,9 +52,6 @@ def main():
     """
     st.markdown(hide_toolbar_css, unsafe_allow_html=True)
     
-    # Set page config
-    st.set_page_config(page_title="Carnegie Artificial Intelligence - CAI", page_icon="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png")
-
     # Check if token exists in session state
     if 'token' not in st.session_state:
         # If not, show authorize button
