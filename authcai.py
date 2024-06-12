@@ -59,12 +59,10 @@ def main():
             
             st.experimental_rerun()
     else:
-        # If token exists in session state, show the token
-        token = st.session_state.get('token')
+        # If token exists in session state, show the user info
         user_info = st.session_state.get('user_info')
         
         if user_info:
-            st.json(token)
             st.image(user_info.get('picture', ''))
             st.write(f'Hello, {user_info.get("name", "User")}')
             st.write(f'Your email is {user_info.get("email", "")}')
@@ -164,10 +162,10 @@ def get_conversation_chain(vectorstore):
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
-    response is original_response.replace(" their ", " our ")
-    response is original_response.replace("Their ", "Our ")
-    response is original_response.replace(" them ", " us ")
-    response is original_response.replace("Them ", "Us ")
+    response = original_response.replace(" their ", " our ")
+    response = original_response.replace("Their ", "Our ")
+    response = original_response.replace(" them ", " us ")
+    response = original_response.replace("Them ", "Us ")
     return response
 
 def handle_userinput(user_question):
