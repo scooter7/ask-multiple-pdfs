@@ -52,40 +52,44 @@ def main():
             st.experimental_rerun()
     else:
         # If token exists in session state, show the token
-        token = st.session_state['token']
-        user_info = st.session_state['user_info']
-        st.json(token)
-        st.image(user_info.get('picture'))
-        st.write(f'Hello, {user_info.get("name")}')
-        st.write(f'Your email is {user_info.get("email")}')
-        if st.button("Log out"):
-            del st.session_state.token
-            del st.session_state.user_info
-            st.experimental_rerun()
+        token = st.session_state.get('token')
+        user_info = st.session_state.get('user_info')
+        
+        if user_info:
+            st.json(token)
+            st.image(user_info.get('picture', ''))
+            st.write(f'Hello, {user_info.get("name", "User")}')
+            st.write(f'Your email is {user_info.get("email", "")}')
+            if st.button("Log out"):
+                del st.session_state.token
+                del st.session_state.user_info
+                st.experimental_rerun()
 
-        st.write(css, unsafe_allow_html=True)
-        header_html = """
-        <div style="text-align: center;">
-            <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
-            <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-            <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your awesome manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl!</p>
-        </div>
-        """
-        st.markdown(header_html, unsafe_allow_html=True)
-        if 'conversation' not in st.session_state:
-            st.session_state.conversation = None
-        if 'chat_history' not in st.session_state:
-            st.session_state.chat_history = []
-        pdf_docs = get_github_pdfs()
-        if pdf_docs:
-            raw_text = get_pdf_text(pdf_docs)
-            text_chunks = get_text_chunks(raw_text)
-            if text_chunks:
-                vectorstore = get_vectorstore(text_chunks)
-                st.session_state.conversation = get_conversation_chain(vectorstore)
-        user_question = st.text_input("Ask CAI about anything Carnegie:")
-        if user_question:
-            handle_userinput(user_question)
+            st.write(css, unsafe_allow_html=True)
+            header_html = """
+            <div style="text-align: center;">
+                <h1 style="font-weight: bold;">Carnegie Artificial Intelligence - CAI</h1>
+                <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+                <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your awesome manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl!</p>
+            </div>
+            """
+            st.markdown(header_html, unsafe_allow_html=True)
+            if 'conversation' not in st.session_state:
+                st.session_state.conversation = None
+            if 'chat_history' not in st.session_state:
+                st.session_state.chat_history = []
+            pdf_docs = get_github_pdfs()
+            if pdf_docs:
+                raw_text = get_pdf_text(pdf_docs)
+                text_chunks = get_text_chunks(raw_text)
+                if text_chunks:
+                    vectorstore = get_vectorstore(text_chunks)
+                    st.session_state.conversation = get_conversation_chain(vectorstore)
+            user_question = st.text_input("Ask CAI about anything Carnegie:")
+            if user_question:
+                handle_userinput(user_question)
+        else:
+            st.error("User information is missing. Please re-authenticate.")
 
 def get_github_pdfs():
     github_token = st.secrets["github"]["access_token"]
@@ -141,9 +145,9 @@ def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
-    response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response is original_response.replace("Their ", "Our ")
+    response is original_response.replace(" them ", " us ")
+    response is original_response.replace("Them ", "Us ")
     return response
 
 def handle_userinput(user_question):
