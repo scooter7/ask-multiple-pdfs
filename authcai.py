@@ -48,7 +48,7 @@ def main():
         if result and 'token' in result:
             # If authorization successful, save token in session state
             st.session_state.token = result.get('token')
-            st.rerun()
+            st.experimental_rerun()
     else:
         # If token exists in session state, show the token
         token = st.session_state['token']
@@ -57,7 +57,7 @@ def main():
             # If refresh token button is clicked, refresh the token
             token = oauth2.refresh_token(token)
             st.session_state.token = token
-            st.rerun()
+            st.experimental_rerun()
 
         # Add your main application logic here
         st.image(st.session_state['user_info'].get('picture'))
