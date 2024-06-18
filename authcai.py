@@ -12,6 +12,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
+import base64
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/History"
@@ -191,9 +192,10 @@ def save_chat_history(chat_history):
     file_name = f"chat_history_{date_str}.txt"
     chat_content = "\n\n".join(f"{'User:' if i % 2 == 0 else 'Bot:'} {message.content}" for i, message in enumerate(chat_history))
     
+    encoded_content = base64.b64encode(chat_content.encode('utf-8')).decode('utf-8')
     data = {
         "message": f"Save chat history on {date_str}",
-        "content": chat_content.encode('utf-8').decode('utf-8'),
+        "content": encoded_content,
         "branch": "main"
     }
     response = requests.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
