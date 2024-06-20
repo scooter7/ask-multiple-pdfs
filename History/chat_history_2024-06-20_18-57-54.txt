@@ -1,0 +1,6 @@
+User: what is the holiday schedule for July 4th weekend?
+
+Bot: In 2024, the holiday schedule for the July 4th weekend is as follows:  
+- Thursday, July 4th – Independence Day  
+- Friday, July 5th – Friday after Independence Day  
+Please note that the holiday schedule may vary each year, so it's advisable to check the current year's list for the most accurate information.
