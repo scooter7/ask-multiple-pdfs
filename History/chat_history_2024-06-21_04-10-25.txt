@@ -1,0 +1,3 @@
+User: what is the holiday schedule for July 4th weekend?
+
+Bot: For the year 2024, July 4th is on a Thursday, so typically, it is a holiday in the U.S. The Carnegie holiday schedule for July 4th weekend would include Independence Day on Thursday, July 4th. However, it's important to check the exact list for the current year as it may vary.
