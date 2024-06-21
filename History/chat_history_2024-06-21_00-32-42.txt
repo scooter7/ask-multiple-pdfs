@@ -1,0 +1,3 @@
+User: what is the holiday schedule for July 4th weekend?
+
+Bot: In 2024, Independence Day falls on Thursday, July 4th. Typically, this holiday is observed on the day it falls on, so it would be a one-day holiday on July 4th.
