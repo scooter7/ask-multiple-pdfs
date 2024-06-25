@@ -1,0 +1,10 @@
+User: How do I submit a PTO request
+
+Bot: To submit a PTO request, follow these steps:
+1. Use the TimeStar system on your computer or the mobile app.
+2. Select the dates and hours you are requesting off.
+3. Choose the reason for your time off from the "Pay Type" dropdown list.
+4. Press submit to send a notification to your manager for review and approval.
+5. Repeat these steps for each day you are requesting off.
+6. Review the dates for accuracy and update any partial day requests.
+7. Click the orange "Submit Request" button to finalize your PTO request.
