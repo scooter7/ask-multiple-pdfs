@@ -1,0 +1,13 @@
+User: How do I submit a PTO request
+
+Bot: To submit a PTO request, follow these steps:
+
+1. Tap the three horizontal lines in the upper left corner to reveal the menu.
+2. Select ‘Time Off’ from the menu.
+3. Tap the orange ‘Request Time Off’ button.
+4. Select the orange circular button with a white ‘+’ on it to add a date to the request.
+5. Input the exact number of hours and choose the dates that you’d like to request those hours off.
+6. From the ‘Pay Type’ dropdown list, choose the relevant reason for your time off.
+7. Select ‘Done’ in the upper right corner.
+
+After submitting your request, your manager will receive a notification to review, approve, and/or discuss it.
