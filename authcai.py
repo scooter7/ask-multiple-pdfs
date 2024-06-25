@@ -105,7 +105,7 @@ def main():
                 if text_chunks:
                     vectorstore = get_vectorstore(text_chunks)
                     st.session_state.conversation = get_conversation_chain(vectorstore)
-            user_question = st.text_input("Ask CAI about anything Carnegie:")
+            user_question = st.text_input("Ask ACE about anything Carnegie:")
             if user_question:
                 handle_userinput(user_question)
         else:
