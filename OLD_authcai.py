@@ -11,8 +11,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
+from datetime import datetime
+import base64
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
+GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/History"
 
 # Load Google Auth credentials from Streamlit secrets
 google_auth = {
@@ -179,6 +182,28 @@ def modify_response_language(original_response):
     response = original_response.replace("Them ", "Us ")
     return response
 
+def save_chat_history(chat_history):
+    github_token = st.secrets["github"]["access_token"]
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {github_token}'
+    }
+    date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f"chat_history_{date_str}.txt"
+    chat_content = "\n\n".join(f"{'User:' if i % 2 == 0 else 'Bot:'} {message.content}" for i, message in enumerate(chat_history))
+    
+    encoded_content = base64.b64encode(chat_content.encode('utf-8')).decode('utf-8')
+    data = {
+        "message": f"Save chat history on {date_str}",
+        "content": encoded_content,
+        "branch": "main"
+    }
+    response = requests.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
+    if response.status_code == 201:
+        st.success("Chat history saved successfully.")
+    else:
+        st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
+
 def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
@@ -189,6 +214,8 @@ def handle_userinput(user_question):
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        # Save chat history after each interaction
+        save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
