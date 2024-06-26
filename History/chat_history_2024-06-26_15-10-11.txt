@@ -1,0 +1,3 @@
+User: is July 4th a holiday?
+
+Bot: Yes, July 4th is a holiday. It is Independence Day.
