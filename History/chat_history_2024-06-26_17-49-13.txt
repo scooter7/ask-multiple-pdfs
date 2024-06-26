@@ -1,0 +1,13 @@
+User: how do I request time off?
+
+Bot: To request time off using the TimeStar system, you can log in via computer or the mobile app. Here's how to do it on the mobile app:
+1. Tap the three horizontal lines in the upper left corner to reveal the menu.
+2. Select ‘Time Off’ from the menu.
+3. Tap the orange ‘Request Time Off’ button.
+4. Select the orange circular button with a white ‘+’ on it to add a date to the request.
+5. Input the exact number of hours and choose the dates that you’d like to request those hours off.
+6. From the ‘Pay Type’ dropdown list, choose the relevant reason for your time off.
+7. Select ‘Done’ in the upper right corner.
+8. Review your timesheet and click ‘Employee Approve’.
+
+Remember, it's recommended to submit your request at least two weeks in advance, but last-minute requests can also be accommodated.
