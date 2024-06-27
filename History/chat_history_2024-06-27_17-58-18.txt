@@ -1,0 +1,3 @@
+User: where can i find information on summer fridays?
+
+Bot: You can find information on Summer Fridays in your company's internal policies or employee handbook. If you cannot locate it there, you may also reach out to your HR department for further clarification on the Summer Fridays policy.
