@@ -1,0 +1,3 @@
+User: what holidays does carnegie celebrate
+
+Bot: Carnegie celebrates the following holidays: New Year’s Day, Martin Luther King, Jr. Day, Presidents’ Day, Memorial Day, Juneteenth, Independence Day, Labor Day, Thanksgiving Day, Friday after Thanksgiving Day, Christmas Eve, and Christmas Day.
