@@ -1,0 +1,3 @@
+User: What kinds of information can you provide
+
+Bot: I can provide information on the company's core competencies, the interview process, candidate screening and redacted information from resumes before sharing with managers. I can also provide details on the hiring manager's preparation for interviews, including accessing candidate information through the Asana card.
