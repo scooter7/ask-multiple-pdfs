@@ -1,0 +1,3 @@
+User: How many employees does Carnegie have?
+
+Bot: I don't have the specific number of employees that Carnegie has based on the provided context.
