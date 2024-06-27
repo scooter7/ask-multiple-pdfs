@@ -1,0 +1,3 @@
+User: how do I use files.com
+
+Bot: To use files.com, you can start by navigating to https://app.files.com/login and entering "carnegie" as the domain. Sign in with Microsoft Azure SSO and set up 2FA. The IT team has installed the Drive for PC users, and Mac users should reach out for help. Open the files.com app from your start menu or application folder and sign into your files.com account via the web as prompted by the app. This will allow you to access and manage your files on files.com.
