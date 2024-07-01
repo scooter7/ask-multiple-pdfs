@@ -1,0 +1,3 @@
+User: What is our time off for July 4th?
+
+Bot: You will have Thursday, July 4th off for Independence Day.
