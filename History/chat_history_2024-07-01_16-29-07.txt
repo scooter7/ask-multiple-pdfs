@@ -1,0 +1,21 @@
+User: how do i take pto
+
+Bot: To take PTO, you can use the Insperity Portal. Here are the steps to follow:
+1. From the left navigation menu, select ‘Time and Attendance’.
+2. Select ‘Requests’.
+3. Click the blue button that says “New Request.”
+4. Select the blue circular button with a white “+” on it to add a date to the request.
+5. Choose the correct date and the exact number of hours you’ll be taking off.
+6. From the ‘Pay Type’ dropdown list, choose the relevant reason for your time off.
+7. Click the orange “Add Dates” button.
+8. Repeat steps 4 - 7 for each day you’re requesting.
+9. Review dates for accuracy and update the scheduling field for any partial day requests.
+10. Click the orange “Submit Request” button.
+
+If you need to cancel your PTO request, you can follow these steps:
+1. From the left navigation menu, select ‘Time and Attendance’.
+2. Under ‘Daily Procedures’ on the left, select ‘Requests’.
+3. Scroll down to see all PTO requests and choose the one you want to cancel.
+4. Select ’Cancel Request’.
+
+Remember to always check with your manager for guidance on navigating the unlimited PTO plan and ensure that your PTO hours are added correctly to the system.
