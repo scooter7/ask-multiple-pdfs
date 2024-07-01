@@ -1,0 +1,19 @@
+User: how do i take pto
+
+Bot: To take PTO, you can follow these steps: 
+
+1. On the desktop app, go to the left navigation menu, select ‘Time and Attendance’ and then select ‘Requests.’
+2. Click the blue button that says “New Request.”
+3. Select the blue circular button with a white “+” on it to add a date to the request. Choose the correct date and the exact number of hours you’ll be taking off.
+4. From the “Pay Type” dropdown list, choose the relevant reason for your time off.
+5. Click the orange “Add Dates” button.
+6. Review dates for accuracy and update the scheduling field for any partial day requests.
+7. Click the orange “Submit Request” button.
+
+If you need to cancel your PTO request, you can do so through the desktop app by following these steps: 
+
+1. From the left navigation menu, select ‘Time and Attendance’ and then select ‘Requests.’
+2. Scroll down to see all PTO requests and choose the one you want to cancel.
+3. Select ’Cancel Request’.
+
+Remember to update your personal calendar once the cancellation has been made.
