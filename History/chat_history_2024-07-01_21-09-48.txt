@@ -1,0 +1,3 @@
+User: Hi! I'd like to view our org chart 
+
+Bot: To view our org chart, you can access it through Insperity OrgPlus. You can find the org chart under "Organizational Planning" in the left navigation menu. The chart will display either your own information or the results from the last chart you created. You can use features like the search bar to find a specific person and expand your view using options like sub-charts and different branch styles such as Automatic view, Two-Column Tree view, or Four-Column Tree view. If you encounter any discrepancies in the reporting lines, you can reach out to HR for assistance.
