@@ -1,0 +1,3 @@
+User: what are our ai guidelines and resources?
+
+Bot: Based on the provided context, there is a resource guide for Fathom, which is an AI call transcription tool used for Zoom calls. It transcribes calls, creates a high-level AI summary, integrates with Slack, allows for creating action items during calls, and more. For more details and guidelines on using Fathom, you can refer to the Fathom Resource Guide provided in the All-staff Resource Guide documentation.
