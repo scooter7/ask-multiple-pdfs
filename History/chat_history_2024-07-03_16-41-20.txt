@@ -1,0 +1,3 @@
+User: where is our organizational structure chart?
+
+Bot: Our organizational structure chart can be viewed using Insperity OrgPlus. To access it, you can go to the left navigation menu and select 'Organizational Planning.' This will display the chart showing your own information or the results from the last chart you created.
