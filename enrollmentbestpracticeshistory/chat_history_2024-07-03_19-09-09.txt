@@ -1,0 +1,8 @@
+User: Tell me about graduate student populations
+
+Bot: Graduate student populations may vary significantly from undergraduate student populations. Some key differential factors for graduate students include: 
+- They may expect more precise academic language than traditional undergraduates.
+- Return on investment (ROI) may be more important to graduate students.
+- Graduate students may have different timelines and deadlines, especially for spring transfer students.
+- Some graduate students may come from non-traditional backgrounds or have work-related responsibilities, leading to part-time enrollment.
+- Partnership with local companies offering tuition remission benefits may be particularly attractive to graduate students.
