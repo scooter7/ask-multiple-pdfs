@@ -1,0 +1,3 @@
+User: Tell me about graduate student populations
+
+Bot: Graduate student populations can vary in characteristics compared to other student groups. Some key differential factors among graduate students include their more specific academic language expectations, a heightened focus on return on investment (ROI), and a diverse range of timelines and deadlines for admissions. It is also important to note that some transfer students might fall into the graduate student category, like those transitioning from community college for an easier college life transition. Additionally, partnerships with local companies offering tuition remission benefits can be attractive for graduate students who might be part-time due to tuition reimbursement utilization.
