@@ -1,0 +1,3 @@
+User: Tell me about graduate student populations
+
+Bot: Graduate student populations can vary significantly from undergraduate populations. Some key differential factors include the fact that graduate students are typically older, have more professional work experience, and are more focused on specific academic and career goals. They are likely to have a stronger understanding of academic language and may be more concerned with the return on investment of their education. Graduate students may also have different timelines and deadlines for applications and admissions, with spring transfer students facing an expedited timeline. Additionally, some graduate students may be part-time due to tuition reimbursement benefits from local companies.
