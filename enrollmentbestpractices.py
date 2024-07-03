@@ -19,7 +19,7 @@ GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/co
 def main():
     # Set page config
     st.set_page_config(
-        page_title="Ask Carnegie Everything",
+        page_title="Enrollment Nest Practice Bot",
         page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
     
@@ -34,9 +34,9 @@ def main():
     st.write(css, unsafe_allow_html=True)
     header_html = """
     <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Ask Carnegie Everything - ACE</h1>
+        <h1 style="font-weight: bold;">Enrollment Best Practices Bot</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl! The text entry field will appear momentarily.</p>
+        <p align="left">Hey there! Ask about enrollment best practices. The text entry field will appear momentarily.</p>
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
@@ -54,7 +54,7 @@ def main():
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
     
-    user_question = st.text_input("Ask ACE about anything Carnegie:")
+    user_question = st.text_input("Ask about enrollment best practices")
     if user_question:
         handle_userinput(user_question)
 
