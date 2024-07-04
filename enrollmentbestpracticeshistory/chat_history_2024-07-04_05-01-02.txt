@@ -1,0 +1,8 @@
+User: Tell me about graduate student populations
+
+Bot: Graduate student populations can vary depending on the institution, but some key differential factors include:
+- Graduate students are typically older and have already completed an undergraduate degree.
+- They may have more work experience and are often seeking to advance their careers or specialize in a particular field.
+- Graduate students may have different academic needs and expectations compared to undergraduate students.
+- They are likely to be more focused on research, academic projects, and professional development.
+- Graduate students may also have different financial considerations, as they may be more concerned with return on investment and career outcomes.
