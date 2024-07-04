@@ -1,0 +1,3 @@
+User: Tell me about graduate student populations
+
+Bot: The Graduate Student population typically consists of individuals who have completed their undergraduate studies and are pursuing advanced degrees such as master's or doctoral degrees. They are usually older and have more experience in academia compared to undergraduate students. Graduate students often have specific research interests and career goals that they are working towards. They may also have different academic needs and expectations than undergraduate students, such as smaller class sizes, more specialized courses, and opportunities for research and scholarly work.
