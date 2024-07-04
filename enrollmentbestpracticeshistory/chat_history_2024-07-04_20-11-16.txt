@@ -1,0 +1,3 @@
+User: Tell me about graduate student populations
+
+Bot: Graduate student populations typically have characteristics that differentiate them from other groups. Some of these characteristics include a focus on precise academic language, a greater emphasis on return on investment, and varied timelines for admission decisions and application processes. Additionally, graduate students may have different expectations and needs compared to undergraduate students.
