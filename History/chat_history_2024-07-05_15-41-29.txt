@@ -1,0 +1,3 @@
+User: I am trying to connect to tinman. Is my username my carnegie email address? That is what I am using but it still isn't connecting. Any idea why? I am connected to the VPN.
+
+Bot: Yes, your username for Tinman should be the same credentials you use to log in to your Carnegie email and VPN. Since you are connected to the VPN and still experiencing issues, it's best to double-check that you are entering the correct username and password. If you are sure you are using the correct credentials and still can't connect, it might be a good idea to reach out to IT support for further assistance.
