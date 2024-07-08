@@ -1,0 +1,765 @@
+Earlham College       June 2024
+PROPOSAL
+Slate Implementation & Prospect Research
+Earlham College
+
+Dear Earlham Advancement Team,
+2
+DIRECTOR, CLIENT SUCCESS
+Hanna Kroskie
+Slate Advancement
+ Implementation Strategist
+Thank you for your interest in partnering with Carnegie for your Slate Implementation. Our team is committed to providing you with the bandwidth, support, and best practices to make this major time investment as valuable as possible.
+An Implementation Partnership with Carnegie is rooted in project management and organized around our weekly calls. These meetings are used for knowledge sharing, information gathering, decision making, and collaboration. You’ll leave our time together with delegated tasks that will propel us into our next week.
+We pride ourselves on serving as extensions of your team by providing a strong framework that will empower Earlham to own the planning, configuration, training, and go-live phases alongside your Carnegie Strategists.
+We’re excited about the possibility of partnership, and hope that you will find the next few pages helpful as you consider next steps.
+Kindly,Your Carnegie Team
+
+About Carnegie
+Ben
+
+Ben
+Student Search dates back to the 70’s and really became popular as a concept in the 1990s when colleges would purchase SAT/ACT names to initiate a comprehensive direct mail and email campaign to recruit students. Student Search was born from a time when we had the world wide web/websites, email and CRMs…. access to names via College Board and ACT’s services. And then starting around 2010 and increased number of college going students…So as an industry we leveraged these tools and purchased names…
+
+Human Connection
+4
+Our core philosophy fuses the principles of psychology with marketing and enrollment innovation. The technical term for this is psychometrics. We think of it as empathy. 
+
+By measuring a student’s unique behaviors and motivators and marketing to those needs and expectations, we help our client to create real conversations … one student at a time.  
+
+Human Connection leads to action, enrollment, retention, and lasting affinity.
+
+We believe that genuine connection is the key to capturing attention and building relationships. 
+
+
+
+
+Carnegie at a Glance
+5
+5
+Higher Education Marketing and Enrollment StrategyCarnegie is the future of higher education marketing and enrollment strategy, and has been since 1985.
+
+
+Integrated Services for Marketing and EnrollmentWe deliver what others simply cannot because we have what others do not: original intellectual property, powerful data, precision tools, and decades of market leadership experience.
+
+
+Custom SolutionsCarnegie builds custom solutions with best-in-every-class services in Research, Strategy, Digital Marketing, Lead Generation, Slate Optimization, Student Search, Financial Aid Optimization, Web Development and Creative that generate student connection. Our approach is data driven, personified, targeted, and customized to solve our clients’ unique enrollment needs and challenges. 
+For more than 35 years, Carnegie has been a leader and innovator in higher education marketing and enrollment strategy, offering groundbreaking services in the areas of Research, Strategy, Digital Marketing, Lead Generation, Slate Optimization, Student Search, Financial Aid Optimization, Website Development, and Creative that generate authentic connections.
+The Power of Human ConnectionWe connect colleges with students through the power of human connection. We believe that genuine connection is the key to capturing attention and building affinity. We measure and then market to a student’s unique behaviors and motivators to create deep connections and real conversations
+
+
+1985The year our company was founded
+41The number of states that we call home
+3The number of major conferences that we host every year
+12 The number of higher education organizations we partner with annually including NACAC, NAGAP, UPCEA and more
+
+11The number of custom research white papers released over the last year
+700The number of institutions we’ve partnered with over the last year
+
+3Top archetypes represented in our team: Provider, Explorer, Competitor
+25The number of major conferences we present at annually
+386The number of Carnegie team members across the country
+
+ComprehensiveServices
+6
+BRAND STRATEGY
+Carnegie’s original psychometric model and brand reputation strategy allow us to do more than just create a brand for your organization.
+
+DIGITAL MARKETING
+We bring advanced strategies to showcase your brand to the world. Above all, we tailor the plans for you: your audience, your institution, your goals.
+
+ENROLLMENT STRATEGY
+Our approach to enrollment marketing success is to uncover and interpret intelligent, market-driven, student-centric data and then leverage its findings to execute customized strategies for your institution.
+
+FINANCIAL AID OPTIMIZATION
+We deliver individualized financial aid strategy—not only customized for your institution, but customized for each student.
+
+
+INTEGRATED RESEARCH
+Our cutting-edge, proven methodologies give you the game-changing insights needed to transform your enrollment, marketing and branding, and communications outcomes. 
+
+LEAD GENERATION
+CollegeXpress is the go-to resource for college and scholarship searches for millions of students, parents, and counselors, which is why it’s a trusted tool for hundreds of institutions.
+
+MARKETING STRATEGY
+Colleges and universities must place more attention on reputation management and marketing strategy as evolving, competitive dynamics further impact higher education.
+
+PERSONALITY ASSESSMENTS
+CarnegieChem, our carefully designed suite of personality assessments and tools, reveals human personality and performance factors in an entirely new way.
+
+
+SIGNATURE CREATIVE
+By defining what sets you apart and by learning what will speak to  your audiences, we create impactful messaging that builds reputation and forges powerful connections.
+
+SLATE OPTIMIZATION
+Our Slate Optimization team saw the industry need and met it. We’re transforming the higher education landscape by leveraging the power of Slate—one project at a time.
+
+STUDENT SEARCH
+Your Student Search will be built on the student’s terms: when they are ready, where they want to connect, and with messaging that speaks directly to who they are as individuals.
+
+WEBSITE DESIGN AND DEVELOPMENT
+We design websites for colleges and universities that are alive and persuasive—congruent with campus voices and integrated within your marketing ecosystem.
+
+
+
+
+Slate Expertise
+8
+SLATE IMPLEMENTATIONS AND CONSULTATIONS
+Slate is a powerful enrollment tool for higher education. With proper setup, it can become a lasting part of your enrollment operations infrastructure that supports your goals for years to come. From first-time implementations to reimplementations and systems integrations, we build and consult on any Admissions, Student Success, or Advancement Slate project.
+
+
+SLATE ADMISSION, STUDENT SUCCESS, AND ADVANCEMENT COMMUNICATIONS
+
+Tailor any Slate communications based on academic, demographic, psychometric, and custom data points and generate connection with highly relevant messages. No data transfers involved, and real-time campaign reporting is built in.
+SLATE PORTALS AND DATA VISUALIZATION
+Your custom prospective student, current student, donor, staff member—any audience—portal will meet your exact needs and specifications. We build your portal from scratch, using web best practices like dynamic content and on-brand design. Our reporting, often delivered via a portal, is digestible and visually appealing to ensure the very best experience for every audience. We’re setting the industry standard—bring us any portal or reporting project, and we’ll exceed your audience’s expectations.
+
+
+SLATE TRAININGS
+
+Our team can make any topic accessible and every training highly productive. We run customized, interactive workshops for all skill levels to advance the knowledge, skill set, and proficiency of your Slate users. Our training topics range from Deliver to Configurable Joins and can be held in person or designed for a virtual audience. Your needs and our recommendations are the foundation of all trainings.
+
+Implementation Options
+Ben
+
+Ben
+Student Search dates back to the 70’s and really became popular as a concept in the 1990s when colleges would purchase SAT/ACT names to initiate a comprehensive direct mail and email campaign to recruit students. Student Search was born from a time when we had the world wide web/websites, email and CRMs…. access to names via College Board and ACT’s services. And then starting around 2010 and increased number of college going students…So as an industry we leveraged these tools and purchased names…
+
+Advancement Comprehensive Implementation Bundles
+One of the greatest strengths of Slate is the ability to customize your instance. We harness this power by taking a phased approach to implementation. You choose the sophistication levels to which we build your data configuration, application, workflows, communications, portals, populations, events, and more.
+Each of our tiered implementation options below build upon one another, beginning with the most basic needs, while allowing for flexibility to explore more advanced features in your areas of highest priority. Below are our bundle packages that include a 15% discount from each individual service cost. 
+Included in the following pages are additional scope details.
+
+
+
+Basic
+Premium
+Premium +
+Pre-Implementation Ten-Week Consultation
+
+Basic Advancement Implementation
+
+Twelve-Month Consultation
+Total: $83,300 | Duration: 22 Months
+Pre-Implementation Ten-Week Consultation
+
+Premium Advancement Implementation
+
+Twelve-Month Consultation
+Pre-Implementation Ten-Week Consultation
+
+Premium Plus Advancement Implementation
+
+Twelve-Month Consultation
+Total: $86,700 | Duration: 23 Months
+Total: $93,500 | Duration: 25 Months
+10
+
+11
+Slate Advancement Implementations 
+Customized and collaborative feature building, including:
+Pre-implementation trainings: Slate 101, Queries 101, and Key Modules 101
+All fields and prompts
+DKIM configuration support
+One version of Slate instance branding
+Customization of donor status rules
+All Head of Household rules
+All Salutation rules
+One donor-facing giving form (including confirmation email)
+One administrative person record creation form
+Up to two custom tabs
+One custom person dashboard
+All source formats for data migration
+Configuration of SFTP service account and folders for continued automation of data flow
+Custom dashboard for Companies and Foundations dataset, Funds dataset, and Appeals dataset
+Consolidate record orientation 
+All constituency types
+One standard contact report form with all interaction codes
+All automated (Hard/Soft) Gift Credits decisioning rules
+All custom roles and associated permissions and populations
+All user imports
+Configuration of Slate Payments
+Post-implementation trainings: Advanced Queries, Slate 201: End User Guide
+Three process modules (See following slide for details)
+IMPLEMENTATION PACKAGES AND SUPPORT 
+BASIC
+7-month project duration
+Biweekly 75-minute project calls
+One two-day virtual  visits
+Two half-day training sessions (Pre-implementation and post-implementation)
+PREMIUM
+8-month project duration
+Biweekly 75-minute project calls
+Two two-day virtual  visits
+Two half-day training sessions (Pre-implementation and post-implementation)
+Two additional (five total) process modules
+PREMIUM PLUS
+10-month project duration
+Biweekly 75-minute project calls
+Two two-day virtual  visits
+Two half-day training sessions (Pre-implementation and post-implementation)
+Two additional (seven total) process modules
+$58,000 - $70,000
+ Implementation in a shared admissions or student success database is an additional $15,000.
+
+A two-day virtual visit may be upgraded to a two-day on campus visit for a cost of $5,000.
+Additional Advancement modules can be added for a cost of $3,000 and one additional month per module.
+
+12
+Advancement Implementation Process Modules
+EVENTS
+Up to two event/scheduler templates (including confirmation page and confirmation, reminder, thank you, and no-show emails)
+One event survey and email
+One event landing page
+RECEIPTING
+One GL query
+Three receipt queries 
+Upload the provided receipt template with merge fields
+ADVANCED CONTACT REPORT
+One contact report dataset
+Three contact report forms
+One contact report tab 
+Custom dataset dashboard
+Three entities
+CAMPAIGNS DATASET
+One custom Campaigns dataset
+One custom dataset creation form
+One dataset dashboard
+Data Migration of Campaigns dataset
+PROSPECT RESEARCH
+One custom Research dashboard 
+One source format for third-party research data
+All scoring rules based on research data
+DONOR INVOLVEMENT HISTORY TRACKING
+Custom fields and prompts (e.g. start date, end date, etc.)
+Up to three entities (one per involvement type)
+One custom entity tab
+Import of historical data
+One query library for Donor Involvement History Tracking data points
+ENDOWED SCHOLARSHIP TRACKING
+Custom dataset for endowed scholarships
+Custom fields and prompts (e.g. start date, end date, etc.)
+Up to two entities (awardees and endowed scholarship contacts)
+One custom entity tab
+Import of historical data
+One query library for Endowed Scholarship Stewardship data points
+ENDOWED GIFT AGREEMENT WORKFLOW
+One reader workflow (including creation of bin structure, bin movement and
+reader assignment rules, tab groups, and tab materials)
+Up to two data containers
+Up to five reader review forms
+One standard reader dashboard
+One email communication after final approval
+PHONATHON/ENGAGEMENT CENTER
+Three custom calling queries
+Creation of three calling forms with partner-provided scripts
+Up to three inbox groups (including text assignment rules)
+Configure Slate Voice for call and text
+Phonathon interaction codes
+User upload of student workers for Phonathon
+ALUMNI INVOLVEMENT HISTORY TRACKING
+Custom fields and prompts (e.g. start date, end date, etc.)
+Up to three entities (one per involvement type)
+One custom entity tab
+Import of historical data
+One query library for Alumni Involvement History Tracking data points
+
+Communications, Portals, Communications & Integrations
+Ben
+
+Ben
+Student Search dates back to the 70’s and really became popular as a concept in the 1990s when colleges would purchase SAT/ACT names to initiate a comprehensive direct mail and email campaign to recruit students. Student Search was born from a time when we had the world wide web/websites, email and CRMs…. access to names via College Board and ACT’s services. And then starting around 2010 and increased number of college going students…So as an industry we leveraged these tools and purchased names…
+
+14
+Slate Consultations
+
+
+
+
+Basic Short-Term Consultations (5, 10, or 15 Weeks)
+Maximum of four hours per week of Slate consultation including:
+Remote troubleshooting support
+Weekly 50-minute project calls
+$11,000 - $27,500
+Premium Short-Term Consultations (5, 10, or 15 Weeks)
+Maximum of six hours per week of Slate consultation including:
+Remote troubleshooting support
+Weekly 50-minute project calls
+$18,000 - $45,000
+Consultation Project Examples
+Application
+Custom Datasets
+Decisions and Letters
+Deliver
+Events/Scheduler/Trips
+Fields/Prompts
+Forms
+Materials and Checklists
+Origin Sources
+Queries
+Reader
+Reporting
+Retention Policies
+Rules and Automation
+Tele-recruiting/Calling Campaigns
+Territory Management
+Upload Dataset
+Users and Permissions
+Custom Projects
+Consultation hours cannot be rolled over to the next week or month; if the total allotment of hours is not fulfilled, remaining hours expire at the week or month’s end. Additionally, development of full communication campaigns, integrations, portals, and reports can be added at a per service cost. These are not currently included in scope.
+
+15
+Giving Officer Portal 
+Evaluate Earlham College’s advancement processes
+Outline effective portal structure based on current processes
+Development of secure portal, including but not limited to:
+Embed reports
+Embed forms
+Integrate Projects and Tasks
+Integrate Visits/Events
+Creation of tabs for various advancement functions, including but not limited to:
+Dashboard/Home
+Tasks
+Donor Lists
+Reports
+Travel
+Visits
+Complete portal design, including custom headers, call-to-action buttons, and social media icons
+Mobile-friendly design and ADA compliance
+Bi-weekly check-in calls
+One month of post-launch support, monitoring & analysis
+$20,000
+Additional Considerations
+All proposal scope and price expire after 90 days.
+Additional terms and conditions will be provided in final contract.
+Cover image may be subject to copyright
+Consultation hours cannot be rolled over to the next week or month; if the total allotment of hours is not fulfilled, remaining hours expire at the week or month’s end. Additionally, development of full communication campaigns, integrations, portals, and reports can be added at a per service cost. These are not currently included in scope.
+Additional populations can be added to Admissions Implementation for $15,000 each.
+Implementation in a shared admissions or advancement database is an additional $15,000.
+Does not include travel costs to and from campus if client prefers on-campus visits – the client is responsible for travel, accommodation, and per diem meal costs (which are subject to client’s approval before they are incurred).
+
+16
+Slate Advancement Campaigns
+
+
+
+
+Communications
+Control is key. With Slate drip marketing campaigns, you’re capitalizing on the power of Slate—from responsive, behavior-driven content to UTM placement and more. We can support you in your outreach efforts, taking care of all the ins and outs of a complete creative and technical setup and execution. Backed by years of marketing know-how, we have unparalleled knowledge of both Slate functionality and the marketing tactics that will set you up for campaign success.
+$30,000+
+Campaign Priorities May Include
+Homecoming/Event Promotion 
+Giving Day 
+Alumni Association/Alumni Engagement
+Annual Giving
+
+17
+Slate to Slate CRM Integration
+
+
+
+
+Slate to Slate CRM Integration
+Project Support
+16-week project duration
+Up to four 50-minute project calls
+Project Deliverables
+Up to three export queries
+Up to two import source formats
+Configuration of SFTP service account and folders for automation
+
+$12,500
+
+Additional Segmentation Recommendations
+Ben
+
+Ben
+Student Search dates back to the 70’s and really became popular as a concept in the 1990s when colleges would purchase SAT/ACT names to initiate a comprehensive direct mail and email campaign to recruit students. Student Search was born from a time when we had the world wide web/websites, email and CRMs…. access to names via College Board and ACT’s services. And then starting around 2010 and increased number of college going students…So as an industry we leveraged these tools and purchased names…
+
+19
+Who to Engage?
+
+DARTS USE PSYCHOLOGICAL FACTORS LIKE PERSONALITY,MOTIVATION, AND DESIRES TO ALLOW FOR DYNAMIC COMMUNICATION SEGMENTATION
+Acuity DartsActionable Data to Address Strategic Engagement
+ACUITY IDENTIFIES CAPACITY TO GIVE AS WELL AS WHICH DONORS
+OR ENGAGERS ARE MOST PROMISING FOR DIRECT DEVELOPMENT EFFORTS
+How to Engage?
+
+
+Acuity Darts: Advanced Donor Screening& Psychometric Communications
+20
+Acuity Darts uniquely blends advancement and communications research to identify whom Earlham College should engage with and how the university should engage them. 
+The research will provide Earlham custom intelligence on prospective donors—including their capacity to give, comprehensive giving history, motivations, attitudes, and beliefs—to help prioritize and personalize engagement. 
+An Acuity Darts engagement with Carnegie will afford Earlham College data to determine donor prioritization and communication segmentation strategies. These tools will build a more effective, efficient development program that will increase engagement and allow your team to meet their goals.
+
+Acuity Darts: Step By Step
+21
+ORGANIZATIONAL MEETING TO REQUEST MATERIALS
+DEMOGRAPHIC CLUSTER ANALYSIS, PSYCHOGRAPHIC WORKSHOPS, AND ACUITY ANALYSIS
+KEY FINDINGS WALK-THROUGH, TRANSFER OF DATA AND ACUITY DARTS DATABASE TAGGING
+ACUITY DART TRAINING AND ADDITIONAL CONSULTING OR EXECUTION SUPPORT
+
+Acuity Darts: Carnegie’s Persona Archetype Key
+22
+Brilliant and forward-thinking
+Driven by inventing the future through innovation. Delivers advancement, ingenuity, and radical outcomes. Values newness, experimentation, and progress. Causes people to feel awe and amazement.
+Innovator
+Supportive and selfless
+Driven by compassion, warmth, and the desire to care for others. Delivers nurturing, comfort, and protection. Values altruism, commitment, and generosity. Causes people to feel valued and supported.
+Provider
+Creative and imaginative
+Driven by self-expression and artistry. Delivers something new that encourages creativity. Values originality, ideation, and new concepts. Causes people to feel constructive and expressive.
+Creator
+Adventurous and inquisitive
+Driven by the quest for discovering the unknown. Delivers progress and an unmatched interest for uncovering truth. Value investigation, curiosity, and trailblazing. Causes people to feel intrigued and emboldened.
+Explorer
+Energetic and enthusiastic
+Driven to entertain and cause others to get excited. Delivers fun and the desire to amuse and uplift. Values energy, playfulness, and enjoyment. Causes people to feel exhilarated and happy.
+Entertainer
+Sophisticated and refined
+Driven by experience, elegance, and beauty in all forms. Delivers excellence, finesse, and vitality. Values poise, intentionality, and beauty. Causes people to feel desired and important.
+Sophisticate
+Resilient and tenacious
+Driven by overcoming challenges through grit and determination. Delivers surprising strength, perseverance, and toughness. Values fortitude and hard work. Causes people to feel triumphant and inspired.
+Competitor
+Powerful and assertive
+Driven by growth and being a frontrunner. Delivers stability, pride, and strength. Values power, influence, and accomplishment. Causes people to feel confident and in control.
+Achiever
+Daring and rebellious
+Driven by challenging and redefining the norm. Delivers empowerment, change, and boldness. Values independence, guts, and breaking with convention. Causes people to feel unrestrained and fearless.
+Rebel
+Generic and confused
+Beige, though not considered an archetype in our model, is still an important consideration. Beige indicates either a completely neutral personality expression or one that attempts to do everything at once.
+Beige
+
+Acuity Dart 1: Mission Maven
+Mission Mavens feel deeply connected to the mission and service of the organization and have a great sense of pride in being associated with the organization. Their knowledge of the organization already runs deep, and they show their passion by giving to ensure the mission continues to thrive and to address unmet needs or gaps in funding. Mission Mavens are the first to volunteer and attend events and meetings and receive heartfelt joy by doing so. They value being able to give back to an organization for which they are so passionate and know their individual actions can add up to make a big difference in the lives of others.
+
+AVG
+AVG
+AVG
+Communication Insights
+Search Engines
+Personal Social Media
+Cable/Network TV
+DIGITAL PLATFORM USE
+Friends and Family
+General Google Searches
+Alumni of Membership Orgs
+ACTIVE INFORMATION SEEKING
+ACCEPTABLE COMMUNICATION FREQUENCY
+Population
+DART 
+DART
+4	
+3
+DART
+2
+DART
+1
+DART
+4
+DART
+3
+DART
+2
+DART
+1
+DART 
+DART
+4	
+3
+DART
+2
+DART
+1
+30.3%
+29.9%
+42.6%
+
+Acuity Dart 1: Mission Maven
+Charitable Contribution Factors
+TOP CAUSE FACTORS
+People Close Benefit
+Personal Cause
+
+
+TOP REPUTATION FACTORS
+Reputation of the Organization
+Family Involvement
+
+TOP CONNECTIONS FACTORS
+Meet Other Community Leaders
+TOP IMPACT FACTORS
+Long Standing Impact
+Community Impact
+TOP FINANCIAL FACTORS
+Gift Transparency
+Non-Monetary Contribution Offerings
+TOP RECOGNITION FACTORS
+Board Membership
+Social Media Connections
+*Factor bars in GOLD indicate a Dart score that is higher than the respondent average. Factor bars in CRIMSON indidate a Dart score that is lower than the respondent average.** Index scores indicate how this Dart scored this activity being of interest compared against the average of all respondents where a zero indicates a score right at the average.
+Involvement and Engagement
+Overall Engagement Index
+3.7
+ACTIVITY
+INVOLVED
+LIKELY
+INDEX*
+The Provider Fair
+36%
+22%
+14.7
+The Envision Lecture Series
+23%
+19%
+6.6
+Volunteering
+22%
+21%
+13.4
+The Safe at Home Yard Cleanup Event
+22%
+31%
+14.7
+A Golf Event
+16%
+9%
+11.8
+Serving on the Board
+12%
+8%
+9
+The Aging Advantages Faith Summit
+9%
+22%
+16.7
+The Magic Ball Event
+2%
+21%
+10.4
+
+Acuity Dart 1: Mission Maven
+Primary Drivers
+What motivates them to give?
+Fulfill unmet needs of others
+Compassion for the underserved
+Big impact through small actions
+Responsibility for lifting others up
+Primary Roadblocks
+What might prevent the organization from connecting?
+Lack of personal connection, even with recognition efforts
+Inadequate communication frequency
+Not capitalizing on their interest in being personally engaged with the organization
+Insufficient illustration of the personal impact the organization has on people’s lives
+Connection Strategy
+Connect with Mission Mavens using lighthearted Red messaging and images; illustrate an understanding that this is a personal cause for them and showcase the organization’s impact on individuals’ lives. As the most highly engaged Dart, they are open to frequent communication, especially on activities like The Aging Advantages Faith Summit and The Provider Fair. (Note: While they will connect with engaging and entertaining Red, be sure that tone still maintains an understanding of personal commitment and passion for the cause.)
+
+RED
+Uplifting & Engaging
+
+Acuity Dart 1: Mission Maven
+Personality
+Copy Preference
+Image Preference
+
+Acuity Dart 1: Grateful Giver
+Grateful Givers highly trust the organization to do the right thing and provide for everyone’s loved ones. Their reflection on the organization’s impact and their desire to leave a legacy themselves motivates them to show up and give to the organization. They or a loved one may have received care in the past, leaving a lasting impression that inspires them to pay it forward. Grateful Givers are often busy caring for others, so they may fly under the radar and not be overly involved in events or meetings. However, Grateful Givers are great storytellers on behalf of the organization because of their positive experiences.
+
+Communication Insights
+DIGITAL PLATFORM USE
+ACTIVE INFORMATION SEEKING
+ACCEPTABLE COMMUNICATION FREQUENCY
+Population
+AVG
+AVG
+AVG
+Search Engines
+Online Shopping
+Personal Email
+Mail and Publications
+Friends and Family
+Local Community Websites
+OF ALL DONORS
+NON-ACUITY PROSPECTS
+OF $25,000+ CAPACITY
+37.8%
+38.7%
+23.8%
+DART 4	
+DART 3
+DART 2
+DART 1
+DART 4
+DART 3
+DART 2
+DART 1
+DART 4	
+DART 3
+DART 2
+DART 1
+
+Acuity Dart 1: Grateful Giver
+Charitable Contribution Factors
+*Factor bars in GOLD indicate a Dart score that is higher than the respondent average. Factor bars in CRIMSON indidate a Dart score that is lower than the respondent average.** Index scores indicate how this Dart scored this activity being of interest compared against the average of all respondents where a zero indicates a score right at the average.
+Involvement and Engagement
+Overall Engagement Index
+-2.6
+TOP CAUSE FACTORS
+Inspiring Organization
+TOP REPUTATION FACTORS
+Family Involvement
+Trust Leadership
+
+TOP CONNECTIONS FACTORS
+Create a Partnership
+TOP IMPACT FACTORS
+Individual Impact
+Immediacy of Impact
+TOP FINANCIAL FACTORS
+Non-Monetary Contribution Offerings
+Percent of Gift Used
+TOP RECOGNITION FACTORS
+Small Gifts
+ACTIVITY
+INVOLVED
+LIKELY
+INDEX*
+The Provider Fair
+16%
+11%
+-17.1
+Volunteering
+11%
+17%
+-5.1
+The Safe at Home Yard Cleanup Event
+10%
+24%
+-10
+The Envision Lecture Series
+9%
+13%
+-22.4
+A Golf Event
+4%
+7%
+-8
+The Aging Advantages Faith Summit
+3%
+17%
+0.7
+Serving on the Board
+1%
+14%
+-4.9
+The Magic Ball Event
+0%
+19%
+-2.2
+
+DART 2 
+Grateful Giver
+29
+
+Acuity Dart 2: Grateful Giver
+Personality
+Copy Preference
+Image Preference
+
+Acuity Dart 2: Grateful Giver
+Primary Drivers
+What motivates them to give?
+Removing barriers for others
+Creating a legacy
+Equity and compassion for all
+Responsibility for improving others’ lives
+Primary Roadblocks
+What might prevent the organization from connecting?
+Too much communication on events or other activities that are not high interest
+Lack of visibility for these active information seekers, especially in the community
+Inability to quantify the organization’s impact clearly and demonstrate immediacy
+Lack of understanding of how to recognize them (need to connect donation to legacy)
+Connection Strategy
+Grateful Givers are attracted to the nurturing and caring nature of the Purple archetype. Communications should show compassion with individual impact but also portray a strong, confident tone that illustrates immediate impact. They are less likely to be engaged and prefer less frequent communication, so ensure messaging is direct and presents clear benefits. The organization’s strategy of prioritizing data-driven decision-making will especially resonate with this Dart.
+PURPLE
+Supportive & Selfless
+
+MAPS
+LARGE ICONS
+Capacity Above $25,000
+
+MEDIUM ICONS
+Capacity Between
+$10,000 and $25,000
+
+SMALL ICONS
+Capacity Below $10,000
+DART 2
+GRATEFUL GIVERS
+DART 1
+MISSION MAVENS
+DART 3
+CONNECTED COLLABORATORS
+DART 4
+INSPIRED INNOVATORS
+ACUITY 4
+OUTSIDE ACUITY
+ACUITY 2
+DONORS ONLY
+ACUITY 3
+ENGAGED ONLY
+ACUITY 1
+DONORS & ENGAGED
+ACUITY & DARTS
+NORTHERN INDIANAPOLIS
+
+Acuity and Darts Map: Northern Indianapolis
+LARGE ICONS
+Capacity Above $25,000
+
+MEDIUM ICONS
+Capacity Between
+$10,000 and $25,000
+
+SMALL ICONS
+Capacity Below $10,000
+DART 2
+GRATEFUL GIVERS
+DART 1
+MISSION MAVENS
+DART 3
+CONNECTED COLLABORATORS
+DART 4
+INSPIRED INNOVATORS
+ACUITY 4
+OUTSIDE ACUITY
+ACUITY 2
+DONORS ONLY
+ACUITY 3
+ENGAGED ONLY
+ACUITY 1
+DONORS & ENGAGED
+
+34
+Our Proposed Solution: Budget Summary
+Service
+Project Summary
+Cost
+Acuity Darts
+Analysis of donor inclination, capacity, and psychographic profiles across a significant sample of alumni & donor records through Acuity Darts. Groundbreaking research into the psychographic variables of your donor segments, and detailed audience persona profiles (called a “Dart”) that describe specifically who you should target, where they tend to exist in the nation, and how best to reach them.
+
+3 workshops for up to 20 stakeholders per workshop; up to 800 alumni/donor survey completes (incentives included); psychographic/demographic Darts identified and embedded with engagement and wealth screening variables.  1 hour virtual training following the presentation of Dart strategy.  Additional training and engagement available
+  $75,000 
+Total:
+$75,000
+Recommended Investment
+Collect and Interpret Intelligent, Actionable, Alumni-Centric Data
+
+Thank You!
+210 LITTLETON ROAD, SUITE 100 WESTFORD, MA 01886
+info@carnegiehighered.com
+carnegiehighered.com
+(978) 692-5092

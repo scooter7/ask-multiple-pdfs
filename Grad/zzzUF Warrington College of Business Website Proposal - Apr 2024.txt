@@ -1,0 +1,403 @@
+Proposal for Work  |  April 2024
+Website Improvement
+Higher Education Marketing and Enrollment Strategy
+
+Warrington College of Business
+University of Florida
+
+2
+April 2024
+Jeff Holeman
+Marketing and Brand Leader
+Warrington College of BusinessUniversity of Florida
+Bryan Hall 100
+PO Box 117150
+Gainesville, FL 32611-7150
+“We wanted our website to come to life and to take visitors on a journey.” 
+Thank you for inviting us to submit a proposal for improving your website.
+
+Through our recent conversations we’ve gained an understanding of your current situation. 
+
+At a high-level, College leadership recognizes a need to invest in marketing to amplify the Warrington brand and drive enrollment outcomes. The creation of your position is a reflection of that. There is also consensus that the current seven-year-old website is a poor reflection of the College and a barrier to marketing initiatives. Under pressure to show progress, your team has plans and ideas for what needs to change, but lacks the skills, capacity, and availability to execute. You are seeking outside help to improve the site, and your priorities are look-and-feel, design templates and components, information architecture and navigation, and content and SEO enablement. 
+
+You want a site that is robust, flexible, and adaptable as the College and its brand evolve. Additionally, you’re concerned that WordPress is not the best-fit long-term platform for your needs, but have little appetite at this time to be the trailblazer for a new platform
+Danita KnightFormer Vice President for Communications and Marketing
+Agnes Scott College
+
+
+
+
+Drilling down into these areas, we gained even more context:
+The Warrington website is viewed primarily as a marketing tool for prospective students, and graduate recruiting is the top priority.
+The website has grown to ~3,000 pages, and you see an opportunity to simplify and streamline the site to ~500 pages. And then, to establish stronger centralized controls to ward off future sprawl.
+The university brand has recently evolved, and the team sees opportunity to leverage UF brand attributes to better tell its story. 
+From a web governance perspective, Warrington has freedom and flexibility to create and manage its own website provided it stays within university brand / identity guidelines and uses an approved CMS platform. The university provides WordPress hosting, and Warrington receives no further support or enablement in terms of web design and CMS platform.
+WordPress is an accepted CMS platform at the University level, and the Warrington site is currently implemented on WP Bakery, which has limitations and is a point of frustration with the team.
+In the enclosed proposal you will find information about our company, relevant portfolio examples, team member bios, and how we wish to collaborate with you. With us, you'll get a bona fide partner who is transparent, innately curious, and flexible in our approach. We're geared toward you and your success, excited to do great work with you, and committed to a meaningful and enjoyable experience.
+To be clear, your situation is unique and complex, and we are eager problem solvers who are ready to make the improvements you seek. We’ve framed several options for your consideration. We hope these convey our interest in working with you and serve as a springboard for additional conversation. We’d love to tailor our approach to your needs. 
+
+Now, let’s go!
+
+3
+Bill McLaughlin
+EVP, Web
+bmclaughlin@carnegiehighered.com
+314.527.2178
+Laura Hall
+Director, Client Success
+lhall@carnegiehighered.com
+423.946.2110
+
+About CarnegieProposed Approach
+Meet the TeamProject Delivery Framework
+Our Work
+Proposed Budget
+5
+10
+15
+18
+23
+25
+table ofcontents
+4
+
+1
+5
+About Carnegie
+
+Higher Education Marketing and Enrollment Strategy
+600
+College and university partners
+Years of Higher Education experience
++
+35
++
+The power of human connection
+For more than 35 years, Carnegie has been a leader and innovator in higher education marketing and enrollment strategy, offering groundbreaking services in the areas of Research, Strategy, Digital Marketing, Lead Generation, Slate Optimization, Student Search, Website Development, and Creative that generate authentic connections.
+We connect colleges with students through the power of human connection. We believe that genuine connection is the key to capturing attention and building affinity. Our core philosophy fuses the principles of human psychology with marketing and enrollment innovation; we measure and then market to a student’s unique behaviors and motivators to create deep connection and real conversation. 
+
+This leads to action, enrollment, retention, and lasting affinity.
+
+6
+
+Whether you need to optimize digital strategies or build a brand strategy from the ground up, Carnegie provides you with single-source access to custom solutions built from our best-in-class services. We’ll deliver the results you’re after, time and time again.
+
+We deliver what others simply cannot because we have what others do not: original intellectual property, powerful data, precision tools, and decades of market leadership experience.
+
+Our Solutions, Your Success
+Brand Strategy 
+Digital Marketing 
+Enrollment Strategy 
+Integrated Research 
+Lead Generation 
+Marketing Strategy 
+Personality Assessments 
+Signature Creative 
+Slate Optimization 
+Student Search 
+Web Development
+
+ 
+best in class
+7
++ 
++ 
++ 
++ 
++ 
++ 
++ 
++ 
++ 
++ 
++ 
+
+350
+Collaborations with colleges and universities 
+Websites launched since 2001
++
+250
++
+8
+mStoner joined Carnegie in October 2021 to pursue our shared goal of being the most transformative marketing and enrollment solution in higher education.
+
+For 20 years, mStoner operated as an independent boutique web agency with headquarters in Chicago and a distributed team spanning the country. mStoner collaborated with more than 350 colleges and universities, launching more than 250 websites. 
+As the Web Team at Carnegie, we bring an unmatched understanding of the strategic goals and challenges of higher education institutions and we are adept at managing the organizational and communication complexities of campus-wide website projects.
+
+
+We create thoughtful, elegant, simple, human experiences that engage and delight. Our design work has won more than 100 awards over the last five years.
+9
+
+2
+Proposed Approach
+10
+
+Option 1: Refresh
+Our Refresh solution is a targeted approach to making improvements to a website. It’s a good fit for clients that are a few years into a new website and have specific areas of need. It works best when at least one aspect of the current site is working well: content, design, or technology.
+
+In your case, content, design, and technology are all challenging. In particular, WP Bakery is a limiting factor.
+
+Given your current situation, we could pursue a Refresh that would yield a new homepage layout and homepage content strategy, and leveled-up academic program pages with stronger content, SEO, and inquiry form placement.
+We would not be able to address look-and-feel, design templates or components, or the overall information architecture and navigation sets.
+
+Optionally, we could aggressively reduce the number of pages on the website and rearrange / simplify the placement of pages within your existing menus and navigation sets.
+11
+
+Option 2: Redesign
+Our Redesign solution is a comprehensive and transformative project to create a new web presence for a college or institution. It’s a large and challenging project and a good fit for clients with older websites that are not working well across user experience, content, design, and technology.
+
+Frankly, this is what you need.
+
+A redesign would yield a new look-and-feel, a new design system, new information architecture and navigation sets, a new CMS implementation, SEO-optimized copywriting for academic programs and other marketing-critical pages, and a plan to reduce and then migrate content into a new site.
+If this route is chosen, you'd get a rock-solid Drupal or WordPress implementation that we've honed over dozens of higher ed implementations: built right, built for scale, and built to last. You'll benefit from a clean and intuitive user interface, powerful and flexible page building tools, and a structure that enables Create Once Publish Everywhere capabilities.
+
+Our redesign would also assess your governance policies and model, and it is almost certain that we’d recommend additions to your staff to position your team to sustain and evolve the website after the project is complete.
+12
+
+Option 3: Microsite
+Our Microsite solution creates a small and standalone website to meet a specific need. Microsites are great for capital campaigns, anniversary celebrations, strategic plans, and websites for centers and institutes. Additionally, we’ve leveraged microsites to great effect as an interim solution for an institution’s homepage and top-level website, and within admissions marketing campaigns. 
+
+In your case, we envision a small website (~30 pages) that would serve as your top-level site, replacing upper level pages on the current site. It would include a new homepage, admissions section, and introduction to your programs. The microsite would have a new look-and-feel, design templates for secondary and tertiary pages, and SEO-optimized copywriting throughout.
+We’d build the microsite on WordPress and leverage a Divi starter theme. This will be a new instance and implementation, to be hosted separately from your current site.
+
+The microsite will co-exist with your current website, and we’d establish a plan for navigation across the two sites, visitor journeys and pathways, and URL patterns and redirects to ensure that traffic is directed to the correct pages and the user experience is not disjointed. UNC Asheville’s website provides an example of this approach.
+
+Similar to the Refresh option, in this alternative we could also aggressively reduce the number of pages on the website and rearrange / simplify the placement of pages within your existing menus and navigation sets.
+13
+
+Internal Cost    
+Middle
+Worst
+Best
+Hard Cost
+$50,000
+$350,000
+$75,000
+Value Delivered
+Worst
+Best
+Middle
+Time to Market
+Six months
+10 to 12 months
+Three to four months
+Post-Project Path Forward
+This approach is a “band aid,” and it punts the larger desired changes and challenges further down the road.
+This approach takes on the big challenges and repositions the college website. Once complete, sustainable, incremental, and continuous improvement is the path forward.
+This could be used as a stop-gap solution, followed by a comprehensive redesign. Or, the Microsite could be incrementally extended and eventually become the College website.
+Options Compared
+Refresh
+14
+Redesign
+Microsite
+NOTE: comparisons above are relative to each other, qualitative, and based on our initial understanding of your situation and needs.
+
+Meet the Team
+15
+3
+
+16
+Jon Shearer
+AVP, Web Strategy & UX
+Jon is a trusted advisor when it comes to higher education websites. He led multiple award-winning website redesigns at private universities for over a decade before joining Carnegie. He also frequently contributed to Inside Higher Ed on timely web topics surrounding content, analytics, and SEO. With roots in both graphic design and front-end development, Jon helps clients navigate complex web projects from day one to launch. Jon enjoys leading a team of web experts who balance innate curiosity with best practices to develop custom web solutions.
+Persona
+The Confident and Sympathetic Host
+
+Kirstin Swagman
+Director, Web Strategy & UX
+Kirstin has always gravitated toward careers that lead with questions – first as a journalist, then an anthropologist, and now a strategist. She has graduate-level training in ethnographic research and specializes in blending quantitative and qualitative data to develop web solutions for higher education institutions. Kirstin brings more than ten years of experience working in higher education to her role at Carnegie and enjoys helping schools connect with their right-fit students.
+Persona
+The Curious and Assertive Champion
+Alayna Setterlind 
+Director, Web Design & UX
+With a lens toward prioritizing the user experience, Alayna enjoys collaborating with colleges and universities to elevate their digital presence. Alayna first discovered her passion for design early on through photography and print design before shifting her focus to web design. Today, she leverages her prior creative agency experience and collaborative mindset to guide designers and developers in producing thoughtful, creative, highly-visual design systems.
+Persona
+The Inquisitive and Creative Storyteller
+Chris Johnson
+Assoc. Director, Front-end Dev.
+Chris is a detail-oriented and versatile web professional with over 7 years of experience working on higher education websites. His background encompasses every facet of the web development lifecycle, including user-centered design, front-end web development, product management, QA testing, and team leadership. He plays a pivotal role orchestrating the journey from creative vision to technical execution, resulting in elegant and impactful digital experiences that both look and function flawlessly.
+Persona
+The Intelligent and Aesthetic Connoisseur
+
+Karmon Runquist
+Director of Web Development
+Before joining Carnegie, Karmon led university web teams through numerous website redesign initiatives and managed the daily operations following the launch of those websites. She has a deep understanding of the importance of website growth and sustainability, and she is passionate about creating easily maintainable websites.
+Persona
+The Confident and Analytical Theorist
+Laura Hall
+Director of Client Success
+Laura exemplifies enthusiasm, leadership, and attention to detail toward her clients’ needs and goals. Before her time at Carnegie, Laura served within the marketing and communications team at the University of Mississippi. In this role, she helped implement recruitment communications and digital strategies while coordinating the redesign and launch of the university’s new website. Laura also spent time at Auburn University focusing on outward-facing marketing campaigns. Her experience in higher education and her people-first mindset allow her to make client success and personal relationships top priorities in her work.
+Persona
+The Confident and Attentive Host
+
+Persona Archetypes Key
+Brilliant and forward-thinking
+Driven by inventing the future through innovation. Delivers advancement, ingenuity, and radical outcomes. Values newness, experimentation, and progress. Causes people to feel awe and amazement.
+Innovator: Yellow
+Supportive and selfless
+Driven by compassion, warmth, and the desire to care for others. Delivers nurturing, comfort, and protection. Values altruism, commitment, and generosity. Causes people to feel valued and supported.
+Provider: Purple
+Creative and imaginative
+Driven by self-expression and artistry. Delivers something new that encourages creativity. Values originality, ideation, and new concepts. Causes people to feel constructive and expressive.
+Creator: Orange
+Adventurous and inquisitive
+Driven by the quest for discovering the unknown. Delivers progress and an unmatched interest for uncovering truth. Value investigation, curiosity, and trailblazing. Causes people to feel intrigued and emboldened
+Explorer: Green
+Energetic and enthusiastic
+Driven to entertain and cause others to get excited. Delivers fun and the desire to amuse and uplift. Values energy, playfulness, and enjoyment. Causes people to feel exhilarated and happy.
+Entertainer: Red
+Sophisticated and refined
+Driven by experience, elegance, and beauty in all forms. Delivers excellence, finesse, and vitality. Values poise, intentionality, and beauty. Causes people to feel desired and important.
+Sophisticate: Pink
+17
+Resilient and tenacious
+Driven by overcoming challenges through grit and determination. Delivers surprising strength, perseverance, and toughness. Values fortitude and hard work. Causes people to feel triumphant and inspired
+Competitor: Maroon
+Powerful and assertive
+Driven by growth and being a frontrunner. Delivers stability, pride, and strength. Values power, influence, and accomplishment. Causes people to feel confident and in control.
+Achiever: Blue
+Daring and rebellious
+Driven by challenging and redefining the norm. Delivers empowerment, change, and boldness. Values independence, guts, and breaking with convention. Causes people to feel unrestrained and fearless.
+Rebel: Silver
+Generic and confused
+Beige, though not considered a personality archetype in
+the model, is still an important consideration. Beige indicates one of two things: a completely neutral personality expression, or one that attempts to do everything at once.
+Beige
+
+Project Delivery Framework
+4
+18
+
+Flexible
+Framework
+Our project delivery framework is based on software development methodology and best practices. It defines key elements that span all of our projects — activities, deliverables and a common vocabulary — yet offers the flexibility to adapt to the unique aspects of each client project. Within this framework, we’ve adopted modern and agile methods for producing our work, sharing it with you, and managing our workflow. 
+19
+
+Tailored Project Plan
+At the beginning of the project, we’ll develop a tailored approach and plan, and a timeline that focuses on key deadlines and leverages interim milestone markers to keep everyone on track. 
+
+The timeline will take into account the academic calendar, holidays and any other dates that might affect the work. We’ll give you plenty of time to plan for periods that will require heavy input or review from your team and crucial stakeholders across the institution.
+20
+
+Collaborative Approach
+During the project, we’ll conduct regular status meetings to communicate progress to the plan and highlight accomplishments, priorities, risks, and issues. We’ll also schedule frequent and ad-hoc meetings to collaborate and share our work with you.
+
+We leverage a web-based, team collaboration tool called Asana that provides threaded communications, task management, and centralized file sharing for the project. Asana acts as the electronic hub for all project communications and key information.
+21
+
+Fixed-Bid Budget
+We are committed to fixed-bid projects. 
+
+When new information arises that threatens the scope, schedule, or budget, we’ll work collaboratively with you to ensure that we have evaluated all possible options. We’ll always present an alternative that involves no additional cost to you. 
+
+If we agree on a revised direction, we’ll gain your written approval via a change order prior to taking on any additional work.
+22
+
+Our Work
+5
+23
+
+Recent Launches
+
+Belmont University
+Clarkson University
+Indiana State University
+Kogod School of Business at American University
+Palm Beach Atlantic University
+SUNY Downstate Health Sciences University
+University of Massachusetts Boston
+University of North Carolina, Asheville (microsite)
+24
+
+6
+Proposed Budget
+25
+
+Scope of Work& ExecutiveSummary
+The pricing in this section is presented as fixed bids based on our current understanding of your project needs. Scope will be tightened as we align on an approach. Once the scope is set, additional charges will not be incurred without a collaborative analysis of all available options and without your prior written approval. 
+ 
+Our proposed budgets do not include out-of-pocket expenses, such as travel and related incidentals, discovery session transcript fees, required fonts, illustration libraries, or expedited delivery. Expenses require client pre approval and are billed at cost with no markup.
+26
+
+Option 1: Refresh
+27
+Discovery, User Experience, and Information Architecture Scope of Work:
+Review of current WordPress implementation and team’s plans for site improvement
+Streamlined discovery with key stakeholders and alignment with the core project team
+Lo-fidelity wireframes for homepage
+
+Implementation Scope of Work:
+Implementation of new homepage layout
+Restructure of academic program page layout to include RFI form
+
+
+Content and SEO Scope of Work:
+Copywriting and optimization of 10 pages
+
+Deployment and Transition Scope of Work:
+Block of hours to rearrange pages within existing navigation menus
+Content editor training
+Launch prep and support
+Post-launch support
+$50,000, achievable in six months
+
+Note: A site-wide content audit and comprehensive page reduction and reorganization approach is not included in the above scope. 
+
+Option 2: Redesign
+28
+Discovery, User Experience, and Information Architecture Scope of Work:
+Comprehensive discovery with key stakeholders, faculty and student,  and alignment with the core project team
+Website strategy that touches on content, user experience, functionality, and technology
+Governance assessment and recommendations
+Sitewide content audit and page elimination / reduction strategy
+
+Design and Implementation Scope of Work:
+Creative concept exploration within UF’s and Warrington’s brand and identify
+Modular and flexible design system
+Conversion of design to accessible, standards-compliant, and mobile-responsive front-end code
+Drupal or WordPress implementation and customization
+
+
+Content and SEO Scope of Work:
+SEO Writing workshop for staff enablement
+Copywriting and optimization of 35 pages
+
+Deployment and Transition Scope of Work:
+Content migration plan and migration enablement including skeletal build, scripted migration, and manual migration of 100 pages.
+Comprehensive CMS training for content editors and administrators 
+Launch prep and support
+Post-launch support
+$350,000, achievable in 10 to 12 months
+
+Option 3: Microsite
+29
+Discovery, User Experience, and Information Architecture Scope of Work:
+Streamlined discovery with key stakeholders and alignment with the core project team
+Sitemap, definition of content types, and content modeling
+Lo-fidelity wireframes for key pages
+Cross-site navigation and redirect strategy
+
+Implementation Scope of Work:
+WordPress configuration for site settings and base install
+Applied design into the theme layer
+Layout build for full-width, sidebar, and program page types
+Configuration of content blocks and structures for editors
+
+
+Content and SEO Scope of Work:
+Copywriting and optimization of 10 pages
+
+Deployment and Transition Scope of Work:
+Skeletal sitemap build (e.g., page titles, menu settings, URL’s)  
+Build of five pages, at least one for each layout
+Content editor training
+Launch prep and support
+Post-launch support
+$75,000, achievable in three to four months
+
+Thank You!
+210 LITTLETON ROAD, SUITE 100 WESTFORD, MA 01886
+info@carnegiehighered.com
+carnegiehighered.com
+(978) 692-5092
+30
