@@ -9,13 +9,14 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.question_answering import load_qa_chain
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
-GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/ProposalChatHistory"
+GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/enrollmentbestpracticeshistoryProposalChatHistory"
 
 def main():
     # Set page config
@@ -60,6 +61,15 @@ def main():
             vectorstore, metadata = get_vectorstore(text_chunks)
             st.session_state.conversation_chain = get_conversation_chain(vectorstore)
             st.session_state.metadata = metadata
+    
+    # Upload PDF and Summarize Scope of Work
+    uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
+    if uploaded_pdf is not None:
+        rfp_text = extract_text_from_pdf(uploaded_pdf)
+        if rfp_text:
+            summarized_scope = summarize_scope_of_work(rfp_text)
+            st.subheader("Summarized Scope of Work")
+            st.write(summarized_scope)
     
     user_question = st.text_input("Ask about enrollment best practices")
     if user_question:
@@ -142,6 +152,28 @@ def get_conversation_chain(vectorstore):
     retriever = vectorstore.as_retriever()
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
     return conversation_chain
+
+def extract_text_from_pdf(uploaded_pdf):
+    try:
+        pdf_reader = PdfReader(uploaded_pdf)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text() or ""
+        return text
+    except Exception as e:
+        st.error(f"Failed to read the PDF file: {e}")
+        return None
+
+def summarize_scope_of_work(text):
+    try:
+        os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
+        llm = ChatOpenAI()
+        qa_chain = load_qa_chain(llm, chain_type="map_reduce")
+        summary = qa_chain({"question": "Summarize the scope of work.", "context": text})
+        return summary['answer']
+    except Exception as e:
+        st.error(f"Failed to summarize the scope of work: {e}")
+        return None
 
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
