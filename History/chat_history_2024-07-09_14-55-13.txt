@@ -1,0 +1,18 @@
+User: When are the ERG content months?
+
+Bot: Here are the Employee Resource Group (ERG) content months for the current calendar year:
+
+- January: Faith + Work ERG
+- February: BIPOC
+- March: Women in the Workplace ERG
+- April: TeamCare - Sustainability
+- May: Neurodiversity and Mental Health ERG
+- June: LGBTQIA ERG
+- July: N/A
+- August: Early Career Professionals ERG
+- September: TeamCare - Philanthropy
+- October: Disabilities and Chronic Health Conditions ERG
+- November: Working Parents ERG
+- December: N/A
+
+Each of these ERGs has the opportunity to share content specific to their work during their assigned month.
