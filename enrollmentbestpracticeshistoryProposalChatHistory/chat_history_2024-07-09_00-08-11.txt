@@ -1,0 +1,7 @@
+User: describe web redesign process
+
+Bot: Based on the provided context, the web redesign process typically involves a comprehensive and transformative project to create a new web presence for a college or institution. The process includes developing a new look-and-feel, design system, information architecture, and navigation sets. It also involves implementing a new content management system (CMS), optimizing copywriting for academic programs and marketing pages, and potentially reducing and migrating content to a new site.
+
+The redesign may result in a rock-solid implementation using Drupal or WordPress, with a focus on scalability and longevity. It aims to deliver a clean and intuitive user interface, flexible page building tools, and the ability to enable Create Once Publish Everywhere capabilities. Additionally, the redesign process may include an assessment of governance policies and staffing recommendations to ensure sustainability and evolution of the website post-project completion.
+
+Overall, the web redesign process is described as a comprehensive solution that addresses user experience, content, design, and technology challenges to create a thoughtful, engaging, and award-winning web experience tailored for higher education institutions.
