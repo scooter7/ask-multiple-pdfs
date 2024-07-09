@@ -56,7 +56,7 @@ def main():
         text_chunks = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
-            st.session_state.conversation = get_conversation_chain(vectorstore)
+            st.session_state.conversation, st.session_state.metadata = get_conversation_chain(vectorstore)
     
     user_question = st.text_input("Ask about enrollment best practices")
     if user_question:
@@ -184,7 +184,7 @@ def handle_userinput(user_question):
             else:
                 # Get citations for this response
                 citations = []
-                for doc in response['source_documents']:
+                for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
                     citations.append(f"Source: {metadata[index]}")
                 citations_text = "\n".join(citations)
