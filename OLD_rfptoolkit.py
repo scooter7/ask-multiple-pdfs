@@ -11,7 +11,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from datetime import datetime
 import base64
-import openai
+import re
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -41,6 +41,16 @@ css = """
 </style>
 """
 
+# Define the keywords to search for
+KEYWORDS = [
+    "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
+    "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
+    "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
+    "graphic design", "video production", "brand redesign", "logo", "microsite",
+    "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
+    "email marketing", "text message", "sms", "student search", "branding"
+]
+
 def main():
     # Set page config
     st.set_page_config(
@@ -61,17 +71,33 @@ def main():
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Proposal Toolkit</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Find and develop proposal resources.The text entry field will appear momentarily.</p>
+        <p align="left">Find and develop proposal resources. The text entry field will appear momentarily.</p>
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
+    # Initialize session state
     if 'conversation_chain' not in st.session_state:
         st.session_state.conversation_chain = None
     if 'metadata' not in st.session_state:
         st.session_state.metadata = []
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
+    if 'uploaded_pdf_text' not in st.session_state:
+        st.session_state.uploaded_pdf_text = None
+    if 'institution_name' not in st.session_state:
+        st.session_state.institution_name = None
+    
+    # Upload PDF and Summarize Scope of Work
+    uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
+    if uploaded_pdf is not None:
+        rfp_text = extract_text_from_pdf(uploaded_pdf)
+        if rfp_text:
+            st.session_state.uploaded_pdf_text = rfp_text
+            st.session_state.institution_name = extract_institution_name(rfp_text)
+            summarized_scope = summarize_scope_of_work(rfp_text)
+            st.subheader("Summarized Scope of Work")
+            st.write(summarized_scope)
     
     undergrad_selected = st.checkbox("Undergraduate")
     grad_selected = st.checkbox("Graduate")
@@ -79,21 +105,15 @@ def main():
     pdf_docs, text_docs = get_github_docs(undergrad_selected, grad_selected)
     if pdf_docs or text_docs:
         raw_text, sources = get_docs_text(pdf_docs, text_docs)
+        if st.session_state.uploaded_pdf_text:
+            raw_text = st.session_state.uploaded_pdf_text + raw_text
+            sources = ['Uploaded PDF'] + sources
         text_chunks = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore, metadata = get_vectorstore(text_chunks)
             st.session_state.conversation_chain = get_conversation_chain(vectorstore)
             st.session_state.metadata = metadata
-    
-    # Upload PDF and Summarize Scope of Work
-    uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
-    if uploaded_pdf is not None:
-        rfp_text = extract_text_from_pdf(uploaded_pdf)
-        if rfp_text:
-            summarized_scope = summarize_scope_of_work(rfp_text)
-            st.subheader("Summarized Scope of Work")
-            st.write(summarized_scope)
-    
+
     user_question = st.text_input("Find past RFP content and craft new content.")
     if user_question:
         handle_userinput(user_question)
@@ -170,7 +190,7 @@ def get_vectorstore(text_chunks):
     return vectorstore, metadata
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     retriever = vectorstore.as_retriever()
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
@@ -187,40 +207,49 @@ def extract_text_from_pdf(uploaded_pdf):
         st.error(f"Failed to read the PDF file: {e}")
         return None
 
+def extract_institution_name(text):
+    # Simple heuristic to find institution name
+    institution_name = ""
+    for line in text.split('\n'):
+        if "college" in line.lower() or "university" in line.lower():
+            institution_name = line.strip()
+            break
+    return institution_name
+
 def summarize_scope_of_work(text):
-    try:
-        openai.api_key = st.secrets["openai_api_key"]
-        
-        # Split the text into chunks to handle lengthy PDFs
-        text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
-        text_chunks = text_splitter.split_text(text)
-        summaries = []
+    keyword_summary = {keyword: [] for keyword in KEYWORDS}
+    proposal_deadline = ""
+    submission_method = ""
 
-        for chunk in text_chunks:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": f"Summarize the following scope of work in no more than 10 bullet points. Look specifically for words and phrases such as website redesign, SEO, search engine optimization, CRM, Slate, enrollment marketing, recruitment marketing, digital ads, online advertising, PPC, social media, surveys, focus groups, market research, creative development, graphic design, video production, brand redesign, logo, microsite, landing page, digital marketing, predictive modeling, financial aid optimization, email marketing, text message, sms, student search, etc.:\n\n{chunk}"}
-                ],
-                max_tokens=150
-            )
-            summary = response['choices'][0]['message']['content'].strip()
-            summaries.append(summary)
+    for line in text.split('\n'):
+        for keyword in KEYWORDS:
+            if re.search(rf'\b{keyword}\b', line, re.IGNORECASE):
+                keyword_summary[keyword].append(line)
+        if re.search(r'\b(deadline|due date)\b', line, re.IGNORECASE):
+            proposal_deadline = line
+        if re.search(r'\b(submission|submit|sent via)\b', line, re.IGNORECASE):
+            submission_method = line
 
-        final_summary = "\n".join(summaries)
-        return final_summary
-    except Exception as e:
-        st.error(f"Failed to summarize the scope of work: {e}")
-        return None
+    summary = []
+    for keyword, occurrences in keyword_summary.items():
+        if occurrences:
+            summary.append(f"{keyword}: {', '.join(occurrences)}")
+    if proposal_deadline:
+        summary.append(f"Proposal Deadline: {proposal_deadline}")
+    if submission_method:
+        summary.append(f"Submission Method: {submission_method}")
 
-def modify_response_language(original_response):
+    return '\n'.join(summary)
+
+def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
-    response = original_response.replace("They ", "We ")
-    response = original_response.replace(" their ", " our ")
-    response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response = response.replace("They ", "We ")
+    response = response.replace(" their ", " our ")
+    response = response.replace("Their ", "Our ")
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
+    if institution_name:
+        response = response.replace("the current opportunity", institution_name)
     return response
 
 def save_chat_history(chat_history):
@@ -251,8 +280,9 @@ def handle_userinput(user_question):
         response = conversation_chain({'question': user_question})
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
+        institution_name = st.session_state.institution_name
         for i, message in enumerate(st.session_state.chat_history):
-            modified_content = modify_response_language(message.content)
+            modified_content = modify_response_language(message.content, institution_name)
             if i % 2 == 0:
                 st.write(f'<div class="chat-message user-message">{modified_content}</div>', unsafe_allow_html=True)
             else:
