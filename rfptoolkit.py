@@ -42,8 +42,10 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
-    if 'conversation' not in st.session_state:
-        st.session_state.conversation = None
+    if 'conversation_chain' not in st.session_state:
+        st.session_state.conversation_chain = None
+    if 'metadata' not in st.session_state:
+        st.session_state.metadata = []
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     
@@ -55,8 +57,9 @@ def main():
         raw_text, sources = get_docs_text(pdf_docs, text_docs)
         text_chunks = get_text_chunks(raw_text, sources)
         if text_chunks:
-            vectorstore = get_vectorstore(text_chunks)
-            st.session_state.conversation, st.session_state.metadata = get_conversation_chain(vectorstore)
+            vectorstore, metadata = get_vectorstore(text_chunks)
+            st.session_state.conversation_chain = get_conversation_chain(vectorstore)
+            st.session_state.metadata = metadata
     
     user_question = st.text_input("Ask about enrollment best practices")
     if user_question:
@@ -136,10 +139,9 @@ def get_vectorstore(text_chunks):
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    vectorstore, metadata = vectorstore
     retriever = vectorstore.as_retriever()
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
-    return conversation_chain, metadata
+    return conversation_chain
 
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
@@ -173,10 +175,11 @@ def save_chat_history(chat_history):
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
 def handle_userinput(user_question):
-    if 'conversation' in st.session_state and st.session_state.conversation:
-        conversation_chain, metadata = st.session_state.conversation
+    if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
+        conversation_chain = st.session_state.conversation_chain
         response = conversation_chain({'question': user_question})
         st.session_state.chat_history = response['chat_history']
+        metadata = st.session_state.metadata
         for i, message in enumerate(st.session_state.chat_history):
             modified_content = modify_response_language(message.content)
             if i % 2 == 0:
