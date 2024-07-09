@@ -293,7 +293,7 @@ def handle_userinput(user_question, pdf_keywords):
                 citations = []
                 for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
-                    citations.append(f"Source: {metadata[index]}")
+                    citations.append(f"Source: [{metadata[index][0]}]({metadata[index][1]})")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
