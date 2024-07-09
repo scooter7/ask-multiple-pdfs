@@ -1,0 +1,3 @@
+User: cite the source and include pricing
+
+Bot: The source of the information provided is from a Proposal for Work document for Drake University. The pricing mentioned in the document is $62,800 for the implementation phase, assuming the use of CMS platforms such as Cascade, Drupal, Squiz, or WordPress. It is stated that the pricing does not include software license costs or any additional plugins/modules for the CMS. If a different CMS platform is chosen, the budget line item may need adjustments. Additionally, if Drake University decides to contract directly with a CMS provider for implementation and training services, a majority of the budget may be credited back for reallocation.
