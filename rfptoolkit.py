@@ -197,12 +197,15 @@ def summarize_scope_of_work(text):
         summaries = []
 
         for chunk in text_chunks:
-            response = openai.Completion.create(
-                engine="text-davinci-003",
-                prompt=f"Summarize the following scope of work in bullet points:\n\n{chunk}",
+            response = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": f"Summarize the following scope of work in bullet points:\n\n{chunk}"}
+                ],
                 max_tokens=150
             )
-            summary = response.choices[0].text.strip()
+            summary = response['choices'][0]['message']['content'].strip()
             summaries.append(summary)
 
         final_summary = "\n".join(summaries)
