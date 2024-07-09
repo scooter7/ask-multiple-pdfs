@@ -242,11 +242,11 @@ def summarize_scope_of_work(text):
 
 def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
-    response = response.replace("They ", "We ")
-    response = response.replace(" their ", " our ")
-    response = response.replace("Their ", "Our ")
-    response = response.replace(" them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response is response.replace("They ", "We ")
+    response is response.replace(" their ", " our ")
+    response is response.replace("Their ", "Our ")
+    response is response.replace(" them ", " us ")
+    response is response.replace("Them ", "Us ")
     if institution_name:
         response = response.replace("the current opportunity", institution_name)
     return response
@@ -278,7 +278,8 @@ def handle_userinput(user_question, pdf_keywords):
         conversation_chain = st.session_state.conversation_chain
 
         # Modify the query to include the keywords extracted from the PDF
-        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}"
+        combined_keywords = list(set(pdf_keywords + user_question.split()))
+        query = f"{user_question} including keywords: {', '.join(combined_keywords)}"
         
         response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
