@@ -30,13 +30,13 @@ css = """
     .chat-message {
         padding: 10px;
         margin: 10px 0;
-        border-radius: 5px.
+        border-radius: 5px;
     }
     .user-message {
-        background: #e0f7fa.
+        background: #e0f7fa;
     }
     .bot-message {
-        background: #ffe0b2.
+        background: #ffe0b2;
     }
 </style>
 """
@@ -101,9 +101,9 @@ def main():
     undergrad_selected = st.checkbox("Undergraduate")
     grad_selected = st.checkbox("Graduate")
     
-    pdf_docs, text_docs = get_github_docs(undergrad_selected, grad_selected)
-    if pdf_docs or text_docs:
-        raw_text, sources = get_docs_text(pdf_docs, text_docs)
+    docs = get_github_docs(undergrad_selected, grad_selected)
+    if docs:
+        raw_text, sources = get_docs_text(docs)
         if st.session_state.uploaded_pdf_text:
             raw_text = st.session_state.uploaded_pdf_text + raw_text
             sources = ['Uploaded PDF'] + sources
@@ -124,17 +124,16 @@ def get_github_docs(undergrad_selected, grad_selected):
         'Authorization': f'token {github_token}'
     }
     
-    pdf_docs = []
-    text_docs = []
+    docs = []
     
     if undergrad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers, pdf_docs, text_docs))
+        docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers))
     if grad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers, pdf_docs, text_docs))
+        docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers))
     
-    return pdf_docs, text_docs
+    return docs
 
-def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
+def fetch_docs_from_github(repo_url, headers):
     response = requests.get(repo_url, headers=headers)
     if response.status_code != 200:
         st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
@@ -145,33 +144,34 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
         st.error(f"Unexpected response format: {files}")
         return []
     
+    docs = []
     for file in files:
         if 'name' in file:
             if file['name'].endswith('.pdf'):
                 pdf_url = file.get('download_url')
                 if pdf_url:
                     response = requests.get(pdf_url, headers=headers)
-                    pdf_docs.append((BytesIO(response.content), file['name']))
+                    docs.append((BytesIO(response.content), file['name'], file['html_url']))
             elif file['name'].endswith('.txt'):
                 text_url = file.get('download_url')
                 if text_url:
                     response = requests.get(text_url, headers=headers)
-                    text_docs.append((response.text, file['name']))
+                    docs.append((response.text, file['name'], file['html_url']))
     
-    return pdf_docs
+    return docs
 
-def get_docs_text(pdf_docs, text_docs):
+def get_docs_text(docs):
     text = ""
     sources = []
-    for pdf, source in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            page_text = page.extract_text() or ""
-            text += page_text
-            sources.append(source)
-    for doc, source in text_docs:
-        text += doc
-        sources.append(source)
+    for doc, source, url in docs:
+        if isinstance(doc, BytesIO):
+            pdf_reader = PdfReader(doc)
+            for page in pdf_reader.pages:
+                page_text = page.extract_text() or ""
+                text += page_text
+        else:
+            text += doc
+        sources.append(f"[{source}]({url})")
     return text, sources
 
 def get_text_chunks(text, sources):
