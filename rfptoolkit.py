@@ -9,7 +9,6 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.retrievers import VectorStoreRetriever
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
@@ -123,23 +122,24 @@ def get_docs_text(pdf_docs, text_docs):
 def get_text_chunks(text, sources):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
-    return [(chunk, sources[i]) for i, chunk in enumerate(chunks)]
+    return [(chunk, sources[i % len(sources)]) for i, chunk in enumerate(chunks)]
 
 def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    texts, sources = zip(*text_chunks)
+    texts, metadata = zip(*text_chunks)
     vectorstore = FAISS.from_texts(texts=texts, embedding=embeddings)
-    retriever = VectorStoreRetriever(vectorstore, metadata=sources)
-    return retriever
+    return vectorstore, metadata
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore, memory=memory)
-    return conversation_chain
+    vectorstore, metadata = vectorstore
+    retriever = vectorstore.as_retriever()
+    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
+    return conversation_chain, metadata
 
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
@@ -174,15 +174,21 @@ def save_chat_history(chat_history):
 
 def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
-        response = st.session_state.conversation({'question': user_question})
+        conversation_chain, metadata = st.session_state.conversation
+        response = conversation_chain({'question': user_question})
         st.session_state.chat_history = response['chat_history']
         for i, message in enumerate(st.session_state.chat_history):
             modified_content = modify_response_language(message.content)
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
-                citations = "\n".join(f"Source: {meta}" for meta in response['source_documents'])
-                st.write(bot_template.replace("{{MSG}}", f"{modified_content}\n\n{citations}"), unsafe_allow_html=True)
+                # Get citations for this response
+                citations = []
+                for doc in response['source_documents']:
+                    index = response['source_documents'].index(doc)
+                    citations.append(f"Source: {metadata[index]}")
+                citations_text = "\n".join(citations)
+                st.write(bot_template.replace("{{MSG}}", f"{modified_content}\n\n{citations_text}"), unsafe_allow_html=True)
         # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
