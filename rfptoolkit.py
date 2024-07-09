@@ -2,7 +2,7 @@ import os
 import streamlit as st
 import requests
 from io import BytesIO
-from PyPDF2 import PdfReader
+from PyPDF2 import PdfReader, utils
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -151,12 +151,12 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
                 pdf_url = file.get('download_url')
                 if pdf_url:
                     response = requests.get(pdf_url, headers=headers)
-                    pdf_docs.append((BytesIO(response.content), file['name'], file['download_url']))
+                    pdf_docs.append((BytesIO(response.content), file['name'], file['html_url']))
             elif file['name'].endswith('.txt'):
                 text_url = file.get('download_url')
                 if text_url:
                     response = requests.get(text_url, headers=headers)
-                    text_docs.append((response.text, file['name'], file['download_url']))
+                    text_docs.append((response.text, file['name'], file['html_url']))
     
     return pdf_docs, text_docs
 
@@ -164,11 +164,14 @@ def get_docs_text(pdf_docs, text_docs):
     text = ""
     sources = []
     for pdf, source, url in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            page_text = page.extract_text() or ""
-            text += page_text
-            sources.append((source, url))
+        try:
+            pdf_reader = PdfReader(pdf)
+            for page in pdf_reader.pages:
+                page_text = page.extract_text() or ""
+                text += page_text
+                sources.append((source, url))
+        except utils.PdfReadError:
+            st.error(f"Failed to read PDF file: {source}")
     for doc, source, url in text_docs:
         text += doc
         sources.append((source, url))
@@ -203,7 +206,7 @@ def extract_text_from_pdf(uploaded_pdf):
             page_text = page.extract_text() or ""
             text += page_text
         return text
-    except Exception as e:
+    except utils.PdfReadError as e:
         st.error(f"Failed to read the PDF file: {e}")
         return None
 
@@ -245,7 +248,7 @@ def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
-    response = response.replace("Their ", "Our ")
+    response is replaced with "Our ")
     response = response.replace(" them ", " us ")
     response = response.replace("Them ", "Us ")
     if institution_name:
