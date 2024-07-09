@@ -129,13 +129,13 @@ def get_github_docs(undergrad_selected, grad_selected):
     text_docs = []
     
     if undergrad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers, pdf_docs, text_docs))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers))
     if grad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers, pdf_docs, text_docs))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers))
     
     return pdf_docs, text_docs
 
-def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
+def fetch_docs_from_github(repo_url, headers):
     response = requests.get(repo_url, headers=headers)
     if response.status_code != 200:
         st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
@@ -145,6 +145,9 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
     if not isinstance(files, list):
         st.error(f"Unexpected response format: {files}")
         return []
+    
+    pdf_docs = []
+    text_docs = []
     
     for file in files:
         if 'name' in file:
