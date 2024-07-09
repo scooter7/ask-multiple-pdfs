@@ -30,13 +30,13 @@ css = """
     .chat-message {
         padding: 10px;
         margin: 10px 0;
-        border-radius: 5px;
+        border-radius: 5px.
     }
     .user-message {
-        background: #e0f7fa;
+        background: #e0f7fa.
     }
     .bot-message {
-        background: #ffe0b2;
+        background: #ffe0b2.
     }
 </style>
 """
@@ -52,13 +52,11 @@ KEYWORDS = [
 ]
 
 def main():
-    # Set page config
     st.set_page_config(
         page_title="Proposal Toolkit",
         page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
     
-    # Hide the Streamlit toolbar
     hide_toolbar_css = """
     <style>
         .css-14xtw13.e8zbici0 { display: none !important; }
@@ -76,7 +74,6 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # Initialize session state
     if 'conversation_chain' not in st.session_state:
         st.session_state.conversation_chain = None
     if 'metadata' not in st.session_state:
@@ -87,15 +84,17 @@ def main():
         st.session_state.uploaded_pdf_text = None
     if 'institution_name' not in st.session_state:
         st.session_state.institution_name = None
-    
-    # Upload PDF and Summarize Scope of Work
+    if 'pdf_keywords' not in st.session_state:
+        st.session_state.pdf_keywords = []
+
     uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
     if uploaded_pdf is not None:
         rfp_text = extract_text_from_pdf(uploaded_pdf)
         if rfp_text:
             st.session_state.uploaded_pdf_text = rfp_text
             st.session_state.institution_name = extract_institution_name(rfp_text)
-            summarized_scope = summarize_scope_of_work(rfp_text)
+            summarized_scope, extracted_keywords = summarize_scope_of_work(rfp_text)
+            st.session_state.pdf_keywords = extracted_keywords
             st.subheader("Summarized Scope of Work")
             st.write(summarized_scope)
     
@@ -116,7 +115,7 @@ def main():
 
     user_question = st.text_input("Find past RFP content and craft new content.")
     if user_question:
-        handle_userinput(user_question)
+        handle_userinput(user_question, st.session_state.pdf_keywords)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -176,7 +175,7 @@ def get_docs_text(pdf_docs, text_docs):
     return text, sources
 
 def get_text_chunks(text, sources):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     return [(chunk, sources[i % len(sources)]) for i, chunk in enumerate(chunks)]
 
@@ -208,7 +207,6 @@ def extract_text_from_pdf(uploaded_pdf):
         return None
 
 def extract_institution_name(text):
-    # Simple heuristic to find institution name
     institution_name = ""
     for line in text.split('\n'):
         if "college" in line.lower() or "university" in line.lower():
@@ -230,16 +228,17 @@ def summarize_scope_of_work(text):
         if re.search(r'\b(submission|submit|sent via)\b', line, re.IGNORECASE):
             submission_method = line
 
-    summary = []
+    summary = ["**Scope of Work:**"]
     for keyword, occurrences in keyword_summary.items():
         if occurrences:
-            summary.append(f"{keyword}: {', '.join(occurrences)}")
+            summary.append(f"- **{keyword.capitalize()}:** {', '.join(occurrences)}")
     if proposal_deadline:
-        summary.append(f"Proposal Deadline: {proposal_deadline}")
+        summary.append(f"- **Proposal Deadline:** {proposal_deadline}")
     if submission_method:
-        summary.append(f"Submission Method: {submission_method}")
+        summary.append(f"- **Submission Method:** {submission_method}")
 
-    return '\n'.join(summary)
+    extracted_keywords = [keyword for keyword, occurrences in keyword_summary.items() if occurrences]
+    return '\n'.join(summary), extracted_keywords
 
 def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
@@ -274,10 +273,14 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_question):
+def handle_userinput(user_question, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
-        response = conversation_chain({'question': user_question})
+
+        # Modify the query to include the keywords extracted from the PDF
+        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}"
+        
+        response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
@@ -293,7 +296,6 @@ def handle_userinput(user_question):
                     citations.append(f"Source: {metadata[index]}")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
-        # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
