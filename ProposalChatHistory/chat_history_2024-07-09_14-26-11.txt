@@ -1,0 +1,3 @@
+User: what work have we done that would fit the current requirements?
+
+Bot: The work previously completed for institutions like Loyola Marymount University, Elon University, and Seattle University aligns well with the current requirements outlined in the proposal for Wheaton College. These projects showcased a commitment to accessibility and universal design principles that are similar to those required for the new site development at Wheaton College, which emphasizes adherence to WCAG 2.1 standards, responsive design, and clear navigation patterns. This experience demonstrates a proven track record in handling similar challenges and objectives, making it highly relevant to the current proposal needs.
