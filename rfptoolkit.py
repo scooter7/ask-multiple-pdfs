@@ -30,13 +30,13 @@ css = """
     .chat-message {
         padding: 10px;
         margin: 10px 0;
-        border-radius: 5px.
+        border-radius: 5px;
     }
     .user-message {
-        background: #e0f7fa.
+        background: #e0f7fa;
     }
     .bot-message {
-        background: #ffe0b2.
+        background: #ffe0b2;
     }
 </style>
 """
@@ -115,7 +115,7 @@ def main():
 
     user_question = st.text_input("Find past RFP content and craft new content.")
     if user_question:
-        handle_userinput(user_question, st.session_state.pdf_keywords)
+        handle_userinput(user_question, st.session_state.pdf_keywords, st.session_state.metadata)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -151,40 +151,40 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
                 pdf_url = file.get('download_url')
                 if pdf_url:
                     response = requests.get(pdf_url, headers=headers)
-                    pdf_docs.append((BytesIO(response.content), file['name']))
+                    pdf_docs.append((BytesIO(response.content), file['name'], file['download_url']))
             elif file['name'].endswith('.txt'):
                 text_url = file.get('download_url')
                 if text_url:
                     response = requests.get(text_url, headers=headers)
-                    text_docs.append((response.text, file['name']))
+                    text_docs.append((response.text, file['name'], file['download_url']))
     
     return pdf_docs
 
 def get_docs_text(pdf_docs, text_docs):
     text = ""
     sources = []
-    for pdf, source in pdf_docs:
+    for pdf, source, url in pdf_docs:
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
             page_text = page.extract_text() or ""
             text += page_text
-            sources.append(source)
-    for doc, source in text_docs:
+            sources.append((source, url))
+    for doc, source, url in text_docs:
         text += doc
-        sources.append(source)
+        sources.append((source, url))
     return text, sources
 
 def get_text_chunks(text, sources):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
-    return [(chunk, sources[i % len(sources)]) for i, chunk in enumerate(chunks)]
+    return [(chunk, sources[i % len(sources)][0], sources[i % len(sources)][1]) for i, chunk in enumerate(chunks)]
 
 def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    texts, metadata = zip(*text_chunks)
+    texts, metadata = zip(*[(text, {"source": source, "url": url}) for text, source, url in text_chunks])
     vectorstore = FAISS.from_texts(texts=texts, embedding=embeddings)
     return vectorstore, metadata
 
@@ -200,7 +200,8 @@ def extract_text_from_pdf(uploaded_pdf):
         pdf_reader = PdfReader(uploaded_pdf)
         text = ""
         for page in pdf_reader.pages:
-            text += page.extract_text() or ""
+            page_text = page.extract_text() or ""
+            text += page_text
         return text
     except Exception as e:
         st.error(f"Failed to read the PDF file: {e}")
@@ -273,7 +274,7 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_question, pdf_keywords):
+def handle_userinput(user_question, pdf_keywords, metadata):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
@@ -282,7 +283,6 @@ def handle_userinput(user_question, pdf_keywords):
         
         response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
-        metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
         for i, message in enumerate(st.session_state.chat_history):
             modified_content = modify_response_language(message.content, institution_name)
@@ -293,7 +293,9 @@ def handle_userinput(user_question, pdf_keywords):
                 citations = []
                 for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
-                    citations.append(f"Source: {metadata[index]}")
+                    source = metadata[index]['source']
+                    url = metadata[index]['url']
+                    citations.append(f"Source: [{source}]({url})")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
