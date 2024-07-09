@@ -44,7 +44,7 @@ css = """
 def main():
     # Set page config
     st.set_page_config(
-        page_title="Enrollment Nest Practice Bot",
+        page_title="Proposal Toolkit",
         page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
     
@@ -61,7 +61,7 @@ def main():
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Enrollment Best Practices Bot</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Hey there! Ask about enrollment best practices. The text entry field will appear momentarily.</p>
+        <p align="left">. Find and develop proposal resources.The text entry field will appear momentarily.</p>
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
@@ -94,7 +94,7 @@ def main():
             st.subheader("Summarized Scope of Work")
             st.write(summarized_scope)
     
-    user_question = st.text_input("Ask about enrollment best practices")
+    user_question = st.text_input("Find past RFP content and craft new content.")
     if user_question:
         handle_userinput(user_question)
 
@@ -201,7 +201,7 @@ def summarize_scope_of_work(text):
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": f"Summarize the following scope of work in bullet points:\n\n{chunk}"}
+                    {"role": "user", "content": f"Summarize the following scope of work in no more than 10 bullet points. Look specifically for words and phrases such as website redesign, SEO, search engine optimization, CRM, Slate, enrollment marketing, recruitment marketing, digital ads, online advertising, PPC, social media, surveys, focus groups, market research, creative development, graphic design, video production, brand redesign, logo, microsite, landing page, digital marketing, predictive modeling, financial aid optimization, email marketing, text message, sms, student search, etc.:\n\n{chunk}"}
                 ],
                 max_tokens=150
             )
