@@ -17,6 +17,30 @@ GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
 GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/ProposalChatHistory"
 
+css = """
+<style>
+    .chat-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .chat-message {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+    .user-message {
+        background: #e0f7fa;
+    }
+    .bot-message {
+        background: #ffe0b2;
+    }
+</style>
+"""
+
 def main():
     # Set page config
     st.set_page_config(
@@ -190,10 +214,10 @@ def summarize_scope_of_work(text):
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
-    response is original_response.replace(" their ", " our ")
-    response is original_response.replace("Their ", "Our ")
-    response is original_response.replace(" them ", " us ")
-    response is original_response.replace("Them ", "Us ")
+    response = original_response.replace(" their ", " our ")
+    response = original_response.replace("Their ", "Our ")
+    response = original_response.replace(" them ", " us ")
+    response = original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
@@ -227,7 +251,7 @@ def handle_userinput(user_question):
         for i, message in enumerate(st.session_state.chat_history):
             modified_content = modify_response_language(message.content)
             if i % 2 == 0:
-                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+                st.write(f'<div class="chat-message user-message">{modified_content}</div>', unsafe_allow_html=True)
             else:
                 # Get citations for this response
                 citations = []
@@ -235,7 +259,7 @@ def handle_userinput(user_question):
                     index = response['source_documents'].index(doc)
                     citations.append(f"Source: {metadata[index]}")
                 citations_text = "\n".join(citations)
-                st.write(bot_template.replace("{{MSG}}", f"{modified_content}\n\n{citations_text}"), unsafe_allow_html=True)
+                st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
