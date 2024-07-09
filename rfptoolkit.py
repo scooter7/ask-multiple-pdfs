@@ -11,7 +11,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from datetime import datetime
 import base64
-import openai
+import re
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -41,6 +41,16 @@ css = """
 </style>
 """
 
+# Define the keywords to search for
+KEYWORDS = [
+    "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
+    "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
+    "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
+    "graphic design", "video production", "brand redesign", "logo", "microsite",
+    "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
+    "email marketing", "text message", "sms", "student search", "branding"
+]
+
 def main():
     # Set page config
     st.set_page_config(
@@ -61,7 +71,7 @@ def main():
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Proposal Toolkit</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Find and develop proposal resources.The text entry field will appear momentarily.</p>
+        <p align="left">Find and develop proposal resources. The text entry field will appear momentarily.</p>
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
@@ -193,39 +203,37 @@ def extract_text_from_pdf(uploaded_pdf):
         return None
 
 def summarize_scope_of_work(text):
-    try:
-        openai.api_key = st.secrets["openai_api_key"]
-        
-        # Split the text into chunks to handle lengthy PDFs
-        text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
-        text_chunks = text_splitter.split_text(text)
-        summaries = []
+    keyword_summary = {keyword: [] for keyword in KEYWORDS}
+    proposal_deadline = ""
+    submission_method = ""
 
-        for chunk in text_chunks:
-            response = openai.ChatCompletion.create(
-                model="gpt-4-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": f"Summarize the following scope of work in no more than 10 bullet points. Look specifically for words and phrases such as website redesign, SEO, search engine optimization, CRM, Slate, enrollment marketing, recruitment marketing, digital ads, online advertising, PPC, social media, surveys, focus groups, market research, creative development, graphic design, video production, brand redesign, logo, microsite, landing page, digital marketing, predictive modeling, financial aid optimization, email marketing, text message, sms, student search, branding, etc. Also make sure to include the proposal deadline and how the proposal needs to be submitted, electronically, email, postal mail, etc.:\n\n{chunk}"}
-                ],
-                max_tokens=150
-            )
-            summary = response['choices'][0]['message']['content'].strip()
-            summaries.append(summary)
+    for line in text.split('\n'):
+        for keyword in KEYWORDS:
+            if re.search(rf'\b{keyword}\b', line, re.IGNORECASE):
+                keyword_summary[keyword].append(line)
+        if re.search(r'\b(deadline|due date)\b', line, re.IGNORECASE):
+            proposal_deadline = line
+        if re.search(r'\b(submission|submit|sent via)\b', line, re.IGNORECASE):
+            submission_method = line
 
-        final_summary = "\n".join(summaries)
-        return final_summary
-    except Exception as e:
-        st.error(f"Failed to summarize the scope of work: {e}")
-        return None
+    summary = []
+    for keyword, occurrences in keyword_summary.items():
+        if occurrences:
+            summary.append(f"{keyword}: {', '.join(occurrences)}")
+    if proposal_deadline:
+        summary.append(f"Proposal Deadline: {proposal_deadline}")
+    if submission_method:
+        summary.append(f"Submission Method: {submission_method}")
+
+    return '\n'.join(summary)
 
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
-    response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response is replaced with "Our ")
+    response is replaced with "us ")
+    response is replaced with "Us ")
     return response
 
 def save_chat_history(chat_history):
