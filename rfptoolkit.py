@@ -101,9 +101,9 @@ def main():
     undergrad_selected = st.checkbox("Undergraduate")
     grad_selected = st.checkbox("Graduate")
     
-    pdf_docs, text_docs = get_github_docs(undergrad_selected, grad_selected)
-    if pdf_docs or text_docs:
-        raw_text, sources = get_docs_text(pdf_docs, text_docs)
+    docs = get_github_docs(undergrad_selected, grad_selected)
+    if docs:
+        raw_text, sources = get_docs_text(docs)
         if st.session_state.uploaded_pdf_text:
             raw_text = st.session_state.uploaded_pdf_text + raw_text
             sources = ['Uploaded PDF'] + sources
@@ -124,15 +124,14 @@ def get_github_docs(undergrad_selected, grad_selected):
         'Authorization': f'token {github_token}'
     }
     
-    pdf_docs = []
-    text_docs = []
+    docs = []
     
     if undergrad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers))
+        docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers))
     if grad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers))
+        docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers))
     
-    return pdf_docs, text_docs
+    return docs
 
 def fetch_docs_from_github(repo_url, headers):
     response = requests.get(repo_url, headers=headers)
@@ -145,22 +144,21 @@ def fetch_docs_from_github(repo_url, headers):
         st.error(f"Unexpected response format: {files}")
         return []
     
-    pdf_docs = []
-    text_docs = []
+    docs = []
     for file in files:
         if 'name' in file:
             if file['name'].endswith('.pdf'):
                 pdf_url = file.get('download_url')
                 if pdf_url:
                     response = requests.get(pdf_url, headers=headers)
-                    pdf_docs.append((BytesIO(response.content), file['name'], file['html_url']))
+                    docs.append((BytesIO(response.content), file['name'], file['html_url']))
             elif file['name'].endswith('.txt'):
                 text_url = file.get('download_url')
                 if text_url:
                     response = requests.get(text_url, headers=headers)
-                    text_docs.append((response.text, file['name'], file['html_url']))
+                    docs.append((response.text, file['name'], file['html_url']))
     
-    return pdf_docs + text_docs
+    return docs
 
 def get_docs_text(docs):
     text = ""
@@ -246,9 +244,9 @@ def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
-    response is response.replace("Their ", "Our ")
+    response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
-    response is response.replace("Them ", "Us ")
+    response = response.replace("Them ", "Us ")
     if institution_name:
         response = response.replace("the current opportunity", institution_name)
     return response
