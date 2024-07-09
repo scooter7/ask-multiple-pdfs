@@ -106,7 +106,7 @@ def main():
         raw_text, sources = get_docs_text(pdf_docs, text_docs)
         if st.session_state.uploaded_pdf_text:
             raw_text = st.session_state.uploaded_pdf_text + raw_text
-            sources = ['Uploaded PDF'] + sources
+            sources = [('Uploaded PDF', '')] + sources
         text_chunks = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore, metadata = get_vectorstore(text_chunks)
@@ -158,7 +158,7 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
                     response = requests.get(text_url, headers=headers)
                     text_docs.append((response.text, file['name'], file['download_url']))
     
-    return pdf_docs
+    return pdf_docs, text_docs
 
 def get_docs_text(pdf_docs, text_docs):
     text = ""
@@ -279,7 +279,7 @@ def handle_userinput(user_question, pdf_keywords, metadata):
         conversation_chain = st.session_state.conversation_chain
 
         # Modify the query to include the keywords extracted from the PDF
-        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}"
+        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}. The goal is to leverage content from the selected Grad or Undergrad folder to match these keywords and pull contextually relevant information from the folder contents, including in-depth scope of work and pricing when available."
         
         response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
