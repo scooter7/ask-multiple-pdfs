@@ -1,0 +1,3 @@
+User: what proposal is that from?
+
+Bot: The proposal is from Carnegie Higher Education.
