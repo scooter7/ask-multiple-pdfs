@@ -1,0 +1,29 @@
+User: list work that applies to the keywords found in the current opportunity including keywords: social media, market research, graphic design, branding
+
+Bot: From the provided information, the work that applies to the keywords social media, market research, graphic design, and branding would include the following services:
+
+1. SOCIAL MEDIA
+- Meta
+- LinkedIn
+- Snapchat
+- TikTok
+- Reddit
+- X (formerly Twitter)
+- Quora
+- Outbrain
+- Pandora
+- Spotify
+- YouTube
+- Hulu
+- OTT + Connected TV
+- Podcasts
+
+2. MARKET RESEARCH
+- Demand Gen
+
+3. GRAPHIC DESIGN & BRANDING
+- Display Outreach
+- Website Redesign Consulting
+- Program Name Analysis
+
+These are the services mentioned in the proposal that align with the keywords social media, market research, graphic design, and branding.
