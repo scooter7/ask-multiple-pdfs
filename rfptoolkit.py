@@ -229,11 +229,11 @@ def summarize_scope_of_work(text):
 
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
-    response = original_response.replace("They ", "We ")
-    response = original_response.replace(" their ", " our ")
-    response is replaced with "Our ")
-    response is replaced with "us ")
-    response is replaced with "Us ")
+    response = response.replace("They ", "We ")
+    response = response.replace(" their ", " our ")
+    response = response.replace("Their ", "Our ")
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
