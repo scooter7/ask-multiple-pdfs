@@ -30,17 +30,18 @@ css = """
     .chat-message {
         padding: 10px;
         margin: 10px 0;
-        border-radius: 5px;
+        border-radius: 5px.
     }
     .user-message {
-        background: #e0f7fa;
+        background: #e0f7fa.
     }
     .bot-message {
-        background: #ffe0b2;
+        background: #ffe0b2.
     }
 </style>
 """
 
+# Define the keywords to search for
 KEYWORDS = [
     "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
     "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
@@ -83,14 +84,17 @@ def main():
         st.session_state.uploaded_pdf_text = None
     if 'institution_name' not in st.session_state:
         st.session_state.institution_name = None
-    
+    if 'pdf_keywords' not in st.session_state:
+        st.session_state.pdf_keywords = []
+
     uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
     if uploaded_pdf is not None:
         rfp_text = extract_text_from_pdf(uploaded_pdf)
         if rfp_text:
             st.session_state.uploaded_pdf_text = rfp_text
             st.session_state.institution_name = extract_institution_name(rfp_text)
-            summarized_scope = summarize_scope_of_work(rfp_text)
+            summarized_scope, extracted_keywords = summarize_scope_of_work(rfp_text)
+            st.session_state.pdf_keywords = extracted_keywords
             st.subheader("Summarized Scope of Work")
             st.write(summarized_scope)
     
@@ -111,7 +115,7 @@ def main():
 
     user_question = st.text_input("Find past RFP content and craft new content.")
     if user_question:
-        handle_userinput(user_question)
+        handle_userinput(user_question, st.session_state.pdf_keywords)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -233,7 +237,8 @@ def summarize_scope_of_work(text):
     if submission_method:
         summary.append(f"- **Submission Method:** {submission_method}")
 
-    return '\n'.join(summary)
+    extracted_keywords = [keyword for keyword, occurrences in keyword_summary.items() if occurrences]
+    return '\n'.join(summary), extracted_keywords
 
 def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
@@ -268,10 +273,14 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_question):
+def handle_userinput(user_question, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
-        response = conversation_chain({'question': user_question})
+
+        # Modify the query to include the keywords extracted from the PDF
+        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}"
+        
+        response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
