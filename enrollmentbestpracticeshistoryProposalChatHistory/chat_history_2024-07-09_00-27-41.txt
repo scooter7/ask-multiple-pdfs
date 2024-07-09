@@ -1,0 +1,3 @@
+User: can you create a table fo the services proposed for Tufts with pricing?
+
+Bot: I am unable to create a table with the pricing information provided in the context.
