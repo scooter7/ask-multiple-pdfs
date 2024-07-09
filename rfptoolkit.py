@@ -9,11 +9,9 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.chains.question_answering import load_qa_chain
-from langchain.schema import Document
-from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
+import openai
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -167,8 +165,7 @@ def extract_text_from_pdf(uploaded_pdf):
 
 def summarize_scope_of_work(text):
     try:
-        os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
-        llm = ChatOpenAI(model="gpt-4")  # Specify model if needed
+        openai.api_key = st.secrets["openai_api_key"]
         
         # Split the text into chunks to handle lengthy PDFs
         text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
@@ -176,9 +173,12 @@ def summarize_scope_of_work(text):
         summaries = []
 
         for chunk in text_chunks:
-            document = Document(page_content=chunk)
-            response = llm({"prompt": f"Summarize the following scope of work in bullet points:\n\n{document.page_content}", "max_tokens": 150})
-            summary = response['choices'][0]['text'].strip()
+            response = openai.Completion.create(
+                engine="text-davinci-003",
+                prompt=f"Summarize the following scope of work in bullet points:\n\n{chunk}",
+                max_tokens=150
+            )
+            summary = response.choices[0].text.strip()
             summaries.append(summary)
 
         final_summary = "\n".join(summaries)
@@ -190,10 +190,10 @@ def summarize_scope_of_work(text):
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
-    response = original_response.replace(" their ", " our ")
-    response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response is original_response.replace(" their ", " our ")
+    response is original_response.replace("Their ", "Our ")
+    response is original_response.replace(" them ", " us ")
+    response is original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
