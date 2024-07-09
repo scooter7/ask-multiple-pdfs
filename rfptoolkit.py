@@ -76,6 +76,7 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
+    # Initialize session state
     if 'conversation_chain' not in st.session_state:
         st.session_state.conversation_chain = None
     if 'metadata' not in st.session_state:
@@ -103,6 +104,7 @@ def main():
         raw_text, sources = get_docs_text(pdf_docs, text_docs)
         if st.session_state.uploaded_pdf_text:
             raw_text = st.session_state.uploaded_pdf_text + raw_text
+            sources = ['Uploaded PDF'] + sources
         text_chunks = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore, metadata = get_vectorstore(text_chunks)
