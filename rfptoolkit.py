@@ -130,7 +130,7 @@ def get_github_docs(undergrad_selected, grad_selected):
     
     if undergrad_selected:
         pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers, pdf_docs, text_docs))
-    if grad selected:
+    if grad_selected:
         pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers, pdf_docs, text_docs))
     
     return pdf_docs, text_docs
