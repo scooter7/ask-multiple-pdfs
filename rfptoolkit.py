@@ -129,13 +129,13 @@ def get_github_docs(undergrad_selected, grad_selected):
     text_docs = []
     
     if undergrad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers, pdf_docs, text_docs))
     if grad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers, pdf_docs, text_docs))
     
     return pdf_docs, text_docs
 
-def fetch_docs_from_github(repo_url, headers):
+def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
     response = requests.get(repo_url, headers=headers)
     if response.status_code != 200:
         st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
@@ -146,52 +146,49 @@ def fetch_docs_from_github(repo_url, headers):
         st.error(f"Unexpected response format: {files}")
         return []
     
-    pdf_docs = []
-    text_docs = []
-    
     for file in files:
         if 'name' in file:
             if file['name'].endswith('.pdf'):
                 pdf_url = file.get('download_url')
                 if pdf_url:
                     response = requests.get(pdf_url, headers=headers)
-                    pdf_docs.append((BytesIO(response.content), file['name'], file['html_url']))
+                    pdf_docs.append((BytesIO(response.content), file['name']))
             elif file['name'].endswith('.txt'):
                 text_url = file.get('download_url')
                 if text_url:
                     response = requests.get(text_url, headers=headers)
-                    text_docs.append((response.text, file['name'], file['html_url']))
+                    text_docs.append((response.text, file['name']))
     
-    return pdf_docs, text_docs
+    return pdf_docs
 
 def get_docs_text(pdf_docs, text_docs):
     text = ""
     sources = []
-    for pdf, source, url in pdf_docs:
+    for pdf, source in pdf_docs:
         try:
             pdf_reader = PdfReader(pdf)
             for page in pdf_reader.pages:
                 page_text = page.extract_text() or ""
                 text += page_text
-                sources.append((source, url))
+                sources.append(source)
         except PdfReadError:
             st.error(f"Failed to read PDF file: {source}")
-    for doc, source, url in text_docs:
+    for doc, source in text_docs:
         text += doc
-        sources.append((source, url))
+        sources.append(source)
     return text, sources
 
 def get_text_chunks(text, sources):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
-    return [(chunk, sources[i % len(sources)][0], sources[i % len(sources)][1]) for i, chunk in enumerate(chunks)]
+    return [(chunk, sources[i % len(sources)]) for i, chunk in enumerate(chunks)]
 
 def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    texts, metadata = zip(*[(text, {"source": source, "url": url}) for text, source, url in text_chunks])
+    texts, metadata = zip(*text_chunks)
     vectorstore = FAISS.from_texts(texts=texts, embedding=embeddings)
     return vectorstore, metadata
 
@@ -300,9 +297,8 @@ def handle_userinput(user_question, pdf_keywords, metadata):
                 citations = []
                 for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
-                    source = metadata[index]['source']
-                    url = metadata[index]['url']
-                    citations.append(f"Source: [{source}]({url})")
+                    source = metadata[index]
+                    citations.append(f"Source: {source}")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
