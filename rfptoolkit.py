@@ -41,7 +41,6 @@ css = """
 </style>
 """
 
-# Define the keywords to search for
 KEYWORDS = [
     "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
     "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
@@ -52,13 +51,11 @@ KEYWORDS = [
 ]
 
 def main():
-    # Set page config
     st.set_page_config(
         page_title="Proposal Toolkit",
         page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
     
-    # Hide the Streamlit toolbar
     hide_toolbar_css = """
     <style>
         .css-14xtw13.e8zbici0 { display: none !important; }
@@ -76,7 +73,6 @@ def main():
     """
     st.markdown(header_html, unsafe_allow_html=True)
 
-    # Initialize session state
     if 'conversation_chain' not in st.session_state:
         st.session_state.conversation_chain = None
     if 'metadata' not in st.session_state:
@@ -88,7 +84,6 @@ def main():
     if 'institution_name' not in st.session_state:
         st.session_state.institution_name = None
     
-    # Upload PDF and Summarize Scope of Work
     uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
     if uploaded_pdf is not None:
         rfp_text = extract_text_from_pdf(uploaded_pdf)
@@ -208,7 +203,6 @@ def extract_text_from_pdf(uploaded_pdf):
         return None
 
 def extract_institution_name(text):
-    # Simple heuristic to find institution name
     institution_name = ""
     for line in text.split('\n'):
         if "college" in line.lower() or "university" in line.lower():
@@ -293,7 +287,6 @@ def handle_userinput(user_question):
                     citations.append(f"Source: {metadata[index]}")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
-        # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
