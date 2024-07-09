@@ -42,7 +42,6 @@ css = """
 </style>
 """
 
-# Define the keywords to search for
 KEYWORDS = [
     "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
     "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
