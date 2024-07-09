@@ -128,13 +128,13 @@ def get_github_docs(undergrad_selected, grad_selected):
     text_docs = []
     
     if undergrad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers, pdf_docs, text_docs))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers))
     if grad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers, pdf_docs, text_docs))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers))
     
     return pdf_docs, text_docs
 
-def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
+def fetch_docs_from_github(repo_url, headers):
     response = requests.get(repo_url, headers=headers)
     if response.status_code != 200:
         st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
@@ -144,6 +144,9 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
     if not isinstance(files, list):
         st.error(f"Unexpected response format: {files}")
         return []
+    
+    pdf_docs = []
+    text_docs = []
     
     for file in files:
         if 'name' in file:
@@ -158,7 +161,7 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
                     response = requests.get(text_url, headers=headers)
                     text_docs.append((response.text, file['name']))
     
-    return pdf_docs
+    return pdf_docs, text_docs
 
 def get_docs_text(pdf_docs, text_docs):
     text = ""
@@ -281,8 +284,8 @@ def handle_userinput(user_question, pdf_keywords, metadata):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Modify the query to include the keywords extracted from the PDF
-        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}. The goal is to leverage content from the selected Grad or Undergrad folder to match these keywords and pull contextually relevant information from the folder contents, including in-depth scope of work and pricing when available."
+        # Combine user question with the keywords extracted from the PDF
+        query = f"{user_question}. Keywords: {', '.join(pdf_keywords)}. Leverage content from the selected Grad or Undergrad folder to match these keywords and pull contextually relevant information, including in-depth scope of work and pricing when available."
         
         response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
