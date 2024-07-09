@@ -134,7 +134,7 @@ def get_docs_text(pdf_docs, text_docs):
     return text, sources
 
 def get_text_chunks(text, sources):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     return [(chunk, sources[i % len(sources)]) for i, chunk in enumerate(chunks)]
 
@@ -170,10 +170,19 @@ def summarize_scope_of_work(text):
         os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
         llm = ChatOpenAI()
         qa_chain = load_qa_chain(llm, chain_type="map_reduce")
-        # Create Document object as expected by the chain
-        document = Document(page_content=text)
-        summary = qa_chain({"question": "Summarize the scope of work.", "input_documents": [document]})
-        return summary['answer']
+
+        # Split the text into chunks to handle lengthy PDFs
+        text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
+        text_chunks = text_splitter.split_text(text)
+        documents = [Document(page_content=chunk) for chunk in text_chunks]
+
+        summaries = []
+        for document in documents:
+            summary = qa_chain({"question": "Summarize the scope of work.", "input_documents": [document]})
+            summaries.append(summary['answer'])
+
+        final_summary = "\n".join(summaries)
+        return final_summary
     except Exception as e:
         st.error(f"Failed to summarize the scope of work: {e}")
         return None
@@ -181,7 +190,7 @@ def summarize_scope_of_work(text):
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
-    response = original_response.replace(" their ", " our ")
+    response is original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
     response is original_response.replace(" them ", " us ")
     response = original_response.replace("Them ", "Us ")
