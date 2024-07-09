@@ -10,6 +10,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chains.question_answering import load_qa_chain
+from langchain.schema import Document
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
@@ -169,7 +170,9 @@ def summarize_scope_of_work(text):
         os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
         llm = ChatOpenAI()
         qa_chain = load_qa_chain(llm, chain_type="map_reduce")
-        summary = qa_chain({"question": "Summarize the scope of work.", "input_documents": [text]})
+        # Create Document object as expected by the chain
+        document = Document(page_content=text)
+        summary = qa_chain({"question": "Summarize the scope of work.", "input_documents": [document]})
         return summary['answer']
     except Exception as e:
         st.error(f"Failed to summarize the scope of work: {e}")
@@ -180,7 +183,7 @@ def modify_response_language(original_response):
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
+    response is original_response.replace(" them ", " us ")
     response = original_response.replace("Them ", "Us ")
     return response
 
