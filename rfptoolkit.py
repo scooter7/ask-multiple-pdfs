@@ -9,13 +9,14 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
+from langchain.retrievers import VectorStoreRetriever
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
-GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/enrollmentbestpracticeshistoryProposalChatHistory"
+GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/ProposalChatHistory"
 
 def main():
     # Set page config
@@ -52,8 +53,8 @@ def main():
     
     pdf_docs, text_docs = get_github_docs(undergrad_selected, grad_selected)
     if pdf_docs or text_docs:
-        raw_text = get_docs_text(pdf_docs, text_docs)
-        text_chunks = get_text_chunks(raw_text)
+        raw_text, sources = get_docs_text(pdf_docs, text_docs)
+        text_chunks = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks)
             st.session_state.conversation = get_conversation_chain(vectorstore)
@@ -96,42 +97,48 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
                 pdf_url = file.get('download_url')
                 if pdf_url:
                     response = requests.get(pdf_url, headers=headers)
-                    pdf_docs.append(BytesIO(response.content))
+                    pdf_docs.append((BytesIO(response.content), file['name']))
             elif file['name'].endswith('.txt'):
                 text_url = file.get('download_url')
                 if text_url:
                     response = requests.get(text_url, headers=headers)
-                    text_docs.append(response.text)
+                    text_docs.append((response.text, file['name']))
     
     return pdf_docs
 
 def get_docs_text(pdf_docs, text_docs):
     text = ""
-    for pdf in pdf_docs:
+    sources = []
+    for pdf, source in pdf_docs:
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
-            text += page.extract_text() or ""
-    for doc in text_docs:
+            page_text = page.extract_text() or ""
+            text += page_text
+            sources.append(source)
+    for doc, source in text_docs:
         text += doc
-    return text
+        sources.append(source)
+    return text, sources
 
-def get_text_chunks(text):
+def get_text_chunks(text, sources):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
-    return chunks
+    return [(chunk, sources[i]) for i, chunk in enumerate(chunks)]
 
 def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
-    return vectorstore
+    texts, sources = zip(*text_chunks)
+    vectorstore = FAISS.from_texts(texts=texts, embedding=embeddings)
+    retriever = VectorStoreRetriever(vectorstore, metadata=sources)
+    return retriever
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore, memory=memory)
     return conversation_chain
 
 def modify_response_language(original_response):
@@ -174,7 +181,8 @@ def handle_userinput(user_question):
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
-                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+                citations = "\n".join(f"Source: {meta}" for meta in response['source_documents'])
+                st.write(bot_template.replace("{{MSG}}", f"{modified_content}\n\n{citations}"), unsafe_allow_html=True)
         # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
