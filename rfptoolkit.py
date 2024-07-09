@@ -242,11 +242,11 @@ def summarize_scope_of_work(text):
 
 def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
-    response is response.replace("They ", "We ")
-    response is response.replace(" their ", " our ")
-    response is response.replace("Their ", "Our ")
-    response is response.replace(" them ", " us ")
-    response is response.replace("Them ", "Us ")
+    response = response.replace("They ", "We ")
+    response = response.replace(" their ", " our ")
+    response = response.replace("Their ", "Our ")
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
     if institution_name:
         response = response.replace("the current opportunity", institution_name)
     return response
@@ -278,8 +278,7 @@ def handle_userinput(user_question, pdf_keywords):
         conversation_chain = st.session_state.conversation_chain
 
         # Modify the query to include the keywords extracted from the PDF
-        combined_keywords = list(set(pdf_keywords + user_question.split()))
-        query = f"{user_question} including keywords: {', '.join(combined_keywords)}"
+        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}"
         
         response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
@@ -294,7 +293,7 @@ def handle_userinput(user_question, pdf_keywords):
                 citations = []
                 for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
-                    citations.append(f"Source: {metadata[index]}")
+                    citations.append(f"Source: [{metadata[index][0]}]({metadata[index][1]})")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
