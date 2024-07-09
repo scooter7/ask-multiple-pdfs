@@ -41,7 +41,6 @@ css = """
 </style>
 """
 
-# Define the keywords to search for
 KEYWORDS = [
     "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
     "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
@@ -248,7 +247,7 @@ def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
-    response is replaced with "Our ")
+    response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
     response = response.replace("Them ", "Us ")
     if institution_name:
