@@ -59,7 +59,7 @@ def main():
     st.write(css, unsafe_allow_html=True)
     header_html = """
     <div style="text-align: center;">
-        <h1 style="font-weight: bold;">Enrollment Best Practices Bot</h1>
+        <h1 style="font-weight: bold;">Proposal Toolkit</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
         <p align="left">Find and develop proposal resources.The text entry field will appear momentarily.</p>
     </div>
