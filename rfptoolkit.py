@@ -169,22 +169,16 @@ def summarize_scope_of_work(text):
     try:
         os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
         llm = ChatOpenAI()
-        qa_chain = load_qa_chain(llm, chain_type="map_reduce")
-
+        
         # Split the text into chunks to handle lengthy PDFs
         text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
         text_chunks = text_splitter.split_text(text)
-        documents = [Document(page_content=chunk) for chunk in text_chunks]
-
         summaries = []
-        for document in documents:
-            summary = qa_chain({"question": "Summarize the scope of work.", "input_documents": [document]})
-            st.write(f"Debug: summary object - {summary}")
-            if 'answer' in summary:
-                summaries.append(summary['answer'])
-            else:
-                st.write("Debug: 'answer' key not found in summary object.")
-                summaries.append("No summary available for this chunk.")
+
+        for chunk in text_chunks:
+            document = Document(page_content=chunk)
+            summary = llm({"input": f"Summarize the following scope of work in bullet points:\n\n{document.page_content}"})
+            summaries.append(summary['choices'][0]['text'].strip())
 
         final_summary = "\n".join(summaries)
         return final_summary
@@ -196,9 +190,9 @@ def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
-    response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response is original_response.replace("Their ", "Our ")
+    response is original_response.replace(" them ", " us ")
+    response is original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
