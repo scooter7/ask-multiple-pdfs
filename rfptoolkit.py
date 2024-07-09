@@ -2,7 +2,8 @@ import os
 import streamlit as st
 import requests
 from io import BytesIO
-from PyPDF2 import PdfReader, utils
+from PyPDF2 import PdfReader
+from PyPDF2.errors import PdfReadError
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -41,6 +42,7 @@ css = """
 </style>
 """
 
+# Define the keywords to search for
 KEYWORDS = [
     "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
     "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
@@ -128,7 +130,7 @@ def get_github_docs(undergrad_selected, grad_selected):
     
     if undergrad_selected:
         pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers, pdf_docs, text_docs))
-    if grad_selected:
+    if grad selected:
         pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers, pdf_docs, text_docs))
     
     return pdf_docs, text_docs
@@ -169,7 +171,7 @@ def get_docs_text(pdf_docs, text_docs):
                 page_text = page.extract_text() or ""
                 text += page_text
                 sources.append((source, url))
-        except utils.PdfReadError:
+        except PdfReadError:
             st.error(f"Failed to read PDF file: {source}")
     for doc, source, url in text_docs:
         text += doc
@@ -205,7 +207,7 @@ def extract_text_from_pdf(uploaded_pdf):
             page_text = page.extract_text() or ""
             text += page_text
         return text
-    except utils.PdfReadError as e:
+    except PdfReadError as e:
         st.error(f"Failed to read the PDF file: {e}")
         return None
 
