@@ -169,7 +169,7 @@ def summarize_scope_of_work(text):
         os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
         llm = ChatOpenAI()
         qa_chain = load_qa_chain(llm, chain_type="map_reduce")
-        summary = qa_chain({"question": "Summarize the scope of work.", "context": text})
+        summary = qa_chain({"question": "Summarize the scope of work.", "input_documents": [text]})
         return summary['answer']
     except Exception as e:
         st.error(f"Failed to summarize the scope of work: {e}")
