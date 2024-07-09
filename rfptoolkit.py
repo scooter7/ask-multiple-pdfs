@@ -176,7 +176,7 @@ def get_docs_text(pdf_docs, text_docs):
     return text, sources
 
 def get_text_chunks(text, sources):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=2000, chunk_overlap=200, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     return [(chunk, sources[i % len(sources)]) for i, chunk in enumerate(chunks)]
 
@@ -230,14 +230,14 @@ def summarize_scope_of_work(text):
         if re.search(r'\b(submission|submit|sent via)\b', line, re.IGNORECASE):
             submission_method = line
 
-    summary = []
+    summary = ["**Scope of Work:**"]
     for keyword, occurrences in keyword_summary.items():
         if occurrences:
-            summary.append(f"{keyword}: {', '.join(occurrences)}")
+            summary.append(f"- **{keyword.capitalize()}:** {', '.join(occurrences)}")
     if proposal_deadline:
-        summary.append(f"Proposal Deadline: {proposal_deadline}")
+        summary.append(f"- **Proposal Deadline:** {proposal_deadline}")
     if submission_method:
-        summary.append(f"Submission Method: {submission_method}")
+        summary.append(f"- **Submission Method:** {submission_method}")
 
     return '\n'.join(summary)
 
