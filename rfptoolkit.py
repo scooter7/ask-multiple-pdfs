@@ -3,7 +3,6 @@ import streamlit as st
 import requests
 from io import BytesIO
 from PyPDF2 import PdfReader
-from PyPDF2.errors import PdfReadError
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -42,6 +41,7 @@ css = """
 </style>
 """
 
+# Define the keywords to search for
 KEYWORDS = [
     "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
     "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
@@ -106,7 +106,7 @@ def main():
         raw_text, sources = get_docs_text(pdf_docs, text_docs)
         if st.session_state.uploaded_pdf_text:
             raw_text = st.session_state.uploaded_pdf_text + raw_text
-            sources = [('Uploaded PDF', '')] + sources
+            sources = ['Uploaded PDF'] + sources
         text_chunks = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore, metadata = get_vectorstore(text_chunks)
@@ -115,7 +115,7 @@ def main():
 
     user_question = st.text_input("Find past RFP content and craft new content.")
     if user_question:
-        handle_userinput(user_question, st.session_state.pdf_keywords, st.session_state.metadata)
+        handle_userinput(user_question, st.session_state.pdf_keywords)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -128,13 +128,13 @@ def get_github_docs(undergrad_selected, grad_selected):
     text_docs = []
     
     if undergrad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers, pdf_docs, text_docs))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_UNDERGRAD, headers))
     if grad_selected:
-        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers, pdf_docs, text_docs))
+        pdf_docs.extend(fetch_docs_from_github(GITHUB_REPO_URL_GRAD, headers))
     
     return pdf_docs, text_docs
 
-def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
+def fetch_docs_from_github(repo_url, headers):
     response = requests.get(repo_url, headers=headers)
     if response.status_code != 200:
         st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
@@ -145,36 +145,35 @@ def fetch_docs_from_github(repo_url, headers, pdf_docs, text_docs):
         st.error(f"Unexpected response format: {files}")
         return []
     
+    pdf_docs = []
+    text_docs = []
     for file in files:
         if 'name' in file:
             if file['name'].endswith('.pdf'):
                 pdf_url = file.get('download_url')
                 if pdf_url:
                     response = requests.get(pdf_url, headers=headers)
-                    pdf_docs.append((BytesIO(response.content), file['name']))
+                    pdf_docs.append((BytesIO(response.content), file['name'], file['html_url']))
             elif file['name'].endswith('.txt'):
                 text_url = file.get('download_url')
                 if text_url:
                     response = requests.get(text_url, headers=headers)
-                    text_docs.append((response.text, file['name']))
+                    text_docs.append((response.text, file['name'], file['html_url']))
     
-    return pdf_docs, text_docs
+    return pdf_docs + text_docs
 
-def get_docs_text(pdf_docs, text_docs):
+def get_docs_text(docs):
     text = ""
     sources = []
-    for pdf, source in pdf_docs:
-        try:
-            pdf_reader = PdfReader(pdf)
+    for doc, source, url in docs:
+        if isinstance(doc, BytesIO):
+            pdf_reader = PdfReader(doc)
             for page in pdf_reader.pages:
                 page_text = page.extract_text() or ""
                 text += page_text
-                sources.append(source)
-        except PdfReadError:
-            st.error(f"Failed to read PDF file: {source}")
-    for doc, source in text_docs:
-        text += doc
-        sources.append(source)
+        else:
+            text += doc
+        sources.append(f"[{source}]({url})")
     return text, sources
 
 def get_text_chunks(text, sources):
@@ -203,10 +202,9 @@ def extract_text_from_pdf(uploaded_pdf):
         pdf_reader = PdfReader(uploaded_pdf)
         text = ""
         for page in pdf_reader.pages:
-            page_text = page.extract_text() or ""
-            text += page_text
+            text += page.extract_text() or ""
         return text
-    except PdfReadError as e:
+    except Exception as e:
         st.error(f"Failed to read the PDF file: {e}")
         return None
 
@@ -248,9 +246,9 @@ def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
-    response = response.replace("Their ", "Our ")
+    response is response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response is response.replace("Them ", "Us ")
     if institution_name:
         response = response.replace("the current opportunity", institution_name)
     return response
@@ -277,15 +275,16 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_question, pdf_keywords, metadata):
+def handle_userinput(user_question, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Combine user question with the keywords extracted from the PDF
-        query = f"{user_question}. Keywords: {', '.join(pdf_keywords)}. Leverage content from the selected Grad or Undergrad folder to match these keywords and pull contextually relevant information, including in-depth scope of work and pricing when available."
+        # Modify the query to include the keywords extracted from the PDF
+        query = f"{user_question} including keywords: {', '.join(pdf_keywords)}"
         
         response = conversation_chain({'question': query})
         st.session_state.chat_history = response['chat_history']
+        metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
         for i, message in enumerate(st.session_state.chat_history):
             modified_content = modify_response_language(message.content, institution_name)
@@ -296,8 +295,7 @@ def handle_userinput(user_question, pdf_keywords, metadata):
                 citations = []
                 for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
-                    source = metadata[index]
-                    citations.append(f"Source: {source}")
+                    citations.append(f"Source: {metadata[index]}")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
