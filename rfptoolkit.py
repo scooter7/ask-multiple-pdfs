@@ -85,6 +85,8 @@ def main():
         st.session_state.chat_history = []
     if 'uploaded_pdf_text' not in st.session_state:
         st.session_state.uploaded_pdf_text = None
+    if 'institution_name' not in st.session_state:
+        st.session_state.institution_name = None
     
     # Upload PDF and Summarize Scope of Work
     uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
@@ -92,6 +94,7 @@ def main():
         rfp_text = extract_text_from_pdf(uploaded_pdf)
         if rfp_text:
             st.session_state.uploaded_pdf_text = rfp_text
+            st.session_state.institution_name = extract_institution_name(rfp_text)
             summarized_scope = summarize_scope_of_work(rfp_text)
             st.subheader("Summarized Scope of Work")
             st.write(summarized_scope)
@@ -187,7 +190,7 @@ def get_vectorstore(text_chunks):
     return vectorstore, metadata
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI(model_name="gpt-4-turbo")
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     retriever = vectorstore.as_retriever()
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
@@ -203,6 +206,15 @@ def extract_text_from_pdf(uploaded_pdf):
     except Exception as e:
         st.error(f"Failed to read the PDF file: {e}")
         return None
+
+def extract_institution_name(text):
+    # Simple heuristic to find institution name
+    institution_name = ""
+    for line in text.split('\n'):
+        if "college" in line.lower() or "university" in line.lower():
+            institution_name = line.strip()
+            break
+    return institution_name
 
 def summarize_scope_of_work(text):
     keyword_summary = {keyword: [] for keyword in KEYWORDS}
@@ -229,13 +241,15 @@ def summarize_scope_of_work(text):
 
     return '\n'.join(summary)
 
-def modify_response_language(original_response):
+def modify_response_language(original_response, institution_name):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
     response = response.replace("Them ", "Us ")
+    if institution_name:
+        response = response.replace("the current opportunity", institution_name)
     return response
 
 def save_chat_history(chat_history):
@@ -266,8 +280,9 @@ def handle_userinput(user_question):
         response = conversation_chain({'question': user_question})
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
+        institution_name = st.session_state.institution_name
         for i, message in enumerate(st.session_state.chat_history):
-            modified_content = modify_response_language(message.content)
+            modified_content = modify_response_language(message.content, institution_name)
             if i % 2 == 0:
                 st.write(f'<div class="chat-message user-message">{modified_content}</div>', unsafe_allow_html=True)
             else:
