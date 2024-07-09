@@ -179,7 +179,12 @@ def summarize_scope_of_work(text):
         summaries = []
         for document in documents:
             summary = qa_chain({"question": "Summarize the scope of work.", "input_documents": [document]})
-            summaries.append(summary['answer'])
+            st.write(f"Debug: summary object - {summary}")
+            if 'answer' in summary:
+                summaries.append(summary['answer'])
+            else:
+                st.write("Debug: 'answer' key not found in summary object.")
+                summaries.append("No summary available for this chunk.")
 
         final_summary = "\n".join(summaries)
         return final_summary
@@ -190,9 +195,9 @@ def summarize_scope_of_work(text):
 def modify_response_language(original_response):
     response = original_response.replace(" they ", " we ")
     response = original_response.replace("They ", "We ")
-    response is original_response.replace(" their ", " our ")
+    response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response is original_response.replace(" them ", " us ")
+    response = original_response.replace(" them ", " us ")
     response = original_response.replace("Them ", "Us ")
     return response
 
