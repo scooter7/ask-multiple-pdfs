@@ -52,7 +52,7 @@ KEYWORDS = [
     "pricing", "cost", "budget", "fee", "quote"
 ]
 
-MAX_CHUNK_SIZE = 4096  # Max tokens for OpenAI API
+MAX_TOKENS = 1500  # Maximum tokens to process in one go
 
 def main():
     st.set_page_config(
@@ -301,10 +301,25 @@ def handle_userinput(user_question, pdf_keywords):
 
         # Process in batches to ensure the total tokens stay within the limit
         responses = []
-        for i in range(0, len(docs), MAX_CHUNK_SIZE):
-            batch = docs[i:i + MAX_CHUNK_SIZE]
+        current_tokens = 0
+        current_batch = []
+
+        for doc in docs:
+            doc_length = len(doc.page_content.split())
+            if current_tokens + doc_length > MAX_TOKENS:
+                response = conversation_chain.combine_docs_chain.run(
+                    {"question": query, "input_documents": current_batch}
+                )
+                responses.append(response)
+                current_batch = []
+                current_tokens = 0
+
+            current_batch.append(doc)
+            current_tokens += doc_length
+
+        if current_batch:
             response = conversation_chain.combine_docs_chain.run(
-                {"question": query, "input_documents": batch}
+                {"question": query, "input_documents": current_batch}
             )
             responses.append(response)
 
