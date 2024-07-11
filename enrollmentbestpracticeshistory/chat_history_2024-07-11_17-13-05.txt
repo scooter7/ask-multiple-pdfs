@@ -1,0 +1,3 @@
+User: Tell me about grad audience characteristics 
+
+Bot: Graduate students have different characteristics compared to other groups. Some of the key differential characteristics within this group include their higher level of education, typically having already completed an undergraduate degree. Graduate students are often more focused on their specific academic and career goals, seeking advanced knowledge and specialization in their field. They may have more work experience and are often more self-directed in their learning. Additionally, graduate students may have different motivations for obtaining a degree, such as career advancement or personal development.
