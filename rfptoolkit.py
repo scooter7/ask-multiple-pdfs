@@ -48,7 +48,8 @@ KEYWORDS = [
     "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
     "graphic design", "video production", "brand redesign", "logo", "microsite",
     "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
-    "email marketing", "text message", "sms", "student search", "branding"
+    "email marketing", "text message", "sms", "student search", "branding",
+    "pricing", "cost", "budget", "fee", "quote"
 ]
 
 def main():
@@ -289,7 +290,7 @@ def handle_userinput(user_question, pdf_keywords):
         query = f"""
         Based on the provided context and the following keywords: {', '.join(combined_keywords)}, 
         perform a thorough search of the available documents and provide a comprehensive response that includes our 
-        approach to offering the requested services. Make sure to include any available details on pricing and timelines. 
+        approach to offering the requested services, especially details on pricing and timelines if available. 
         Always provide citations with links to the original documents for verification.
         """
 
