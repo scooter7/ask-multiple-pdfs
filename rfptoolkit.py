@@ -52,6 +52,8 @@ KEYWORDS = [
     "pricing", "cost", "budget", "fee", "quote"
 ]
 
+MAX_TOKENS = 1500  # Maximum tokens to process in one go
+
 def main():
     st.set_page_config(
         page_title="Proposal Toolkit",
@@ -294,22 +296,21 @@ def handle_userinput(user_question, pdf_keywords):
         Always provide citations with links to the original documents for verification.
         """
 
-        response = conversation_chain({'question': query})
-        st.session_state.chat_history = response['chat_history']
+        chunks = st.session_state.conversation_chain.retriever.vectorstore.chunk_size
+        responses = []
+
+        for i in range(0, len(chunks), MAX_TOKENS):
+            batch = chunks[i:i + MAX_TOKENS]
+            response = conversation_chain.run({"question": query, "input_documents": batch})
+            responses.append(response)
+
+        full_response = " ".join(responses)
+        st.session_state.chat_history.append(full_response)
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
-        for i, message in enumerate(st.session_state.chat_history):
-            modified_content = modify_response_language(message.content, institution_name)
-            if i % 2 == 0:
-                st.write(f'<div class="chat-message user-message">{modified_content}</div>', unsafe_allow_html=True)
-            else:
-                # Get citations for this response
-                citations = []
-                for doc in response.get('source_documents', []):
-                    index = response['source_documents'].index(doc)
-                    citations.append(f"Source: [{metadata[index]}]")
-                citations_text = "\n".join(citations)
-                st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
+        modified_content = modify_response_language(full_response, institution_name)
+
+        st.write(f'<div class="chat-message bot-message">{modified_content}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
