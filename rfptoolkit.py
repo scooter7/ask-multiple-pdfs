@@ -177,7 +177,7 @@ def get_docs_text(docs):
     return text, sources
 
 def get_text_chunks(text, sources):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     chunk_metadata = []
     for i, chunk in enumerate(chunks):
@@ -289,8 +289,8 @@ def handle_userinput(user_question, pdf_keywords):
         combined_keywords = list(set(pdf_keywords + user_question.split()))
         query = f"""
         Based on the provided context and the following keywords: {', '.join(combined_keywords)}, 
-        perform a thorough search of the available documents and provide a comprehensive response that includes our 
-        approach to offering the requested services, with a focus on pricing and timelines if available. 
+        perform a thorough search of all available documents and provide a comprehensive response that includes our 
+        approach to offering the requested services, with a specific focus on pricing and timelines if available. 
         Always provide citations with links to the original documents for verification.
         """
 
