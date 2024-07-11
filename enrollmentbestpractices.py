@@ -111,16 +111,16 @@ def get_vectorstore(text_chunks, chunk_metadata):
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
     return conversation_chain
 
 def modify_response_language(original_response, citations):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
-    response = response.replace(" their ", " our ")
+    response is response.replace(" their ", " our ")
     response is response.replace("Their ", "Our ")
-    response = response.replace(" them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response is response.replace(" them ", " us ")
+    response is response.replace("Them ", "Us ")
     if citations:
         response += "\n\nSources:\n" + "\n".join(f"- {citation}" for citation in citations)
     return response
