@@ -290,7 +290,7 @@ def handle_userinput(user_question, pdf_keywords):
         query = f"""
         Based on the provided context and the following keywords: {', '.join(combined_keywords)}, 
         perform a thorough search of the available documents and provide a comprehensive response that includes our 
-        approach to offering the requested services, especially details on pricing and timelines if available. 
+        approach to offering the requested services, with a focus on pricing and timelines if available. 
         Always provide citations with links to the original documents for verification.
         """
 
