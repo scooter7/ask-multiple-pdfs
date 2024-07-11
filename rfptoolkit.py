@@ -105,10 +105,10 @@ def main():
         raw_text, sources = get_docs_text(docs)
         if st.session_state.uploaded_pdf_text:
             raw_text = st.session_state.uploaded_pdf_text + raw_text
-            sources = ['Uploaded PDF'] + sources
-        text_chunks = get_text_chunks(raw_text, sources)
+            sources = [{'source': 'Uploaded PDF', 'page': None, 'url': ''}] + sources
+        text_chunks, chunk_metadata = get_text_chunks(raw_text, sources)
         if text_chunks:
-            vectorstore, metadata = get_vectorstore(text_chunks)
+            vectorstore, metadata = get_vectorstore(text_chunks, chunk_metadata)
             st.session_state.conversation_chain = get_conversation_chain(vectorstore)
             st.session_state.metadata = metadata
 
@@ -186,14 +186,14 @@ def get_text_chunks(text, sources):
             chunk_metadata.append(f"{source_info['source']} [{source_info['url']}]")
     return chunks, chunk_metadata
 
-def get_vectorstore(text_chunks):
+def get_vectorstore(text_chunks, chunk_metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    documents = [Document(page_content=chunk, metadata={'source': metadata}) for chunk, metadata in text_chunks]
+    documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
     vectorstore = FAISS.from_documents(documents, embedding=embeddings)
-    return vectorstore
+    return vectorstore, chunk_metadata
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
@@ -305,7 +305,7 @@ def handle_userinput(user_question, pdf_keywords):
                 citations = []
                 for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
-                    citations.append(f"Source: [{metadata[index]['source']} - Page {metadata[index]['page']}]({metadata[index]['url']})")
+                    citations.append(f"Source: [{metadata[index]}]")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
