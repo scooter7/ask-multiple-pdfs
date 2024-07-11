@@ -1,0 +1,10 @@
+User: What is the best way to market to online students?
+
+Bot: The best way to market to online students includes considering the following strategies:
+1. Transfer students often apply directly instead of visiting campuses first.
+2. Timing of sending applications can be up to the first day of classes.
+3. Brand recognition is important as transfer students typically consider a smaller set of schools.
+4. Personalized communication is more effective than email bombardment.
+5. Self-service elements like transfer evaluations can be beneficial.
+6. Transfer-specific scholarships.
+7. Market research to understand the target audience better.
