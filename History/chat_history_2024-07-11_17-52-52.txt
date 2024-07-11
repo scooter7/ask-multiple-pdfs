@@ -1,0 +1,3 @@
+User: Where can I find the employee handbook?
+
+Bot: You can find the employee handbook in the Insperity portal. It serves as your hub for information about your paystub, benefit elections, and other important documents. Additionally, you can update your personal information like your address and email through the portal.
