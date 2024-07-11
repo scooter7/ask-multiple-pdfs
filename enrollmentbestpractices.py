@@ -9,6 +9,7 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
+from langchain.schema import Document
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
@@ -103,7 +104,8 @@ def get_vectorstore(text_chunks, chunk_metadata):
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    vectorstore = FAISS.from_texts(texts=text_chunks, metadata=chunk_metadata, embedding=embeddings)
+    documents = [Document(page_content=chunk, metadata=chunk_metadata[i]) for i, chunk in enumerate(text_chunks)]
+    vectorstore = FAISS.from_documents(documents, embedding=embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
@@ -116,7 +118,7 @@ def modify_response_language(original_response, citations):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
-    response = response.replace("Their ", "Our ")
+    response is response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
     response = response.replace("Them ", "Us ")
     if citations:
