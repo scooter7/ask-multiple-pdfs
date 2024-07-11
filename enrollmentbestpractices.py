@@ -110,17 +110,17 @@ def get_vectorstore(text_chunks, chunk_metadata):
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
     return conversation_chain
 
 def modify_response_language(original_response, citations):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
-    response is response.replace(" their ", " our ")
-    response is response.replace("Their ", "Our ")
-    response is response.replace(" them ", " us ")
-    response is response.replace("Them ", "Us ")
+    response = response.replace(" their ", " our ")
+    response = response.replace("Their ", "Our ")
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
     if citations:
         response += "\n\nSources:\n" + "\n".join(f"- {citation}" for citation in citations)
     return response
@@ -151,13 +151,10 @@ def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
         st.session_state.chat_history = response['chat_history']
+        answer = response['answer']
         citations = [msg.metadata['source'] for msg in response['source_documents']]
-        for i, message in enumerate(st.session_state.chat_history):
-            modified_content = modify_response_language(message.content, citations if i % 2 != 0 else None)
-            if i % 2 == 0:
-                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-            else:
-                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        modified_content = modify_response_language(answer, citations)
+        st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
         # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
