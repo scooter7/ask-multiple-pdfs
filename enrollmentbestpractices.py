@@ -48,8 +48,8 @@ def main():
         
     pdf_docs = get_github_pdfs()
     if pdf_docs:
-        raw_text = get_pdf_text(pdf_docs)
-        text_chunks, chunk_metadata = get_text_chunks(raw_text)
+        raw_text, source_metadata = get_pdf_text(pdf_docs)
+        text_chunks, chunk_metadata = get_text_chunks(raw_text, source_metadata)
         if text_chunks:
             vectorstore = get_vectorstore(text_chunks, chunk_metadata)
             st.session_state.conversation = get_conversation_chain(vectorstore)
