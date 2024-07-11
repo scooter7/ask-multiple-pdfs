@@ -41,7 +41,6 @@ css = """
 </style>
 """
 
-# Define the keywords to search for
 KEYWORDS = [
     "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
     "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
@@ -166,33 +165,40 @@ def get_docs_text(docs):
     for doc, source, url in docs:
         if isinstance(doc, BytesIO):
             pdf_reader = PdfReader(doc)
-            for page in pdf_reader.pages:
+            for page_num, page in enumerate(pdf_reader.pages):
                 page_text = page.extract_text() or ""
                 text += page_text
+                sources.append({'source': source, 'page': page_num + 1, 'url': url})
         else:
             text += doc
-        sources.append(f"[{source}]({url})")
+            sources.append({'source': source, 'page': None, 'url': url})
     return text, sources
 
 def get_text_chunks(text, sources):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
-    return [(chunk, sources[i % len(sources)]) for i, chunk in enumerate(chunks)]
+    chunk_metadata = []
+    for i, chunk in enumerate(chunks):
+        source_info = sources[i % len(sources)]
+        if source_info['page'] is not None:
+            chunk_metadata.append(f"{source_info['source']} - Page {source_info['page']} [{source_info['url']}]")
+        else:
+            chunk_metadata.append(f"{source_info['source']} [{source_info['url']}]")
+    return chunks, chunk_metadata
 
 def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    texts, metadata = zip(*text_chunks)
-    vectorstore = FAISS.from_texts(texts=texts, embedding=embeddings)
-    return vectorstore, metadata
+    documents = [Document(page_content=chunk, metadata={'source': metadata}) for chunk, metadata in text_chunks]
+    vectorstore = FAISS.from_documents(documents, embedding=embeddings)
+    return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo")
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    retriever = vectorstore.as_retriever()
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
+    llm = ChatOpenAI()
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
+    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
     return conversation_chain
 
 def extract_text_from_pdf(uploaded_pdf):
@@ -299,7 +305,7 @@ def handle_userinput(user_question, pdf_keywords):
                 citations = []
                 for doc in response.get('source_documents', []):
                     index = response['source_documents'].index(doc)
-                    citations.append(f"Source: [{metadata[index][0]}]({metadata[index][1]})")
+                    citations.append(f"Source: [{metadata[index]['source']} - Page {metadata[index]['page']}]({metadata[index]['url']})")
                 citations_text = "\n".join(citations)
                 st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
