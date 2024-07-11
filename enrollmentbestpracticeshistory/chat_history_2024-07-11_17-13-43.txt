@@ -1,0 +1,9 @@
+User: What is the difference between retention and persistence? 
+
+Bot: Retention and persistence are related concepts in the context of student success in higher education, but they refer to slightly different aspects. 
+
+Retention typically refers to the ability of an institution to keep students enrolled and engaged in their studies until they complete their degree or program. It focuses on the rate at which students continue their studies and remain enrolled from one academic period to the next.
+
+Persistence, on the other hand, refers to the ability of individual students to stay enrolled and complete their degree or program despite facing challenges or obstacles. It focuses on the determination and effort of students to continue their studies and reach their educational goals.
+
+In summary, retention is more about the institution's success in keeping students enrolled, while persistence is about the student's ability to overcome challenges and complete their studies.
