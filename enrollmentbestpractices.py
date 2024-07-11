@@ -49,9 +49,9 @@ def main():
     pdf_docs = get_github_pdfs()
     if pdf_docs:
         raw_text = get_pdf_text(pdf_docs)
-        text_chunks = get_text_chunks(raw_text)
+        text_chunks, chunk_metadata = get_text_chunks(raw_text)
         if text_chunks:
-            vectorstore = get_vectorstore(text_chunks)
+            vectorstore = get_vectorstore(text_chunks, chunk_metadata)
             st.session_state.conversation = get_conversation_chain(vectorstore)
     
     user_question = st.text_input("Ask about enrollment best practices")
@@ -78,28 +78,32 @@ def get_github_pdfs():
             pdf_url = file.get('download_url')
             if pdf_url:
                 response = requests.get(pdf_url, headers=headers)
-                pdf_docs.append(BytesIO(response.content))
+                pdf_docs.append({'file': BytesIO(response.content), 'source': file['name']})
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
     text = ""
+    source_metadata = []
     for pdf in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text += page.extract_text() or ""
-    return text
+        pdf_reader = PdfReader(pdf['file'])
+        for page_num, page in enumerate(pdf_reader.pages):
+            page_text = page.extract_text() or ""
+            text += page_text
+            source_metadata.append({'text': page_text, 'source': f"{pdf['source']} - Page {page_num + 1}"})
+    return text, source_metadata
 
-def get_text_chunks(text):
+def get_text_chunks(text, metadata):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
-    return chunks
+    chunk_metadata = [metadata[i // 1000] for i in range(len(chunks))]  # Match chunks with their metadata
+    return chunks, chunk_metadata
 
-def get_vectorstore(text_chunks):
+def get_vectorstore(text_chunks, chunk_metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+    vectorstore = FAISS.from_texts(texts=text_chunks, metadata=chunk_metadata, embedding=embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
@@ -108,13 +112,15 @@ def get_conversation_chain(vectorstore):
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
 
-def modify_response_language(original_response):
+def modify_response_language(original_response, citations):
     response = original_response.replace(" they ", " we ")
-    response = original_response.replace("They ", "We ")
-    response = original_response.replace(" their ", " our ")
-    response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response = response.replace("They ", "We ")
+    response = response.replace(" their ", " our ")
+    response = response.replace("Their ", "Our ")
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
+    if citations:
+        response += "\n\nSources:\n" + "\n".join(f"- {citation}" for citation in citations)
     return response
 
 def save_chat_history(chat_history):
@@ -143,8 +149,9 @@ def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
         st.session_state.chat_history = response['chat_history']
+        citations = [msg.metadata['source'] for msg in response['source_documents']]
         for i, message in enumerate(st.session_state.chat_history):
-            modified_content = modify_response_language(message.content)
+            modified_content = modify_response_language(message.content, citations if i % 2 != 0 else None)
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
