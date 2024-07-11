@@ -83,20 +83,24 @@ def get_github_pdfs():
     return pdf_docs
 
 def get_pdf_text(pdf_docs):
-    text = ""
+    text = []
     source_metadata = []
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf['file'])
         for page_num, page in enumerate(pdf_reader.pages):
             page_text = page.extract_text() or ""
-            text += page_text
-            source_metadata.append({'text': page_text, 'source': f"{pdf['source']} - Page {page_num + 1}"})
+            text.append(page_text)
+            source_metadata.append({'source': f"{pdf['source']} - Page {page_num + 1}"})
     return text, source_metadata
 
 def get_text_chunks(text, metadata):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
-    chunks = text_splitter.split_text(text)
-    chunk_metadata = [metadata[i // 1000] for i in range(len(chunks))]  # Match chunks with their metadata
+    chunks = []
+    chunk_metadata = []
+    for i, page_text in enumerate(text):
+        page_chunks = text_splitter.split_text(page_text)
+        chunks.extend(page_chunks)
+        chunk_metadata.extend([metadata[i]] * len(page_chunks))  # Assign correct metadata to each chunk
     return chunks, chunk_metadata
 
 def get_vectorstore(text_chunks, chunk_metadata):
