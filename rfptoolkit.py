@@ -52,7 +52,7 @@ KEYWORDS = [
     "pricing", "cost", "budget", "fee", "quote"
 ]
 
-MAX_TOKENS = 1500  # Maximum tokens to process in one go
+MAX_CHUNK_SIZE = 4096  # Max tokens for OpenAI API
 
 def main():
     st.set_page_config(
@@ -296,12 +296,16 @@ def handle_userinput(user_question, pdf_keywords):
         Always provide citations with links to the original documents for verification.
         """
 
-        chunks = st.session_state.conversation_chain.retriever.vectorstore.chunk_size
-        responses = []
+        retriever = conversation_chain.retriever
+        docs = retriever.get_relevant_documents(query)
 
-        for i in range(0, len(chunks), MAX_TOKENS):
-            batch = chunks[i:i + MAX_TOKENS]
-            response = conversation_chain.run({"question": query, "input_documents": batch})
+        # Process in batches to ensure the total tokens stay within the limit
+        responses = []
+        for i in range(0, len(docs), MAX_CHUNK_SIZE):
+            batch = docs[i:i + MAX_CHUNK_SIZE]
+            response = conversation_chain.combine_docs_chain.run(
+                {"question": query, "input_documents": batch}
+            )
             responses.append(response)
 
         full_response = " ".join(responses)
