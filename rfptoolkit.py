@@ -12,9 +12,6 @@ from langchain.schema import Document
 from datetime import datetime
 import base64
 import re
-import google.auth
-import google.auth.credentials
-from google.cloud import aiplatform_v1beta1
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -331,12 +328,9 @@ def handle_userinput(user_question, pdf_keywords):
 
 def request_gemini_api(query, context_chunks):
     api_key = st.secrets["google"]["api_key"]
+    instance_content = query + "\n\n" + "\n".join(context_chunks)
     instance = {
-        "content": f"""{
-            query
-        }\n\n{
-            '\n'.join(context_chunks)
-        }"""
+        "content": instance_content
     }
     headers = {"Authorization": f"Bearer {api_key}"}
     response = requests.post(
