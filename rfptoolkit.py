@@ -86,8 +86,6 @@ def main():
         st.session_state.institution_name = None
     if 'pdf_keywords' not in st.session_state:
         st.session_state.pdf_keywords = []
-    if 'user_keywords' not in st.session_state:
-        st.session_state.user_keywords = []
 
     uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
     if uploaded_pdf is not None:
@@ -103,8 +101,8 @@ def main():
     undergrad_selected = st.checkbox("Undergraduate")
     grad_selected = st.checkbox("Graduate")
     
-    user_keywords = st.text_input("Enter keywords to search in documents (comma-separated)").split(",")
-    st.session_state.user_keywords = [kw.strip() for kw in user_keywords if kw.strip()]
+    user_input = st.text_input("Enter keywords to search in documents and craft new content (comma-separated)")
+    user_keywords = [kw.strip() for kw in user_input.split(",") if kw.strip()]
 
     docs = get_github_docs(undergrad_selected, grad_selected)
     if docs:
@@ -118,9 +116,8 @@ def main():
             st.session_state.conversation_chain = get_conversation_chain(vectorstore)
             st.session_state.metadata = metadata
 
-    user_question = st.text_input("Find past RFP content and craft new content.", key="user_question")
-    if user_question:
-        handle_userinput(user_question, st.session_state.pdf_keywords, st.session_state.user_keywords)
+    if user_input:
+        handle_userinput(user_input, st.session_state.pdf_keywords, user_keywords)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -285,15 +282,15 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_question, pdf_keywords, user_keywords):
+def handle_userinput(user_input, pdf_keywords, user_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Combine user-defined keywords with user question
-        combined_keywords = list(set(user_keywords + user_question.split()))
+        # Combine user-defined keywords with user input
+        combined_keywords = list(set(user_keywords + user_input.split()))
         keyword_context = ", ".join(combined_keywords)
         query = f"""
-        Based on the user's question and keywords: {keyword_context}, search through the available documents 
+        Based on the user's input and keywords: {keyword_context}, search through the available documents 
         and provide a comprehensive response that includes our past approach to offering the requested services. 
         Make sure to include any available details on strategy, pricing, and timelines. 
         Always provide citations with links to the original documents for verification.
