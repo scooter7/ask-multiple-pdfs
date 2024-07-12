@@ -331,7 +331,13 @@ def handle_userinput(user_question, pdf_keywords):
 
 def request_gemini_api(query, context_chunks):
     api_key = st.secrets["google"]["api_key"]
-    instance = {"content": f"{query}\n\n{'\n'.join(context_chunks)}"}
+    instance = {
+        "content": f"""{
+            query
+        }\n\n{
+            '\n'.join(context_chunks)
+        }"""
+    }
     headers = {"Authorization": f"Bearer {api_key}"}
     response = requests.post(
         "https://gemini.googleapis.com/v1beta1/generateText",
