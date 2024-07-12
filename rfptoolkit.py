@@ -194,7 +194,7 @@ def get_vectorstore(text_chunks, chunk_metadata):
         raise ValueError("No text chunks available for embedding.")
     embeddings = GoogleGenerativeAIEmbeddings(
         model="text-bison-001", 
-        google_api_key=st.secrets["google"]["api_key"].get_secret_value()  # Extract the actual string value
+        google_api_key=st.secrets["google"]["api_key"]
     )
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
     
@@ -212,7 +212,7 @@ def get_vectorstore(text_chunks, chunk_metadata):
 def get_conversation_chain(vectorstore):
     llm = ChatGoogleGenerativeAI(
         model="text-bison-001",
-        google_api_key=st.secrets["google"]["api_key"].get_secret_value()  # Extract the actual string value
+        google_api_key=st.secrets["google"]["api_key"]
     )
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
@@ -342,7 +342,7 @@ def handle_userinput(user_question, pdf_keywords):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def request_gemini_api(query, context_chunks):
-    api_key = st.secrets["google"]["api_key"].get_secret_value()  # Extract the actual string value
+    api_key = st.secrets["google"]["api_key"]
     instance_content = query + "\n\n" + "\n".join(context_chunks)
     instance = {
         "content": instance_content
