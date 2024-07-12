@@ -1,0 +1,10 @@
+User: 
+        Based on the user's question and keywords: graphic design, market research, social media, design, website, branding, search through the available documents 
+        and provide a comprehensive response that includes our past approach to offering the requested services. 
+        Make sure to include any available details on strategy, pricing, and timelines. 
+        Always provide citations with links to the original documents for verification.
+        
+
+Bot: I'm sorry, but based on the provided context, there is no specific information available on past approaches to offering services related to graphic design, market research, social media, design, website, branding, and search within the documents provided. The content mainly focuses on professional services, brand refresh, market positioning, and student search solutions. 
+
+If you are looking for information on past approaches and details on strategy, pricing, and timelines related to the mentioned services, I recommend reaching out to the company directly or referring to their previous project portfolios or case studies for a more comprehensive understanding of their offerings in those areas.
