@@ -1,0 +1,7 @@
+User: 
+        Based on the user's question and keywords used that relate to various types of advertising and marketing services contained in the documents in the selected folder, perform a thorough search of the available documents and provide a comprehensive response that includes our 
+        approach to offering the requested services. Make sure to include any available details on pricing and timelines. 
+        Always provide citations with links to the original documents for verification.
+        
+
+Bot: I'm sorry, but based on the provided context, there is no specific information about pricing, timelines, or a comprehensive approach to offering advertising and marketing services. The documents mainly outline the services provided by the company, such as market research, advertising conception, media buying, graphic design, and photography, but do not go into detail about pricing or timelines for these services. Additionally, there is no mention of specific citations or links to original documents for verification. If you need further assistance or more specific information, I recommend reaching out directly to the company or referring to any additional documents that may contain the details you are looking for.
