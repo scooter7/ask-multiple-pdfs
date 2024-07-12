@@ -4,15 +4,15 @@ import requests
 from io import BytesIO
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.schema import Document
 from datetime import datetime
 import base64
 import re
-import time
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -48,11 +48,8 @@ KEYWORDS = [
     "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
     "graphic design", "video production", "brand redesign", "logo", "microsite",
     "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
-    "email marketing", "text message", "sms", "student search", "branding",
-    "pricing", "cost", "budget", "fee", "quote"
+    "email marketing", "text message", "sms", "student search", "branding"
 ]
-
-MAX_TOKENS = 8192  # Adjust as needed for Google Gemini 1.5
 
 def main():
     st.set_page_config(
@@ -179,7 +176,7 @@ def get_docs_text(docs):
     return text, sources
 
 def get_text_chunks(text, sources):
-    text_splitter = CharacterTextSplitter(separator="\n\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     chunk_metadata = []
     for i, chunk in enumerate(chunks):
@@ -193,38 +190,14 @@ def get_text_chunks(text, sources):
 def get_vectorstore(text_chunks, chunk_metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="gemini-1.5", 
-        google_api_key=st.secrets["google"]["api_key"]
-    )
+    os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
+    embeddings = OpenAIEmbeddings()
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
-    
-    # Embedding documents in smaller batches with retries
-    batch_size = 5  # Adjust batch size as needed
-    all_embeddings = []
-    for i in range(0, len(documents), batch_size):
-        batch = documents[i:i + batch_size]
-        retries = 3
-        while retries > 0:
-            try:
-                batch_embeddings = embeddings.embed_documents([doc.page_content for doc in batch])
-                all_embeddings.extend(batch_embeddings)
-                break
-            except Exception as e:
-                st.warning(f"Error embedding batch: {e}")
-                time.sleep(2 ** (3 - retries))
-                retries -= 1
-                if retries == 0:
-                    raise e
-
-    vectorstore = FAISS.from_texts([doc.page_content for doc in documents], embeddings)
+    vectorstore = FAISS.from_documents(documents, embedding=embeddings)
     return vectorstore, chunk_metadata
 
 def get_conversation_chain(vectorstore):
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5", 
-        google_api_key=st.secrets["google"]["api_key"]
-    )
+    llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
     return conversation_chain
@@ -311,62 +284,34 @@ def handle_userinput(user_question, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
+        # Modify the query to include the keywords extracted from the PDF
         combined_keywords = list(set(pdf_keywords + user_question.split()))
         query = f"""
         Based on the provided context and the following keywords: {', '.join(combined_keywords)}, 
-        perform a thorough search of all available documents and provide a comprehensive response that includes our 
-        approach to offering the requested services, with a specific focus on pricing and timelines if available. 
+        perform a thorough search of the available documents and provide a comprehensive response that includes our 
+        approach to offering the requested services. Make sure to include any available details on pricing and timelines. 
         Always provide citations with links to the original documents for verification.
         """
 
-        retriever = conversation_chain.retriever
-        docs = retriever.get_relevant_documents(query)
-
-        responses = []
-        current_tokens = 0
-        current_batch = []
-
-        for doc in docs:
-            doc_length = len(doc.page_content.split())
-            if current_tokens + doc_length > MAX_TOKENS:
-                response = request_gemini_api(query, current_batch)
-                responses.append(response)
-                current_batch = []
-                current_tokens = 0
-
-            current_batch.append(doc.page_content)
-            current_tokens += doc_length
-
-        if current_batch:
-            response = request_gemini_api(query, current_batch)
-            responses.append(response)
-
-        full_response = " ".join(responses)
-        st.session_state.chat_history.append(full_response)
+        response = conversation_chain({'question': query})
+        st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
-        modified_content = modify_response_language(full_response, institution_name)
-
-        st.write(f'<div class="chat-message bot-message">{modified_content}</div>', unsafe_allow_html=True)
+        for i, message in enumerate(st.session_state.chat_history):
+            modified_content = modify_response_language(message.content, institution_name)
+            if i % 2 == 0:
+                st.write(f'<div class="chat-message user-message">{modified_content}</div>', unsafe_allow_html=True)
+            else:
+                # Get citations for this response
+                citations = []
+                for doc in response.get('source_documents', []):
+                    index = response['source_documents'].index(doc)
+                    citations.append(f"Source: [{metadata[index]}]")
+                citations_text = "\n".join(citations)
+                st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
-
-def request_gemini_api(query, context_chunks):
-    api_key = st.secrets["google"]["api_key"]
-    instance_content = query + "\n\n" + "\n".join(context_chunks)
-    instance = {
-        "content": instance_content
-    }
-    headers = {"Authorization": f"Bearer {api_key}"}
-    response = requests.post(
-        "https://gemini.googleapis.com/v1beta1/generateText",
-        json={"model": "gemini-1.5", "instances": [instance], "max_tokens": MAX_TOKENS},
-        headers=headers
-    )
-    response.raise_for_status()
-    result = response.json()
-    return result['generated_text'][0]
 
 if __name__ == '__main__':
     main()
