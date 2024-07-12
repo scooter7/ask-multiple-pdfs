@@ -42,15 +42,6 @@ css = """
 </style>
 """
 
-KEYWORDS = [
-    "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
-    "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
-    "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
-    "graphic design", "video production", "brand redesign", "logo", "microsite",
-    "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
-    "email marketing", "text message", "sms", "student search", "branding"
-]
-
 def main():
     st.set_page_config(
         page_title="Proposal Toolkit",
@@ -118,7 +109,7 @@ def main():
             st.session_state.conversation_chain = get_conversation_chain(vectorstore)
             st.session_state.metadata = metadata
 
-    user_question = st.text_input("Find past RFP content and craft new content.")
+    user_question = st.text_input("Find past RFP content and craft new content.", key="user_question")
     if user_question:
         handle_userinput(user_question, st.session_state.pdf_keywords, st.session_state.user_keywords)
 
@@ -289,7 +280,7 @@ def handle_userinput(user_question, pdf_keywords, user_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Modify the query to include the user-defined keywords
+        # Combine user-defined keywords with user question
         combined_keywords = list(set(user_keywords + user_question.split()))
         keyword_context = ", ".join(combined_keywords)
         query = f"""
