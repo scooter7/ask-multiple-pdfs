@@ -286,9 +286,11 @@ def handle_userinput(user_question, pdf_keywords):
 
         # Modify the query to include the keywords extracted from the PDF
         combined_keywords = list(set(pdf_keywords + user_question.split()))
+        keyword_context = ", ".join(combined_keywords)
         query = f"""
-        Based on the user's question and keywords used that relate to various types of advertising and marketing services contained in the documents in the selected folder, perform a thorough search of the available documents and provide a comprehensive response that includes our 
-        approach to offering the requested services. Make sure to include any available details on pricing and timelines. 
+        Based on the user's question and keywords: {keyword_context}, search through the available documents 
+        and provide a comprehensive response that includes our past approach to offering the requested services. 
+        Make sure to include any available details on strategy, pricing, and timelines. 
         Always provide citations with links to the original documents for verification.
         """
 
