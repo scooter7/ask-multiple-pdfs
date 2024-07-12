@@ -192,13 +192,19 @@ def get_text_chunks(text, sources):
 def get_vectorstore(text_chunks, chunk_metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
-    embeddings = GoogleGenerativeAIEmbeddings()
+    embeddings = GoogleGenerativeAIEmbeddings(
+        model="text-bison-001", 
+        google_api_key=st.secrets["google"]["api_key"]
+    )
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
     vectorstore = FAISS.from_documents(documents, embedding=embeddings)
     return vectorstore, chunk_metadata
 
 def get_conversation_chain(vectorstore):
-    llm = ChatGoogleGenerativeAI()
+    llm = ChatGoogleGenerativeAI(
+        model="text-bison-001",
+        google_api_key=st.secrets["google"]["api_key"]
+    )
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
     return conversation_chain
