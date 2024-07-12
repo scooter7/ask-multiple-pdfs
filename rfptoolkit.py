@@ -194,7 +194,7 @@ def get_vectorstore(text_chunks, chunk_metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="text-bison-001", 
+        model="gemini-1.5", 
         google_api_key=st.secrets["google"]["api_key"]
     )
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
@@ -211,7 +211,7 @@ def get_vectorstore(text_chunks, chunk_metadata):
                 all_embeddings.extend(batch_embeddings)
                 break
             except Exception as e:
-                st.error(f"Error embedding batch: {e}")
+                st.warning(f"Error embedding batch: {e}")
                 time.sleep(2 ** (3 - retries))
                 retries -= 1
                 if retries == 0:
@@ -222,7 +222,7 @@ def get_vectorstore(text_chunks, chunk_metadata):
 
 def get_conversation_chain(vectorstore):
     llm = ChatGoogleGenerativeAI(
-        model="chat-bison-001", 
+        model="gemini-1.5", 
         google_api_key=st.secrets["google"]["api_key"]
     )
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
@@ -361,7 +361,7 @@ def request_gemini_api(query, context_chunks):
     headers = {"Authorization": f"Bearer {api_key}"}
     response = requests.post(
         "https://gemini.googleapis.com/v1beta1/generateText",
-        json={"model": "text-bison-001", "instances": [instance], "max_tokens": MAX_TOKENS},
+        json={"model": "gemini-1.5", "instances": [instance], "max_tokens": MAX_TOKENS},
         headers=headers
     )
     response.raise_for_status()
