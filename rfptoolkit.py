@@ -86,6 +86,8 @@ def main():
         st.session_state.institution_name = None
     if 'pdf_keywords' not in st.session_state:
         st.session_state.pdf_keywords = []
+    if 'user_keywords' not in st.session_state:
+        st.session_state.user_keywords = []
 
     uploaded_pdf = st.file_uploader("Upload an RFP PDF", type="pdf")
     if uploaded_pdf is not None:
@@ -101,6 +103,9 @@ def main():
     undergrad_selected = st.checkbox("Undergraduate")
     grad_selected = st.checkbox("Graduate")
     
+    user_keywords = st.text_input("Enter keywords to search in documents (comma-separated)").split(",")
+    st.session_state.user_keywords = [kw.strip() for kw in user_keywords if kw.strip()]
+
     docs = get_github_docs(undergrad_selected, grad_selected)
     if docs:
         raw_text, sources = get_docs_text(docs)
@@ -115,7 +120,7 @@ def main():
 
     user_question = st.text_input("Find past RFP content and craft new content.")
     if user_question:
-        handle_userinput(user_question, st.session_state.pdf_keywords)
+        handle_userinput(user_question, st.session_state.pdf_keywords, st.session_state.user_keywords)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -280,12 +285,12 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_question, pdf_keywords):
+def handle_userinput(user_question, pdf_keywords, user_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Modify the query to include the keywords extracted from the PDF
-        combined_keywords = list(set(pdf_keywords + user_question.split()))
+        # Modify the query to include the user-defined keywords
+        combined_keywords = list(set(user_keywords + user_question.split()))
         keyword_context = ", ".join(combined_keywords)
         query = f"""
         Based on the user's question and keywords: {keyword_context}, search through the available documents 
