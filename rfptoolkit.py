@@ -197,7 +197,16 @@ def get_vectorstore(text_chunks, chunk_metadata):
         google_api_key=st.secrets["google"]["api_key"]
     )
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
-    vectorstore = FAISS.from_documents(documents, embedding=embeddings)
+    
+    # Embedding documents in smaller batches
+    batch_size = 10  # Adjust batch size as needed
+    all_embeddings = []
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        batch_embeddings = embeddings.embed_documents([doc.page_content for doc in batch])
+        all_embeddings.extend(batch_embeddings)
+    
+    vectorstore = FAISS.from_embeddings(all_embeddings, documents)
     return vectorstore, chunk_metadata
 
 def get_conversation_chain(vectorstore):
@@ -260,7 +269,7 @@ def modify_response_language(original_response, institution_name):
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response = response replace("Them ", "Us ")
     if institution_name:
         response = response.replace("the current opportunity", institution_name)
     return response
