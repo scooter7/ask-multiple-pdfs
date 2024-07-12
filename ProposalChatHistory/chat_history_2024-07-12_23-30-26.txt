@@ -1,0 +1,10 @@
+User: 
+        Based on the user's question and keywords: website, design, search through the available documents 
+        and provide a comprehensive response that includes our past approach to offering the requested services. 
+        Make sure to include any available details on strategy, pricing, and timelines. 
+        Always provide citations with links to the original documents for verification.
+        
+
+Bot: I'm sorry, but based on the available information, there is no specific mention of past approaches to offering website design services, including strategy, pricing, or timelines within the provided context. The information shared pertains more to SEO strategies, content strategy, information architecture, and measurement strategies for website performance.
+
+If you have any other questions or need further assistance with a different topic within the provided context, feel free to ask.
