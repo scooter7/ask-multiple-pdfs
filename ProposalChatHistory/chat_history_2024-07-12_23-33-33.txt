@@ -1,0 +1,10 @@
+User: 
+        Based on the user's question and keywords: website, design, website design, search through the available documents 
+        and provide a comprehensive response that includes our past approach to offering the requested services. 
+        Make sure to include any available details on strategy, pricing, and timelines. 
+        Always provide citations with links to the original documents for verification.
+        
+
+Bot: I'm sorry, but based on the available documents and information provided, there is no specific mention of past approaches to offering website design services, including details on strategy, pricing, and timelines. The documents mainly focus on services such as website design, search engine optimization, content optimization, technical site audits, SEO strategy, user experience, and more. 
+
+For specific details on past approaches to website design services, including strategy, pricing, and timelines, I would recommend reaching out directly to the service provider or company mentioned in the documents. The documents provided do not offer the requested information regarding past approaches to website design services.
