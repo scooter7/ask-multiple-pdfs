@@ -42,6 +42,15 @@ css = """
 </style>
 """
 
+KEYWORDS = [
+    "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
+    "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
+    "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
+    "graphic design", "video production", "brand redesign", "logo", "microsite",
+    "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
+    "email marketing", "text message", "sms", "student search", "branding"
+]
+
 def main():
     st.set_page_config(
         page_title="Proposal Toolkit",
