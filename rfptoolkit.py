@@ -269,7 +269,7 @@ def modify_response_language(original_response, institution_name):
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
-    response = response replace("Them ", "Us ")
+    response = response.replace("Them ", "Us ")
     if institution_name:
         response = response.replace("the current opportunity", institution_name)
     return response
