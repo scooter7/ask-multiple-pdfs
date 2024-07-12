@@ -12,6 +12,7 @@ from langchain.schema import Document
 from datetime import datetime
 import base64
 import re
+import time
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -198,20 +199,30 @@ def get_vectorstore(text_chunks, chunk_metadata):
     )
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
     
-    # Embedding documents in smaller batches
+    # Embedding documents in smaller batches with retries
     batch_size = 10  # Adjust batch size as needed
     all_embeddings = []
     for i in range(0, len(documents), batch_size):
         batch = documents[i:i + batch_size]
-        batch_embeddings = embeddings.embed_documents([doc.page_content for doc in batch])
-        all_embeddings.extend(batch_embeddings)
-    
-    vectorstore = FAISS.from_embeddings(all_embeddings, documents)
+        retries = 3
+        while retries > 0:
+            try:
+                batch_embeddings = embeddings.embed_documents([doc.page_content for doc in batch])
+                all_embeddings.extend(batch_embeddings)
+                break
+            except Exception as e:
+                st.error(f"Error embedding batch: {e}")
+                time.sleep(2 ** (3 - retries))
+                retries -= 1
+                if retries == 0:
+                    raise e
+
+    vectorstore = FAISS.from_texts([doc.page_content for doc in documents], embeddings)
     return vectorstore, chunk_metadata
 
 def get_conversation_chain(vectorstore):
     llm = ChatGoogleGenerativeAI(
-        model="text-bison-001",
+        model="chat-bison-001", 
         google_api_key=st.secrets["google"]["api_key"]
     )
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
