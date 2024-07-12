@@ -200,7 +200,7 @@ def get_vectorstore(text_chunks, chunk_metadata):
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
     
     # Embedding documents in smaller batches with retries
-    batch_size = 10  # Adjust batch size as needed
+    batch_size = 5  # Adjust batch size as needed
     all_embeddings = []
     for i in range(0, len(documents), batch_size):
         batch = documents[i:i + batch_size]
