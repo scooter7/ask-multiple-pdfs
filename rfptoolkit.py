@@ -4,9 +4,8 @@ import requests
 from io import BytesIO
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from langchain.chat_models import ChatOpenAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.schema import Document
@@ -52,7 +51,7 @@ KEYWORDS = [
     "pricing", "cost", "budget", "fee", "quote"
 ]
 
-MAX_TOKENS = 1500  # Maximum tokens to process in one go
+MAX_TOKENS = 8192  # Adjust as needed for Google Gemini 1.5
 
 def main():
     st.set_page_config(
@@ -193,14 +192,13 @@ def get_text_chunks(text, sources):
 def get_vectorstore(text_chunks, chunk_metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
-    os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
-    embeddings = OpenAIEmbeddings()
+    embeddings = GoogleGenerativeAIEmbeddings()
     documents = [Document(page_content=chunk, metadata={'source': chunk_metadata[i]}) for i, chunk in enumerate(text_chunks)]
     vectorstore = FAISS.from_documents(documents, embedding=embeddings)
     return vectorstore, chunk_metadata
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
+    llm = ChatGoogleGenerativeAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
     return conversation_chain
@@ -287,7 +285,6 @@ def handle_userinput(user_question, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Modify the query to include the keywords extracted from the PDF
         combined_keywords = list(set(pdf_keywords + user_question.split()))
         query = f"""
         Based on the provided context and the following keywords: {', '.join(combined_keywords)}, 
@@ -299,7 +296,6 @@ def handle_userinput(user_question, pdf_keywords):
         retriever = conversation_chain.retriever
         docs = retriever.get_relevant_documents(query)
 
-        # Process in batches to ensure the total tokens stay within the limit
         responses = []
         current_tokens = 0
         current_batch = []
@@ -307,20 +303,16 @@ def handle_userinput(user_question, pdf_keywords):
         for doc in docs:
             doc_length = len(doc.page_content.split())
             if current_tokens + doc_length > MAX_TOKENS:
-                response = conversation_chain.combine_docs_chain.run(
-                    {"question": query, "input_documents": current_batch}
-                )
+                response = request_gemini_api(query, current_batch)
                 responses.append(response)
                 current_batch = []
                 current_tokens = 0
 
-            current_batch.append(doc)
+            current_batch.append(doc.page_content)
             current_tokens += doc_length
 
         if current_batch:
-            response = conversation_chain.combine_docs_chain.run(
-                {"question": query, "input_documents": current_batch}
-            )
+            response = request_gemini_api(query, current_batch)
             responses.append(response)
 
         full_response = " ".join(responses)
@@ -333,6 +325,15 @@ def handle_userinput(user_question, pdf_keywords):
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
+
+def request_gemini_api(query, context_chunks):
+    instance = {"content": f"{query}\n\n{'\n'.join(context_chunks)}"}
+    response = genai.generate_text(
+        model="text-bison-001",  # Adjust to the appropriate Google Gemini model
+        instances=[instance],
+        max_tokens=MAX_TOKENS
+    )
+    return response['generated_text'][0]
 
 if __name__ == '__main__':
     main()
