@@ -10,6 +10,10 @@ nltk
 streamlit-google-auth
 StreamlitGAuth
 streamlit-oauth
+google-generativeai
+chromadb
+langchain_google_genai
+langchain-community
 # uncomment to use huggingface llms
 # huggingface-hub==0.14.1
 
