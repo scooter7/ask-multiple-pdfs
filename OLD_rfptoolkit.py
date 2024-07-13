@@ -13,6 +13,7 @@ from langchain.schema import Document
 from datetime import datetime
 import base64
 import re
+import numpy as np
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -101,6 +102,8 @@ def main():
     undergrad_selected = st.checkbox("Undergraduate")
     grad_selected = st.checkbox("Graduate")
     
+    user_input = st.text_input("Enter your query to search in documents and craft new content")
+
     docs = get_github_docs(undergrad_selected, grad_selected)
     if docs:
         raw_text, sources = get_docs_text(docs)
@@ -110,12 +113,11 @@ def main():
         text_chunks, chunk_metadata = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore, metadata = get_vectorstore(text_chunks, chunk_metadata)
-            st.session_state.conversation_chain = get_conversation_chain(vectorstore)
             st.session_state.metadata = metadata
+            st.session_state.conversation_chain = get_conversation_chain(vectorstore)
 
-    user_question = st.text_input("Find past RFP content and craft new content.")
-    if user_question:
-        handle_userinput(user_question, st.session_state.pdf_keywords)
+    if user_input:
+        handle_userinput(user_input, st.session_state.pdf_keywords)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -280,20 +282,18 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_question, pdf_keywords):
+def handle_userinput(user_input, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Modify the query to include the keywords extracted from the PDF
-        combined_keywords = list(set(pdf_keywords + user_question.split()))
-        query = f"""
-        Based on the provided context and the following keywords: {', '.join(combined_keywords)}, 
-        perform a thorough search of the available documents and provide a comprehensive response that includes our 
-        approach to offering the requested services. Make sure to include any available details on pricing and timelines. 
-        Always provide citations with links to the original documents for verification.
-        """
-
-        response = conversation_chain({'question': query})
+        # Stage 1: Retrieve broader set of relevant documents
+        initial_retrieval = conversation_chain.retriever.get_relevant_documents(user_input)
+        
+        # Stage 2: Rerank the retrieved documents
+        reranked_documents = rerank_documents(initial_retrieval, user_input)
+        
+        # Create a custom input for the conversation chain
+        response = run_conversation_chain(conversation_chain, user_input, reranked_documents)
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
@@ -312,6 +312,43 @@ def handle_userinput(user_question, pdf_keywords):
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
+
+def run_conversation_chain(chain, question, documents):
+    # Prepare context from documents
+    context = ' '.join([doc.page_content for doc in documents])
+    # Combine question and context into a single input
+    combined_input = f"Question: {question}\n\nContext: {context}"
+    return chain({'question': combined_input})
+
+def rerank_documents(documents, query):
+    # Get embeddings for the query
+    embeddings = OpenAIEmbeddings()
+    query_embedding = np.array(embeddings.embed_query(query)).reshape(1, -1)
+    
+    # Get embeddings for the documents
+    document_embeddings = np.array([np.array(embeddings.embed_query(doc.page_content)) for doc in documents])
+    
+    # Calculate cosine similarity between query and documents
+    similarities = cosine_similarity(query_embedding, document_embeddings)[0]
+    
+    # Sort documents by similarity score
+    sorted_indices = np.argsort(similarities)[::-1]
+    reranked_documents = [documents[idx] for idx in sorted_indices]
+    
+    return reranked_documents
+
+def cosine_similarity(query_embedding, document_embeddings):
+    # Compute dot product between query and documents
+    dot_product = np.dot(document_embeddings, query_embedding.T)
+    
+    # Compute norms (magnitudes) of query and documents
+    query_norm = np.linalg.norm(query_embedding)
+    doc_norms = np.linalg.norm(document_embeddings, axis=1)
+    
+    # Compute cosine similarity
+    similarities = dot_product / (query_norm * doc_norms)
+    
+    return similarities
 
 if __name__ == '__main__':
     main()
