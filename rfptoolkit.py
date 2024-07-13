@@ -13,7 +13,6 @@ from langchain.schema import Document
 from datetime import datetime
 import base64
 import re
-from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
@@ -293,7 +292,10 @@ def handle_userinput(user_input, pdf_keywords):
         # Stage 2: Rerank the retrieved documents
         reranked_documents = rerank_documents(initial_retrieval, user_input)
         
-        response = conversation_chain({'question': user_input, 'documents': reranked_documents})
+        # Creating a new input with reranked documents for the conversation chain
+        input_with_docs = {'question': user_input, 'documents': reranked_documents}
+
+        response = conversation_chain(input_with_docs)
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
@@ -322,13 +324,26 @@ def rerank_documents(documents, query):
     document_embeddings = np.array([embeddings.embed_query(doc.page_content) for doc in documents])
     
     # Calculate cosine similarity between query and documents
-    similarities = cosine_similarity([query_embedding], document_embeddings)[0]
+    similarities = cosine_similarity(query_embedding.reshape(1, -1), document_embeddings)[0]
     
     # Sort documents by similarity score
     sorted_indices = np.argsort(similarities)[::-1]
     reranked_documents = [documents[idx] for idx in sorted_indices]
     
     return reranked_documents
+
+def cosine_similarity(query_embedding, document_embeddings):
+    # Compute dot product between query and documents
+    dot_product = np.dot(document_embeddings, query_embedding.T)
+    
+    # Compute norms (magnitudes) of query and documents
+    query_norm = np.linalg.norm(query_embedding)
+    doc_norms = np.linalg.norm(document_embeddings, axis=1)
+    
+    # Compute cosine similarity
+    similarities = dot_product / (query_norm * doc_norms)
+    
+    return similarities
 
 if __name__ == '__main__':
     main()
