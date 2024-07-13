@@ -1,0 +1,8 @@
+User: 
+        Based on the user's input: provide content on web design and graphic design services with pricing, search through the available documents 
+        and provide a comprehensive response that includes our past approach to offering the requested services. 
+        Make sure to include any available details on strategy, pricing, and timelines. 
+        Always provide citations with links to the original documents for verification.
+        
+
+Bot: I'm sorry, I don't have access to the internet to search and provide specific details on web design and graphic design services, pricing, and timelines. If you have any other questions or need assistance with something else, feel free to ask!
