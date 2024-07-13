@@ -1,0 +1,8 @@
+User: 
+        Based on the user's input: website design, search through the available documents 
+        and provide a comprehensive response that includes our past approach to offering the requested services. 
+        Make sure to include any available details on strategy, pricing, and timelines. 
+        Always provide citations with links to the original documents for verification.
+        
+
+Bot: I'm sorry, but based on the context provided, there is no specific information available about past approaches to offering website design services, including details on strategy, pricing, and timelines. The context mainly focuses on website strategy scope of work, messaging, information architecture, content creation, SEO, user experience, technical SEO strategy, content strategy, and information architecture. If you have specific questions related to the content provided, feel free to ask!
