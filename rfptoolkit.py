@@ -318,7 +318,7 @@ def run_conversation_chain(chain, question, documents):
     context = ' '.join([doc.page_content for doc in documents])
     # Combine question and context into a single input
     combined_input = f"Question: {question}\n\nContext: {context}"
-    return chain({'input': combined_input})
+    return chain({'question': combined_input})
 
 def rerank_documents(documents, query):
     # Get embeddings for the query
