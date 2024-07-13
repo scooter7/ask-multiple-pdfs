@@ -242,9 +242,9 @@ def summarize_scope_of_work(text):
         if occurrences:
             summary.append(f"- **{keyword.capitalize()}:** {', '.join(occurrences)}")
     if proposal_deadline:
-        summary.append(f"- **Proposal Deadline:** {proposal_deadline}")
+        summary.append(f("- **Proposal Deadline:** {proposal_deadline}"))
     if submission_method:
-        summary.append(f"- **Submission Method:** {submission_method}")
+        summary.append(f("- **Submission Method:** {submission_method}"))
 
     extracted_keywords = [keyword for keyword, occurrences in keyword_summary.items() if occurrences]
     return '\n'.join(summary), extracted_keywords
@@ -316,8 +316,9 @@ def handle_userinput(user_input, pdf_keywords):
 def run_conversation_chain(chain, question, documents):
     # Prepare context from documents
     context = ' '.join([doc.page_content for doc in documents])
-    inputs = {'question': question, 'context': context}
-    return chain(inputs)
+    # Combine question and context into a single input
+    combined_input = f"Question: {question}\n\nContext: {context}"
+    return chain({'input': combined_input})
 
 def rerank_documents(documents, query):
     # Get embeddings for the query
