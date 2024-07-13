@@ -292,10 +292,8 @@ def handle_userinput(user_input, pdf_keywords):
         # Stage 2: Rerank the retrieved documents
         reranked_documents = rerank_documents(initial_retrieval, user_input)
         
-        # Creating a new input with reranked documents for the conversation chain
-        input_with_docs = {'question': user_input, 'documents': reranked_documents}
-
-        response = conversation_chain(input_with_docs)
+        # Create a custom input for the conversation chain
+        response = run_conversation_chain(conversation_chain, user_input, reranked_documents)
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
@@ -314,6 +312,13 @@ def handle_userinput(user_input, pdf_keywords):
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
+
+def run_conversation_chain(chain, question, documents):
+    inputs = {
+        'question': question,
+        'context': ' '.join([doc.page_content for doc in documents])
+    }
+    return chain(inputs)
 
 def rerank_documents(documents, query):
     # Get embeddings for the query
