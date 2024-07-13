@@ -318,13 +318,13 @@ def handle_userinput(user_input, pdf_keywords):
 def rerank_documents(documents, query):
     # Get embeddings for the query
     embeddings = OpenAIEmbeddings()
-    query_embedding = embeddings.embed_query(query)
+    query_embedding = np.array(embeddings.embed_query(query)).reshape(1, -1)
     
     # Get embeddings for the documents
-    document_embeddings = np.array([embeddings.embed_query(doc.page_content) for doc in documents])
+    document_embeddings = np.array([np.array(embeddings.embed_query(doc.page_content)) for doc in documents])
     
     # Calculate cosine similarity between query and documents
-    similarities = cosine_similarity(query_embedding.reshape(1, -1), document_embeddings)[0]
+    similarities = cosine_similarity(query_embedding, document_embeddings)[0]
     
     # Sort documents by similarity score
     sorted_indices = np.argsort(similarities)[::-1]
