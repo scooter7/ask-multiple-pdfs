@@ -13,6 +13,8 @@ from langchain.schema import Document
 from datetime import datetime
 import base64
 import re
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 GITHUB_REPO_URL_UNDERGRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Undergrad"
 GITHUB_REPO_URL_GRAD = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/Grad"
@@ -285,14 +287,13 @@ def handle_userinput(user_input, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        query = f"""
-        Based on the user's input: {user_input}, search through the available documents 
-        and provide a comprehensive response that includes our past approach to offering the requested services. 
-        Make sure to include any available details on strategy, pricing, and timelines. 
-        Always provide citations with links to the original documents for verification.
-        """
-
-        response = conversation_chain({'question': query})
+        # Stage 1: Retrieve broader set of relevant documents
+        initial_retrieval = conversation_chain.retriever.get_relevant_documents(user_input)
+        
+        # Stage 2: Rerank the retrieved documents
+        reranked_documents = rerank_documents(initial_retrieval, user_input)
+        
+        response = conversation_chain({'question': user_input, 'documents': reranked_documents})
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
@@ -311,6 +312,23 @@ def handle_userinput(user_input, pdf_keywords):
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
+
+def rerank_documents(documents, query):
+    # Get embeddings for the query
+    embeddings = OpenAIEmbeddings()
+    query_embedding = embeddings.embed_query(query)
+    
+    # Get embeddings for the documents
+    document_embeddings = np.array([embeddings.embed_query(doc.page_content) for doc in documents])
+    
+    # Calculate cosine similarity between query and documents
+    similarities = cosine_similarity([query_embedding], document_embeddings)[0]
+    
+    # Sort documents by similarity score
+    sorted_indices = np.argsort(similarities)[::-1]
+    reranked_documents = [documents[idx] for idx in sorted_indices]
+    
+    return reranked_documents
 
 if __name__ == '__main__':
     main()
