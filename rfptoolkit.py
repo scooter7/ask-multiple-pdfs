@@ -242,9 +242,9 @@ def summarize_scope_of_work(text):
         if occurrences:
             summary.append(f"- **{keyword.capitalize()}:** {', '.join(occurrences)}")
     if proposal_deadline:
-        summary.append(f("- **Proposal Deadline:** {proposal_deadline}"))
+        summary.append(f"- **Proposal Deadline:** {proposal_deadline}")
     if submission_method:
-        summary.append(f("- **Submission Method:** {submission_method}"))
+        summary.append(f"- **Submission Method:** {submission_method}")
 
     extracted_keywords = [keyword for keyword, occurrences in keyword_summary.items() if occurrences]
     return '\n'.join(summary), extracted_keywords
