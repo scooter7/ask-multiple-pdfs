@@ -101,8 +101,7 @@ def main():
     undergrad_selected = st.checkbox("Undergraduate")
     grad_selected = st.checkbox("Graduate")
     
-    user_input = st.text_input("Enter keywords to search in documents and craft new content (comma-separated)")
-    user_keywords = [kw.strip() for kw in user_input.split(",") if kw.strip()]
+    user_input = st.text_input("Enter your query to search in documents and craft new content")
 
     docs = get_github_docs(undergrad_selected, grad_selected)
     if docs:
@@ -113,11 +112,11 @@ def main():
         text_chunks, chunk_metadata = get_text_chunks(raw_text, sources)
         if text_chunks:
             vectorstore, metadata = get_vectorstore(text_chunks, chunk_metadata)
-            st.session_state.conversation_chain = get_conversation_chain(vectorstore)
             st.session_state.metadata = metadata
+            st.session_state.conversation_chain = get_conversation_chain(vectorstore)
 
     if user_input:
-        handle_userinput(user_input, st.session_state.pdf_keywords, user_keywords)
+        handle_userinput(user_input, st.session_state.pdf_keywords)
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -255,7 +254,7 @@ def modify_response_language(original_response, institution_name):
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response is.response.replace("Them ", "Us ")
     if institution_name:
         response = response.replace("the current opportunity", institution_name)
     return response
@@ -282,15 +281,12 @@ def save_chat_history(chat_history):
     else:
         st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
 
-def handle_userinput(user_input, pdf_keywords, user_keywords):
+def handle_userinput(user_input, pdf_keywords):
     if 'conversation_chain' in st.session_state and st.session_state.conversation_chain:
         conversation_chain = st.session_state.conversation_chain
 
-        # Combine user-defined keywords with user input
-        combined_keywords = list(set(user_keywords + user_input.split()))
-        keyword_context = ", ".join(combined_keywords)
         query = f"""
-        Based on the user's input and keywords: {keyword_context}, search through the available documents 
+        Based on the user's input: {user_input}, search through the available documents 
         and provide a comprehensive response that includes our past approach to offering the requested services. 
         Make sure to include any available details on strategy, pricing, and timelines. 
         Always provide citations with links to the original documents for verification.
