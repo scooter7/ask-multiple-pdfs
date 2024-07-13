@@ -314,10 +314,9 @@ def handle_userinput(user_input, pdf_keywords):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def run_conversation_chain(chain, question, documents):
-    inputs = {
-        'question': question,
-        'context': ' '.join([doc.page_content for doc in documents])
-    }
+    # Prepare context from documents
+    context = ' '.join([doc.page_content for doc in documents])
+    inputs = {'question': question, 'context': context}
     return chain(inputs)
 
 def rerank_documents(documents, query):
