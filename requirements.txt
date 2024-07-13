@@ -10,6 +10,7 @@ nltk
 streamlit-google-auth
 StreamlitGAuth
 streamlit-oauth
+scikit-learn
 # uncomment to use huggingface llms
 # huggingface-hub==0.14.1
 
