@@ -1,0 +1,63 @@
+User: Question: financial aid optimization
+
+Context: academic, ﬁnancial, and behavioral indicators, our team designs predictive models 
+that assign a yield probability to each admitted student. We use those models and 
+yield probabilities to determine the institutional aid award for each student that 
+would maximize their contribution to net tuition revenue. We then layer in 
+institutional goals and constraints until we achieve a grant and scholarship strategy 
+that maximizes net tuition revenue alongside key indicators like headcount, 
+discount rate, diversity, and access for lower income students. 
+What you’ll gain: 
++A model and aid optimization strategy that is ﬂexible to adapt to new or 
+changing resources. 
++An understanding of the most efficient way to utilize new scholarship resources. 
++An understanding of how to shift resources between merit- and need-based aid 
+programs to ensure that the funds are helping move you toward meeting key 
+enrollment goals. Our modeling process is designed to begin with net tuition revenue maximization before building in institutional goals and constraints. This approach acknowledges that 
+the design and execution of an institutional aid strategy is often the product of a careful consideration of a number of different (sometimes competing) goals. For 
+instance, institutions often wish to increase access for lower-income students like Pell Grant and state need-based grant recipients, although investments in 
+institutional aid for the highest need populations often erode net tuition revenue. Our modeling and strategy building strikes a balance between those goals and 
+constraints. 
+During the model building and strategy design phases, we engage in an active and collaborative process with our clients, identifying key tradeoffs and prioritizing those in your admitted or enrolled class. 
+Individual Financial Aid 
+Money matters. It’s your number one yield 
+tactic, which is why it ought to be precise. We 
+deliver individual aid strategy–not only 
+customized for your institution, but 
+customized for every student. 
+This is what we call data-driven 
+decision making at its best.  We work to 
+identify students who are most likely to 
+apply, exactly what precise amount of 
+aid an individual student needs to 
+enroll, and who might need intervention 
+in order to retain. This is where your 
+Student Search strategy becomes your 
+enrollment strategy, and you recruit to 
+retain. YIELD AND 
+RETENTION 
+STRATEGY 
+Fort Lewis College  —  Proposal for Work 34En G a ug e 
+A p p l y Sc or e +Identify and prioritize highly-engaged prospects. 
++Focus your resources on the students who need 
+contact to convert. 
++Inform communication segmentation, recruitment and 
+marketing plans, and intervention tactics. +An understanding of how to shift resources between merit- and need-based aid 
+programs to ensure that the funds are helping move you toward meeting key 
+enrollment goals. 
++A live simulation environment (pictured here) with your yield models  built in. 
++Regular strategy meetings to run through scenarios with the live tools, discuss 
+questions or proposals of aid reallocation, and rapidly show how shifting aid 
+investments across different populations may contribute to meeting or 
+exceeding enrollment goals. 
+Ithaca College  —  Proposal for Work 12
+P r ojec t Ov er vie w 
+The ﬁgure below provides an overview of a Carnegie ﬁnancial aid optimization project from start to ﬁnish. Our engagement approach is designed to minimize  
+administrative burden on your team from the moment we begin data collection through implementation and the conclusion of the cycle.  
+HISTORICAL DATA REVIEW 
++Develop 3-year history of enrollment  
+outcomes 
++Prepare reports and conﬁrm shared  
+understanding
+
+Bot: Based on the context provided, the financial aid optimization project involves designing predictive models to determine the right institutional aid award for each admitted student to maximize net tuition revenue. The project also includes strategies to balance institutional goals and constraints such as increasing access for lower-income students while maintaining revenue. Additionally, the project aims to understand how to shift resources between merit- and need-based aid programs to achieve key enrollment goals. The approach involves a collaborative process with clients to identify tradeoffs and prioritize goals.
