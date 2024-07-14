@@ -1,0 +1,90 @@
+User: Question: portal pricing
+
+Context: Enrollment Operations + Communications Audit
+
+11
+Our Proposed Solution: Budget Summary
+Service
+Scope of Work Summary
+Slate Grad Application Status Portal
+We build your portal using web best practices like dynamic content and on-brand design. Our reporting is digestible and visually appealing to ensure the very best experience for every audience.
+Standard templated portal, updated for color and logos (6-week timeline): $10,000Custom portal solution (14-week timeline): $15,000
+Enrollment Operations + Communications Audit
+Analysis of your graduate admissions operations, systems, resources, and communications flow, including frequency, timing, channel strategy, and segmentation. The analysis will cover all relevant subject areas within enrollment operations and communications. A detailed report inclusive of summary insights and recommendations as well as specific insights and recommendations for each subject area will be provided. Integrate Projects and Tasks
+Integrate Visits/Events
+Creation of tabs for various advancement functions, including but not limited to:
+Dashboard/Home
+Tasks
+Donor Lists
+Reports
+Travel
+Visits
+Complete portal design, including custom headers, call-to-action buttons, and social media icons
+Mobile-friendly design and ADA compliance
+Bi-weekly check-in calls
+One month of post-launch support, monitoring & analysis
+$20,000
+Additional Considerations
+All proposal scope and price expire after 90 days.
+Additional terms and conditions will be provided in final contract.
+Cover image may be subject to copyright
+Consultation hours cannot be rolled over to the next week or month; if the total allotment of hours is not fulfilled, remaining hours expire at the week or month’s end. Additionally, development of full communication campaigns, integrations, portals, and reports can be added at a per service cost. These are not currently included in scope. Slate Portals & Data Visualization 
+8
+
+9
+Application Status Portal
+Basic Application Status Portals
+14-week project duration
+4-week post-launch support period
+Up to six project calls
+One Slate query library to define applicant statuses and populations
+Custom CSS styling, HTML, and necessary Javascript based on brand standards
+Home Page containing portal elements:
+Navigation bar
+Welcome text (customized per status)
+Visual representation of Application Status
+Application details section (e.g., start term, intended major, application status, etc.)
+Up to three test score displays
+Custom application materials checklist section
+Custom upload materials section
+Custom decision release section
+Custom post-admission checklist section
+Custom payment section
+Portfolio Widget (via Slate-hosted functionality)
+Application proof
+Contact Us section (with staff assigned or general contact info)
+Resources section (up to 5 external links) Origin Sources
+Queries
+Reader
+Reporting
+Retention Policies
+Rules and Automation
+Tele-recruiting/Calling Campaigns
+Territory Management
+Upload Dataset
+Users and Permissions
+Custom Projects
+Consultation hours cannot be rolled over to the next week or month; if the total allotment of hours is not fulfilled, remaining hours expire at the week or month’s end. Additionally, development of full communication campaigns, integrations, portals, and reports can be added at a per service cost. These are not currently included in scope.
+
+15
+Giving Officer Portal 
+Evaluate Earlham College’s advancement processes
+Outline effective portal structure based on current processes
+Development of secure portal, including but not limited to:
+Embed reports
+Embed forms
+Integrate Projects and Tasks
+Integrate Visits/Events
+Creation of tabs for various advancement functions, including but not limited to:
+Dashboard/Home
+Tasks
+Donor Lists
+Reports
+Travel
+Visits
+
+Bot: The pricing for the portal services mentioned in the context varies based on the type of portal and customization level. For the Slate Grad Application Status Portal, the pricing is as follows:
+- Standard templated portal (6-week timeline): $10,000
+- Custom portal solution (14-week timeline): $15,000
+
+For the Application Status Portal in the Slate Portals & Data Visualization section, the pricing is $20,000.
