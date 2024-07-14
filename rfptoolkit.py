@@ -306,9 +306,10 @@ def handle_userinput(user_input, pdf_keywords):
         for message in response['chat_history']:
             modified_content = modify_response_language(message.content, institution_name)
             final_response += modified_content + "\n\n"
-            for doc in message.metadata.get('source_documents', []):
-                citations.append(f"{doc.metadata['source']}")
-        
+
+        for doc in response['source_documents']:
+            citations.append(f"{doc.metadata['source']} - Page {doc.metadata.get('page', 'N/A')}")
+
         citations_text = "\n".join(set(citations))  # Remove duplicates
         st.write(f'<div class="chat-message bot-message">{final_response}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
