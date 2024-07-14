@@ -1,0 +1,3 @@
+User: describe slate name buy consultants
+
+Bot: Slate Name Buy Consultants are responsible for consulting with partner institutions on search name purchases. They work directly with list source agencies to purchase names and send name files to a Slate Strategist via Google Drive or SFTP site to load and map in Slate. Additionally, they request reports from the Slate Strategist team to show historical funnel data for the partner institution by geomarket/county/zip.
