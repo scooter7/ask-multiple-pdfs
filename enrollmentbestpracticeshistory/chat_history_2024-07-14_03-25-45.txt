@@ -1,0 +1,3 @@
+User: What are online student best practices?
+
+Bot: Online students can benefit greatly from a range of support services. They rely heavily on technology, so 24/7 technical support is essential to resolve any technical issues quickly. Access to digital libraries, research databases, and academic resources is crucial for completing assignments effectively. Online students may also require virtual tutoring services and academic advising sessions for guidance on course selection, study strategies, and academic goals. Creating an interactive learning environment, facilitating communication among students and instructors, building peer support networks, and organizing virtual events are also essential best practices to engage online students and promote a sense of community.
