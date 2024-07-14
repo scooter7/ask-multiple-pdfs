@@ -123,8 +123,8 @@ def modify_response_language(original_response, citations):
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
-    response = response.replace(" them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response.replace(" them ", " us ")
+    response.replace("Them ", "Us ")
     if citations:
         response += "\n\nSources:\n" + "\n".join(f"- {citation}" for citation in citations)
     return response
