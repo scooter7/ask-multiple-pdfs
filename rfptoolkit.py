@@ -49,7 +49,7 @@ KEYWORDS = [
     "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
     "graphic design", "video production", "brand redesign", "logo", "microsite",
     "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
-    "email marketing", "text message", "sms", "student search", "branding"
+    "email marketing", "text message", "sms", "student search", "branding", "pricing"
 ]
 
 def main():
@@ -297,18 +297,20 @@ def handle_userinput(user_input, pdf_keywords):
         st.session_state.chat_history = response['chat_history']
         metadata = st.session_state.metadata
         institution_name = st.session_state.institution_name
-        for i, message in enumerate(st.session_state.chat_history):
+
+        # Consolidate the bot response
+        final_response = ""
+        citations = []
+        for message in st.session_state.chat_history:
             modified_content = modify_response_language(message.content, institution_name)
-            if i % 2 == 0:
-                st.write(f'<div class="chat-message user-message">{modified_content}</div>', unsafe_allow_html=True)
-            else:
-                # Get citations for this response
-                citations = []
-                for doc in response.get('source_documents', []):
+            final_response += modified_content + "\n\n"
+            if 'source_documents' in response:
+                for doc in response['source_documents']:
                     index = response['source_documents'].index(doc)
                     citations.append(f"Source: [{metadata[index]}]")
-                citations_text = "\n".join(citations)
-                st.write(f'<div class="chat-message bot-message">{modified_content}\n\n{citations_text}</div>', unsafe_allow_html=True)
+        
+        citations_text = "\n".join(set(citations))  # Remove duplicates
+        st.write(f'<div class="chat-message bot-message">{final_response}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
