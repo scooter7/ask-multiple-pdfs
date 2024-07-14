@@ -20,7 +20,7 @@ GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/co
 def main():
     # Set page config
     st.set_page_config(
-        page_title="Enrollment Nest Practice Bot",
+        page_title="Enrollment Best Practice Bot",
         page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
     
