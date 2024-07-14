@@ -1,0 +1,72 @@
+User: Question: portal
+
+Context: You want a site that is robust, flexible, and adaptable as the College and its brand evolve. Additionally, you’re concerned that WordPress is not the best-fit long-term platform for your needs, but have little appetite at this time to be the trailblazer for a new platform
+Danita KnightFormer Vice President for Communications and Marketing
+Agnes Scott College
+
+
+
+
+Drilling down into these areas, we gained even more context:
+The Warrington website is viewed primarily as a marketing tool for prospective students, and graduate recruiting is the top priority.
+The website has grown to ~3,000 pages, and you see an opportunity to simplify and streamline the site to ~500 pages. And then, to establish stronger centralized controls to ward off future sprawl.
+The university brand has recently evolved, and the team sees opportunity to leverage UF brand attributes to better tell its story. SLATE PORTALS AND DATA VISUALIZATION
+Your custom prospective student, current student, donor, staff member—any audience—portal will meet your exact needs and specifications. We build your portal from scratch, using web best practices like dynamic content and on-brand design. Our reporting, often delivered via a portal, is digestible and visually appealing to ensure the very best experience for every audience. We’re setting the industry standard—bring us any portal or reporting project, and we’ll exceed your audience’s expectations.
+
+
+SLATE TRAININGS
+
+Our team can make any topic accessible and every training highly productive. We run customized, interactive workshops for all skill levels to advance the knowledge, skill set, and proficiency of your Slate users. Our training topics range from Deliver to Configurable Joins and can be held in person or designed for a virtual audience. Your needs and our recommendations are the foundation of all trainings.
+
+Implementation Options
+Ben
+
+Ben Slate Portals & Data Visualization 
+8
+
+9
+Application Status Portal
+Basic Application Status Portals
+14-week project duration
+4-week post-launch support period
+Up to six project calls
+One Slate query library to define applicant statuses and populations
+Custom CSS styling, HTML, and necessary Javascript based on brand standards
+Home Page containing portal elements:
+Navigation bar
+Welcome text (customized per status)
+Visual representation of Application Status
+Application details section (e.g., start term, intended major, application status, etc.)
+Up to three test score displays
+Custom application materials checklist section
+Custom upload materials section
+Custom decision release section
+Custom post-admission checklist section
+Custom payment section
+Portfolio Widget (via Slate-hosted functionality)
+Application proof
+Contact Us section (with staff assigned or general contact info)
+Resources section (up to 5 external links) Custom payment section
+Portfolio Widget (via Slate-hosted functionality)
+Application proof
+Contact Us section (with staff assigned or general contact info)
+Resources section (up to 5 external links)
+Event registration section with student's current registration and up to 2 event categories per population
+One priority event call out section template
+Social links
+Account Tools
+Application selector Widget (via Slate-hosted functionality)
+Application submission confirmation Widget (via Slate-hosted functionality)
+Footer
+Update Info Page containing portal elements: Update Contact Info form, Deferral and/or Withdrawal Request form
+Premium Application Status Portal
+16-week project duration
+4-week post-launch support period
+Up to six project calls
+One Slate query library to define applicant statuses and populations
+Custom CSS styling, HTML, and necessary Javascript based on brand standards
+Home Page containing portal elements:
+Navigation bar
+Welcome text (customized per status)
+
+Bot: Based on the context provided, it seems like you are looking for a robust, flexible, and adaptable portal for your college or university that can meet the evolving needs of the institution and its brand. The Slate Portals and Data Visualization service mentioned can help create custom portals tailored to your specific audience, such as prospective students, current students, donors, and staff members. These portals are built from scratch using dynamic content and on-brand design to ensure the best user experience. Additionally, the service offers visually appealing reporting via the portal to exceed audience expectations. If you are interested in creating a portal that meets your exact needs and specifications, utilizing web best practices, the Slate Portals and Data Visualization service may be a good fit for your requirements.
