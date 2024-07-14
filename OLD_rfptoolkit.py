@@ -33,6 +33,8 @@ css = """
         padding: 10px;
         margin: 10px 0;
         border-radius: 5px;
+        font-family: Arial, sans-serif;
+        word-wrap: break-word;
     }
     .user-message {
         background: #e0f7fa;
@@ -301,14 +303,13 @@ def handle_userinput(user_input, pdf_keywords):
         # Consolidate the bot response
         final_response = ""
         citations = []
-        for message in st.session_state.chat_history:
+        for message in response['chat_history']:
             modified_content = modify_response_language(message.content, institution_name)
             final_response += modified_content + "\n\n"
-            if 'source_documents' in response:
-                for doc in response['source_documents']:
-                    index = response['source_documents'].index(doc)
-                    citations.append(f"Source: [{metadata[index]}]")
-        
+
+        for doc in response['source_documents']:
+            citations.append(f"{doc.metadata['source']} - Page {doc.metadata.get('page', 'N/A')}")
+
         citations_text = "\n".join(set(citations))  # Remove duplicates
         st.write(f'<div class="chat-message bot-message">{final_response}\n\n{citations_text}</div>', unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
