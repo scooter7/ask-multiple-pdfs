@@ -1,0 +1,3 @@
+User: Where do I find the portal where you can search the name of a client and find all information related to them?
+
+Bot: To find a client's landing page in Tinman where you can search for a client's name and access all information related to them, you need to click on "Clients" from the top navigation menu. Then, type the school name in the "Sage ID/Name" field and press enter. All results with that name will appear in a table below, allowing you to access the client's landing page with records of proposed, ongoing, or past work.
