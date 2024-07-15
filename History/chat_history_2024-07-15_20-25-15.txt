@@ -1,0 +1,18 @@
+User: what are the company holidays
+
+Bot: The company holidays for 2024 at Carnegie are:  
+1. Monday, January 1st - New Year’s Day  
+2. Monday, January 15th - Martin Luther King, Jr. Day  
+3. Monday, February 19th - Presidents’ Day  
+4. Monday, May 27th - Memorial Day  
+5. Wednesday, June 19th - Juneteenth  
+6. Thursday, July 4th – Independence Day  
+7. Monday, September 2nd – Labor Day  
+8. Wednesday, November 27th – Early Release 2:00 pm  
+9. Thursday, November 28th – Thanksgiving Day  
+10. Friday, November 29th – Friday after Thanksgiving Day  
+11. Tuesday, December 24th - Christmas Eve Early Release 2:00 pm  
+12. Wednesday, December 25th – Christmas Day  
+13. Wednesday, January 1st, 2025 – New Year’s Day 
+
+It's important to note that the exact list changes from year to year, so it's advisable to always check the list for the current year.
