@@ -70,7 +70,7 @@ def main():
     header_html = """
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Proposal Toolkit</h1>
-        <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+        <img src="https://github.com/scooter7/ask-multiple-pdfs/blob/6241598f302e0c9e91dab0fb95f2819957b82698/silogo.jpg" alt="Icon" style="height:200px; width:500px;">
         <p align="left">Find and develop proposal resources. The text entry field will appear momentarily.</p>
     </div>
     """
