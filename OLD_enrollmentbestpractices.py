@@ -20,7 +20,7 @@ GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/co
 def main():
     # Set page config
     st.set_page_config(
-        page_title="Enrollment Nest Practice Bot",
+        page_title="Enrollment Best Practice Bot",
         page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
     
@@ -123,8 +123,8 @@ def modify_response_language(original_response, citations):
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
-    response = response.replace(" them ", " us ")
-    response = response.replace("Them ", "Us ")
+    response.replace(" them ", " us ")
+    response.replace("Them ", "Us ")
     if citations:
         response += "\n\nSources:\n" + "\n".join(f"- {citation}" for citation in citations)
     return response
