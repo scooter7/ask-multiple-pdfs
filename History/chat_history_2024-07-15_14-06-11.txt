@@ -1,0 +1,3 @@
+User: on summer fridays, how much PTO do I put into harvest?
+
+Bot: On Summer Fridays, if you want to take a full day off, you only need to request 4 hours of paid time off (PTO) in Harvest instead of the usual 8 hours. This will allow you to leave work at 1:00 pm local time and be paid for the full day without using a full PTO day.
