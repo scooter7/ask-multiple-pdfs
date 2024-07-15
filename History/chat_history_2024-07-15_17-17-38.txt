@@ -1,0 +1,3 @@
+User: internal portal
+
+Bot: The internal portal mentioned in the provided context is the Insperity portal. It serves as a hub for information related to paystubs, benefit elections, documents like the employee handbook, training modules, updating personal information such as addresses, and submitting timesheets and PTO requests. Additionally, the portal also houses organizational charts and serves as a platform for accessing various resources.
