@@ -100,23 +100,6 @@ def main():
             st.subheader("Summarized Scope of Work")
             st.write(summarized_scope)
     
-    user_input = st.text_input("Enter your query to search in documents and craft new content")
-
-    docs = get_supplier_docs()
-    if docs:
-        raw_text, sources = get_docs_text(docs)
-        if st.session_state.uploaded_pdf_text:
-            raw_text = st.session_state.uploaded_pdf_text + raw_text
-            sources = [{'source': 'Uploaded PDF', 'page': None, 'url': ''}] + sources
-        text_chunks, chunk_metadata = get_text_chunks(raw_text, sources)
-        if text_chunks:
-            vectorstore, metadata = get_vectorstore(text_chunks, chunk_metadata)
-            st.session_state.metadata = metadata
-            st.session_state.conversation_chain = get_conversation_chain(vectorstore)
-
-    if user_input:
-        handle_userinput(user_input, st.session_state.pdf_keywords)
-
     supplier_query = st.text_input("Enter service areas to find matching suppliers")
     if supplier_query:
         handle_supplier_query(supplier_query)
@@ -331,7 +314,7 @@ def get_supplier_docs():
 
 def run_conversation_chain(chain, question, documents):
     # Prepare context from documents
-    context = ' '.join([doc.page_content for doc in documents])
+    context = ' '.join([doc.page_content for doc in documents if isinstance(doc, Document)])
     # Combine question and context into a single input
     combined_input = f"Question: {question}\n\nContext: {context}"
     return chain({'question': combined_input})
@@ -342,7 +325,7 @@ def rerank_documents(documents, query):
     query_embedding = np.array(embeddings.embed_query(query)).reshape(1, -1)
     
     # Get embeddings for the documents
-    document_embeddings = np.array([np.array(embeddings.embed_query(doc.page_content)) for doc in documents])
+    document_embeddings = np.array([np.array(embeddings.embed_query(doc.page_content)) for doc in documents if isinstance(doc, Document)])
     
     # Calculate cosine similarity between query and documents
     similarities = cosine_similarity(query_embedding, document_embeddings)[0]
