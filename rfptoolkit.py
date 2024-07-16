@@ -367,5 +367,5 @@ def cosine_similarity(query_embedding, document_embeddings):
     
     return similarities
 
-if __name__ == '__'):
+if __name__ == '__main__':
     main()
