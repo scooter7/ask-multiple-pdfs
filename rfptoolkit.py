@@ -331,11 +331,25 @@ def handle_userinput(user_input, pdf_keywords):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def run_conversation_chain(chain, question, documents):
-    # Prepare context from documents
-    context = ' '.join([doc.page_content for doc in documents])
-    # Combine question and context into a single input
-    combined_input = f"Question: {question}\n\nContext: {context}"
-    return chain({'question': combined_input})
+    # Split documents into smaller chunks if they exceed the context limit
+    max_tokens_per_chunk = 1500
+    chunked_responses = []
+    for i in range(0, len(documents), max_tokens_per_chunk):
+        chunk = documents[i:i + max_tokens_per_chunk]
+        context = ' '.join([doc.page_content for doc in chunk])
+        combined_input = f"Question: {question}\n\nContext: {context}"
+        chunked_responses.append(chain({'question': combined_input}))
+    
+    # Combine responses
+    combined_response = {
+        'chat_history': [],
+        'source_documents': []
+    }
+    for response in chunked_responses:
+        combined_response['chat_history'].extend(response['chat_history'])
+        combined_response['source_documents'].extend(response['source_documents'])
+    
+    return combined_response
 
 def rerank_documents(documents, query):
     # Get embeddings for the query
