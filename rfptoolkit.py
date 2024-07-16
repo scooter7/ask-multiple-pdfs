@@ -36,6 +36,7 @@ css = """
         font-family: Arial, sans-serif;
         word-wrap: break-word;
         white-space: pre-wrap;
+        overflow-wrap: break-word;
     }
     .user-message {
         background: #e0f7fa;
