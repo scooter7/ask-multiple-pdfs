@@ -28,13 +28,14 @@ css = """
         background: #f9f9f9;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-family: Arial, sans-serif;
     }
     .chat-message {
         padding: 10px;
         margin: 10px 0;
         border-radius: 5px;
-        font-family: Arial, sans-serif;
         word-wrap: break-word;
+        white-space: pre-wrap; /* Ensure spaces and line breaks are preserved */
     }
     .user-message {
         background: #e0f7fa;
