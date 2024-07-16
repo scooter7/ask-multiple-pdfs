@@ -1,0 +1,27 @@
+User: How do I take pto
+
+Bot: To take PTO, you can use the Insperity Portal desktop app or the mobile app. Here are the steps for both:
+
+Desktop App:
+1. From the left navigation menu, select ‘Time and Attendance’.
+2. Select ‘Requests’.
+3. Click the blue button that says “New Request”.
+4. Select the blue circular button with a white “+” to add a date to the request.
+5. Choose the correct date and the exact number of hours you’ll be taking off.
+6. From the ‘Pay Type’ dropdown list, choose the relevant reason for your time off.
+7. Click the orange “Add Dates” button.
+8. Repeat steps 4-7 for each day you’re requesting.
+9. Review dates for accuracy and update the scheduling field for any partial day requests.
+10. Click the orange “Submit Request” button.
+
+Mobile App:
+1. Tap the three horizontal lines in the upper left corner to reveal the menu.
+2. Select ‘Time Off’ from the menu.
+3. Tap the orange ‘Request Time Off’ button.
+4. Select the orange circular button with a white ‘+’ to add a date to the request.
+5. Input the exact number of hours and choose the dates that you’d like to request those hours off.
+6. From the ‘Pay Type’ dropdown list, choose the relevant reason for your time off.
+7. Select ‘Done’ in the upper right corner.
+8. Click the “Save Changes” button in the lower right.
+
+Remember to submit your PTO request as soon as you know which days you’d like to take off.
