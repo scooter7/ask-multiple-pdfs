@@ -36,6 +36,9 @@ css = """
         border-radius: 5px;
         word-wrap: break-word;
         white-space: pre-wrap; /* Ensure spaces and line breaks are preserved */
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
     }
     .user-message {
         background: #e0f7fa;
@@ -309,7 +312,10 @@ def handle_userinput(user_input, pdf_keywords):
             final_response += modified_content + "\n\n"
 
         for doc in response['source_documents']:
-            citations.append(f"{doc.metadata['source']} - Page {doc.metadata.get('page', 'N/A')}")
+            if 'page' in doc.metadata:
+                citations.append(f"{doc.metadata['source']} - Page {doc.metadata['page']}")
+            else:
+                citations.append(f"{doc.metadata['source']}")
 
         citations_text = "\n".join(set(citations))  # Remove duplicates
         st.write(f'<div class="chat-message bot-message">{final_response}\n\n{citations_text}</div>', unsafe_allow_html=True)
