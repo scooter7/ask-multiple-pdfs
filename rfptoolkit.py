@@ -98,7 +98,7 @@ def main():
     if uploaded_pdf is not None:
         rfp_text = extract_text_from_pdf(uploaded_pdf)
         if rfp_text:
-            st.session_state.uploaded_pdf_text = rfp_text
+            st.session_state.uploaded_pdf_text = clean_text(rfp_text)
             st.session_state.institution_name = extract_institution_name(rfp_text)
             summarized_scope, extracted_keywords = summarize_scope_of_work(rfp_text)
             st.session_state.pdf_keywords = extracted_keywords
@@ -124,6 +124,13 @@ def main():
 
     if user_input:
         handle_userinput(user_input, st.session_state.pdf_keywords)
+
+def clean_text(text):
+    # Remove any non-printable characters
+    text = re.sub(r'[^\x20-\x7E]', ' ', text)
+    # Replace multiple spaces with a single space
+    text = re.sub(r'\s+', ' ', text)
+    return text
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -175,11 +182,11 @@ def get_docs_text(docs):
         if isinstance(doc, BytesIO):
             pdf_reader = PdfReader(doc)
             for page_num, page in enumerate(pdf_reader.pages):
-                page_text = page.extract_text() or ""
+                page_text = clean_text(page.extract_text() or "")
                 text += page_text
                 sources.append({'source': source, 'page': page_num + 1, 'url': url})
         else:
-            text += doc
+            text += clean_text(doc)
             sources.append({'source': source, 'page': None, 'url': url})
     return text, sources
 
@@ -360,5 +367,5 @@ def cosine_similarity(query_embedding, document_embeddings):
     
     return similarities
 
-if __name__ == '__main__':
+if __name__ == '__'):
     main()
