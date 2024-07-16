@@ -1,0 +1,16 @@
+User: what are the company holidays
+
+Bot: The company holidays for 2024 are:  
+- New Year’s Day on Monday, January 1st  
+- Martin Luther King, Jr. Day on Monday, January 15th  
+- Presidents’ Day on Monday, February 19th  
+- Memorial Day on Monday, May 27th  
+- Juneteenth on Wednesday, June 19th  
+- Independence Day on Thursday, July 4th  
+- Labor Day on Monday, September 2nd  
+- Thanksgiving Day on Thursday, November 28th  
+- Friday after Thanksgiving Day on Friday, November 29th  
+- Christmas Eve Early Release on Tuesday, December 24th  
+- Christmas Day on Wednesday, December 25th
+
+Please note that this list is specific to 2024, and it's recommended to check the current year's list for accurate information.
