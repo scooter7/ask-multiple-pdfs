@@ -71,7 +71,7 @@ def main():
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Proposal Toolkit</h1>
         <img src="https://github.com/scooter7/ask-multiple-pdfs/blob/main/silogo.jpg?raw=true" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Find and develop proposal resources. The text entry field will appear momentarily.</p>
+        <p align="left">Match your RFP to Suppliers.</p>
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
