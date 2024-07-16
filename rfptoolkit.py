@@ -310,7 +310,10 @@ def handle_userinput(user_input, pdf_keywords):
             final_response += modified_content + "\n\n"
 
         for doc in response['source_documents']:
-            citations.append(f"{doc.metadata['source']} - Page {doc.metadata.get('page', 'N/A')}")
+            if doc.metadata['page'] is not None:
+                citations.append(f"{doc.metadata['source']} - Page {doc.metadata['page']}")
+            else:
+                citations.append(f"{doc.metadata['source']}")
 
         citations_text = "\n".join(set(citations))  # Remove duplicates
         st.write(f'<div class="chat-message bot-message">{final_response}\n\n{citations_text}</div>', unsafe_allow_html=True)
