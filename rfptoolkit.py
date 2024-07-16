@@ -310,8 +310,9 @@ def handle_userinput(user_input, pdf_keywords):
             final_response += modified_content + "\n\n"
 
         for doc in response['source_documents']:
-            if doc.metadata['page'] is not None:
-                citations.append(f"{doc.metadata['source']} - Page {doc.metadata['page']}")
+            page = doc.metadata.get('page')
+            if page is not None:
+                citations.append(f"{doc.metadata['source']} - Page {page}")
             else:
                 citations.append(f"{doc.metadata['source']}")
 
