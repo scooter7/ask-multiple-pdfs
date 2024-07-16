@@ -28,17 +28,14 @@ css = """
         background: #f9f9f9;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        font-family: Arial, sans-serif;
     }
     .chat-message {
         padding: 10px;
         margin: 10px 0;
         border-radius: 5px;
-        word-wrap: break-word;
-        white-space: pre-wrap; /* Ensure spaces and line breaks are preserved */
         font-family: Arial, sans-serif;
-        font-size: 14px;
-        line-height: 1.5;
+        word-wrap: break-word;
+        white-space: pre-wrap;
     }
     .user-message {
         background: #e0f7fa;
@@ -98,7 +95,7 @@ def main():
     if uploaded_pdf is not None:
         rfp_text = extract_text_from_pdf(uploaded_pdf)
         if rfp_text:
-            st.session_state.uploaded_pdf_text = clean_text(rfp_text)
+            st.session_state.uploaded_pdf_text = rfp_text
             st.session_state.institution_name = extract_institution_name(rfp_text)
             summarized_scope, extracted_keywords = summarize_scope_of_work(rfp_text)
             st.session_state.pdf_keywords = extracted_keywords
@@ -124,13 +121,6 @@ def main():
 
     if user_input:
         handle_userinput(user_input, st.session_state.pdf_keywords)
-
-def clean_text(text):
-    # Remove any non-printable characters
-    text = re.sub(r'[^\x20-\x7E]', ' ', text)
-    # Replace multiple spaces with a single space
-    text = re.sub(r'\s+', ' ', text)
-    return text
 
 def get_github_docs(undergrad_selected, grad_selected):
     github_token = st.secrets["github"]["access_token"]
@@ -182,11 +172,11 @@ def get_docs_text(docs):
         if isinstance(doc, BytesIO):
             pdf_reader = PdfReader(doc)
             for page_num, page in enumerate(pdf_reader.pages):
-                page_text = clean_text(page.extract_text() or "")
+                page_text = page.extract_text() or ""
                 text += page_text
                 sources.append({'source': source, 'page': page_num + 1, 'url': url})
         else:
-            text += clean_text(doc)
+            text += doc
             sources.append({'source': source, 'page': None, 'url': url})
     return text, sources
 
@@ -319,10 +309,7 @@ def handle_userinput(user_input, pdf_keywords):
             final_response += modified_content + "\n\n"
 
         for doc in response['source_documents']:
-            if 'page' in doc.metadata:
-                citations.append(f"{doc.metadata['source']} - Page {doc.metadata['page']}")
-            else:
-                citations.append(f"{doc.metadata['source']}")
+            citations.append(f"{doc.metadata['source']} - Page {doc.metadata.get('page', 'N/A')}")
 
         citations_text = "\n".join(set(citations))  # Remove duplicates
         st.write(f'<div class="chat-message bot-message">{final_response}\n\n{citations_text}</div>', unsafe_allow_html=True)
@@ -331,25 +318,11 @@ def handle_userinput(user_input, pdf_keywords):
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def run_conversation_chain(chain, question, documents):
-    # Split documents into smaller chunks if they exceed the context limit
-    max_tokens_per_chunk = 1500
-    chunked_responses = []
-    for i in range(0, len(documents), max_tokens_per_chunk):
-        chunk = documents[i:i + max_tokens_per_chunk]
-        context = ' '.join([doc.page_content for doc in chunk])
-        combined_input = f"Question: {question}\n\nContext: {context}"
-        chunked_responses.append(chain({'question': combined_input}))
-    
-    # Combine responses
-    combined_response = {
-        'chat_history': [],
-        'source_documents': []
-    }
-    for response in chunked_responses:
-        combined_response['chat_history'].extend(response['chat_history'])
-        combined_response['source_documents'].extend(response['source_documents'])
-    
-    return combined_response
+    # Prepare context from documents
+    context = ' '.join([doc.page_content for doc in documents])
+    # Combine question and context into a single input
+    combined_input = f"Question: {question}\n\nContext: {context}"
+    return chain({'question': combined_input})
 
 def rerank_documents(documents, query):
     # Get embeddings for the query
