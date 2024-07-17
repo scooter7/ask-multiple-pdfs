@@ -1,0 +1,76 @@
+User: Question: SEO services scope and pricing
+
+Context: Address additional backend technical website issues affecting search engine visibility and additional enhancements that can be implemented
+3
+July 2024 - September 2024
+$2,000.00
+$6,000.00
+SEO
+Web copywriting and optimization (10 pages/month): Perform keyword research and rewrite or revise existing on-page content to optimize for targeted keywords and ensure a positive user experience. This will include writing off-page metadata for these pages utilizing the same keywords as well as link and header recommendations. (Scope of work)
+Increase organic search engine rankings, website traffic, and user experience to drive brand awareness and on-site conversions
+12
+July 2024 - June 2025
+$15,000.00
+$180,000.00
+Analytics Modular and flexible design system
+Conversion of design to accessible, standards-compliant, and mobile-responsive front-end code
+Drupal or WordPress implementation and customization
+
+
+Content and SEO Scope of Work:
+SEO Writing workshop for staff enablement
+Copywriting and optimization of 35 pages
+
+Deployment and Transition Scope of Work:
+Content migration plan and migration enablement including skeletal build, scripted migration, and manual migration of 100 pages.
+Comprehensive CMS training for content editors and administrators 
+Launch prep and support
+Post-launch support
+$350,000, achievable in 10 to 12 months
+
+Option 3: Microsite
+29
+Discovery, User Experience, and Information Architecture Scope of Work:
+Streamlined discovery with key stakeholders and alignment with the core project team
+Sitemap, definition of content types, and content modeling
+Lo-fidelity wireframes for key pages
+Cross-site navigation and redirect strategy
+
+Implementation Scope of Work: Lead Gen/Branding & Awareness
+12
+July 2024 - June 2025
+$416.67
+$5,000.00
+SEO
+Technical site audit: Full audits of metadata, images, links, and duplicate and thin content. Over a series of phone calls and screen shares, we would work with your school’s marketers and developers to understand and address these issues. We also provide documents and guides to assist you in the process of implementing recommended changes. (Scope of work)
+Address the top backend technical website issues affecting search engine visibility
+-
+July 2024
+-
+$10,000.00
+SEO
+Technical consulting: Ongoing support to address additional backend technical SEO roadblocks beyond what is covered in the initial technical audit phase, as well as additional technical enhancements.
+Address additional backend technical website issues affecting search engine visibility and additional enhancements that can be implemented
+3
+July 2024 - September 2024
+$2,000.00
+$6,000.00
+SEO Increase organic search engine rankings, website traffic, and user experience to drive brand awareness and on-site conversions
+12
+July 2024 - June 2025
+$15,000.00
+$180,000.00
+Analytics
+Google Analytics Consulting: Carnegie`s analytics team will custom tailor analytics consulting to meet your institution's needs which may include implementing recommendations from an assessment, audit existing goals and rectify any issues, develop a comprehensive Data Studio dashboard, site search analysis, heat mapping, and more. (Scope of Work)
+Arm your team with tools/data to glean actionable insights, customized to your needs
+12
+July 2024 - June 2025
+$2,500.00
+$30,000.00
+Zapier/Hubspot Import Automation Set Up & Management Fee
+Set up and monthly monitoring of direct integration from LinkedIn, Facebook, TikTok ad platform to Hubspot for automated import of lead information up to 5 audiences per platform.
+1
+June 2024
+$3,600.00
+
+Bot: The SEO services scope includes addressing backend technical website issues affecting search engine visibility, conducting a technical site audit, and providing ongoing technical consulting. The pricing for these services ranges from $2,000.00 to $6,000.00 for the specified period. Additionally, there are options for increasing organic search engine rankings, website traffic, and user experience to drive brand awareness and on-site conversions, with pricing starting at $15,000.00 for the specified period.
