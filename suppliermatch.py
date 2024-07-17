@@ -50,7 +50,7 @@ KEYWORDS = [
     "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
     "graphic design", "video production", "brand redesign", "logo", "microsite",
     "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
-    "email marketing", "text message", "sms", "student search", "branding", "pricing"
+    "email marketing", "text message", "sms", "student search", "branding", "pricing", "asset management", Fleet Vehicle Maintenance", "Work order generation", "Job costing", "Inventory Management"
 ]
 
 def main():
