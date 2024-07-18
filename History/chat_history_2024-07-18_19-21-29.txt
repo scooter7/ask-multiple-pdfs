@@ -1,0 +1,3 @@
+User: how do you nominate someone for a ticket
+
+Bot: To nominate someone for a Carnegie ticket, you need to complete the ticket nomination form. In the form, you should share why the person has gone above and beyond for you or the team. Reasons for nominations can range from covering on a project, helping organize an event, showing kindness to a teammate, or participating in Carnegie activities like team trivia. Once you fill out the form, the nominee will be considered for a Carnegie ticket.
