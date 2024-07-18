@@ -1,0 +1,3 @@
+User: summarize marketing audit recommendations
+
+Bot: The marketing audit recommendations include utilizing data and analysis for strategic decision-making, implementing a data-driven approach to communications and marketing campus-wide, evolving marketing and recruitment funnels to track metrics at every step, designing a metric-driven dashboard, structuring dedicated resources and teams, centralizing the marketing budget for better allocation and performance tracking, reviewing enrollment data to target feeder institutions, and fostering a culture of accountability and strategic leadership within the campus community.
