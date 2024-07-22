@@ -48,12 +48,29 @@ css = """
 """
 
 KEYWORDS = [
-    "website redesign", "SEO", "search engine optimization", "CRM", "Slate",
-    "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
-    "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
-    "graphic design", "video production", "brand redesign", "logo", "microsite",
-    "landing page", "digital marketing", "predictive modeling", "financial aid optimization",
-    "email marketing", "text message", "sms", "student search", "branding", "pricing"
+"website redesign", "SEO", "search engine optimization", "CRM", "Slate", "Google Analytics", "GA4", "GA 4", "Universal Analytics", "OTT", "blog posts", "blogging", "copy writing", "submitted by", "due date",
+"enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
+"PPC", "social media", "surveys", "focus groups", "market research", "creative development",
+"graphic design", "video production", "brand redesign", "logo", "microsite",
+"landing page", "digital marketing", "predictive modeling", "financial aid optimization",
+"email marketing", "text message", "sms", "student search", "branding", "pricing",
+"content marketing", "influencer marketing", "affiliate marketing", "display advertising",
+"native advertising", "programmatic advertising", "retargeting", "mobile marketing",
+"app marketing", "event marketing", "experiential marketing", "public relations",
+"media planning", "media buying", "outdoor advertising", "billboards", "print advertising",
+"radio advertising", "television advertising", "podcast advertising", "sponsorships",
+"webinar production", "web design", "copywriting", "newsletter marketing", "conversion rate optimization",
+"lead generation", "account-based marketing", "B2B marketing", "B2C marketing",
+"partnership marketing", "cause marketing", "in-store marketing", "promotional marketing",
+"sales promotion", "trade show marketing", "direct mail", "ecommerce marketing", "interactive marketing",
+"virtual event marketing", "guerrilla marketing", "drip marketing", "cross-channel marketing",
+"community management", "customer journey mapping", "buyer persona development", "keyword research",
+"link building", "press release", "media outreach", "reputation management", "crisis management",
+"budget planning", "cost estimation", "financial forecasting", "budget approval",
+"timeline creation", "project scheduling", "milestone planning", "deadline management",
+"due date tracking", "deliverable management", "project timeline", "production schedule",
+"insurance coverage", "liability insurance", "errors and omissions insurance", "contract insurance",
+"risk management", "campaign tracking", "performance measurement", "ROI analysis", "A/B testing"
 ]
 
 def main():
