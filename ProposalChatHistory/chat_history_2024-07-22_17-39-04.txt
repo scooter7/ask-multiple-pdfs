@@ -1,0 +1,73 @@
+User: Question: google analytics
+
+Context: expectations of all of your audiences. 
+In order to start making data driven decisions you 
+need to have the correct data. Our team has a 
+structured approach to data-driven website 
+redesign. 
+The four steps of our process: 
+Step One: Our certiﬁed Google Analytics 
+specialists conduct an assessment of your 
+account to build data collection conﬁdence by 
+ensuring proper setup and feature utilization. 
+Step Two: Utilizing Google Analytics, our team 
+analyzes onsite search to understand what users 
+are searching for on the site and how effectively. 
+This information provides insight into what 
+information should be added on the new website. 
+In the event that our team discovers your site 
+search is not properly conﬁgured this will be 
+resolved during the assessment period. In this 
+situation the site search will have to be performed 
+after at least three months to ensure there is 
+enough data to gain insights. 
+Step Three: We develop a measurement strategy communications experts work directly in your 
+campaigns tracking performance and delivering 
+insights to optimize your efforts. 
+2
+0  Utah State 
+University PERFORMANCE 
+REPORTING 
+24/7 REPORTING 
+ACCESS 
+IN-FLIGHT 
+OPTIMIZATIONS 
+ACTIONABLE 
+INSIGHTS 
+ATTRIBUTION 
+TRACKING 
+2
+1We can give you full student journey data, from the very ﬁrst touchpoint to 
+application and beyond. From digital campaigns to Student Search emails, through 
+to deposit submission, we track and report on each user’s unique digital journey. 
+We use this powerful intel to create a personalized website experience for each 
+site visitor—based on their behaviors, interests, and position in the pipeline. We 
+will help you create and deliver custom web content for an onsite experience that 
+will meet student expectations and drive action. 
+The tool is called Carnegie Clarity, named for the data transparency it provides. 
+With Carnegie Clarity you have the power to engage stealth prospects, deliver new website. 
+Results from the SEO Strategy will inform our Creative and Content Strategy for the new 
+website. 
+$11,000 ANALYTICS BENCHMARKING AND ANALYSIS SCOPE OF WORK: 
+We’ll set the stage for data-driven reporting and decision making by evaluating your current 
+visitors’ behavior, engagement, and traffic sources using Google Analytics. Benchmarking 
+current audiences and pages can lead to an understanding of how your site is performing and 
+discover how it can be improved to deliver the ideal experience, informing the new website 
+strategy. 
+Also, this service will help to measure and prove critical post-launch ROI and impact on key 
+metrics and institutional goals (e.g., RFIs, event registrations, or applications). 
+Scope includes: 
+● GA4 Property Audit & Event Measurement Plan 
+● Event and Key Event Implementation 
+● User Behavior Analysis & Site Search Analysis 
+● Website Benchmarking Report - Understand key site metrics before and after the site 
+redesign sample Analytics dashboard is included below. 
+Our team prides itself on agility during the enrollment cycle. During regular client meetings, our team will 
+use the dashboard to monitor the developing applicant, admit, and deposit pools for risks or opportunities. 
+If we identify a shift from our initial assumptions about student populations, we will act immediately to 
+consider different interventions to either mitigate risk or take advantage of a key opportunity. 
+Ithaca College  —  Proposal for Work 17Ser vic e Sc o p e of W or k S umm a r y Cost 
+FAO Renewal Option 1 Utilizing institutional and third-party data on student geodemographic, academic, ﬁnancial, and behavioral indicators, our team will design predictive 
+models that assign a yield probability to each admitted student to determine the right institutional aid award. We merge our analysis with your unique
+
+Bot: The provided context outlines a structured approach to data-driven website redesign that involves utilizing Google Analytics in various steps. The team conducts an assessment of the Google Analytics account, analyzes onsite search behavior, develops a measurement strategy, and performs benchmarking and analysis using Google Analytics to inform decision-making for the new website. Additionally, there is a focus on tracking and reporting student journey data, optimizing digital campaigns, and leveraging tools like Carnegie Clarity for data transparency in engaging prospects.
