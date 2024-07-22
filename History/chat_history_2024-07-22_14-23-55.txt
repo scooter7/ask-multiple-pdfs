@@ -1,0 +1,3 @@
+User: How many bereavement days do we have?
+
+Bot: I don't know, the policy does not specify the number of bereavement days available. It's best to refer to the specific company policy or consult with HR for more information on bereavement leave.
