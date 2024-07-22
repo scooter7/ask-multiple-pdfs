@@ -48,7 +48,7 @@ css = """
 """
 
 KEYWORDS = [
-"website redesign", "SEO", "search engine optimization", "CRM", "Slate", "Google Analytics", "GA4", "GA 4", "Universal Analytics", "OTT", "blog posts", "blogging", "copy writing", "submitted by",
+"website redesign", "SEO", "search engine optimization", "CRM", "Slate", "Google Analytics", "GA4", "GA 4", "Universal Analytics", "OTT", "blog posts", "blogging", "copy writing", "submitted by", "due date",
 "enrollment marketing", "recruitment marketing", "digital ads", "online advertising",
 "PPC", "social media", "surveys", "focus groups", "market research", "creative development",
 "graphic design", "video production", "brand redesign", "logo", "microsite",
