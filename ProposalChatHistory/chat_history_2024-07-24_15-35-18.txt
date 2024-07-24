@@ -1,0 +1,44 @@
+User: Question: media buying scope and pricing
+
+Context: 5.3 Specifications :  
+Below are specifications expected of the ensuing C ontractor :   
+A. Digital Advertising Media Buying Services .  Upon award, the vendor will provide digital advertising media 
+buying services in targeted markets. Advertising may include, but is not limited to, any of the following:  
+a. Paid search: campaign, ad group and keyword development; campaign management; ongoing testing and 
+optimization; set -up and maintenance of audience lists; coordination with University- developed ad 
+content and landing pages   
+RFP FY1 9-67 Digital Media  Services  9 of 11  b. Display (prospecting, retargeting, native and online video): campaign develop ment and management; 
+ongoing testing and optimization, site exclusions, frequency caps; sequential messaging 
+recommendations and implementation; regular management directly with vendors or through a demand 
+side platform (DSP); pixel mapping; and coordination with University- developed creative content and 
+landing pages DIGITAL MARKETING STRATEGY + 
+EXECUTION Strategy, execution, and management of all paid digital media. Set up across all digital platforms including 
+keyword research, creation of target audiences, development of all copy and ad text, including testing 
+variations, bidding strategies, etc. Access to a live dashboard to monitor digital campaigns as well as ongoing 
+analysis from Digital team, including performance insights, trends, and recommendations when applicable.   $100,000 
+DIGITAL VIDEO CAMPAIGN One 30-second campaign video Two 10-15-second social media versions of the campaign video, including 3 
+refreshes per video Two 10-15-second campaign story social media videos, including 3 refreshes per video 
+Hard drive delivery of unedited footage at the completion of the engagement Three rounds of revision are 
+included for all deliverables. On-the-ground production includes up to six Carnegie crew members for 3 days. assignments and project. Vendors should submit proposals that detail the following: 1.) Large brand 
+awareness/enrollment campaigns with an average campaign budget of $25,000+, and 2.) Targeted academic 
+campaigns that will range between $5,000- 10,000. All production and management fees should be line itemed  
+ 
+5.4 Criteria Questions :  Vendors must  provide answers to all questions as shown below within proposals .  Questions 
+should be answered in the same order as those shown below in order to create a comparison of all vendors based on 
+said questions :  
+A. Indicate the name, email address, and phone number of the individual who will serve as the University’s single 
+point of contact  for this RFP.  
+B. Indicate the nu mber of years of experience your  company has in providing requested services for organizations 
+similar in size and scope to the University  
+C. Provide a minimum of three (3) reference institutions/organizations of similar size and scope to the University $12,750 
+Brand Creative Concept We'll provide an enterprise-level brand creative concept that speaks to the university's multiple audiences in a bold 
+and timeless way. It will include a core theme, storytelling arc, design and photography style, and a suite of seven 
+sample canvases to illustrate brand expression. $70,000 
+Messaging Playbook A companion to our campaign concept work, this highly tactical messaging framework demonstrates successful 
+application of your brand personality to communications with your priority audiences. For each of your speciﬁc 
+audiences, we'll provide a key positioning statement and content samples. Our scope of work includes up to three 
+audiences, three discovery sessions in total, and a 12-page ﬁnal document. We've also built in up to two rounds of 
+revision before ﬁnal approval of the messaging guide. $14,500 
+Brand Standards One brand standards document laying out and deﬁning essential brand rules and guidelines for the existing logo.
+
+Bot: Based on the provided context, the pricing for the digital marketing services includes $100,000 for Digital Marketing Strategy + Execution and $70,000 for a Brand Creative Concept. Additionally, there is pricing mentioned for a Digital Video Campaign, Messaging Playbook, and Brand Standards. The pricing for the media buying services is not explicitly mentioned in the context provided.
