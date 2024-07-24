@@ -1,0 +1,3 @@
+User: how do we onboard clients for digital projects?
+
+Bot: To onboard clients for digital projects, we typically start with kickoff and planning meetings between all team members involved. During these meetings, we confirm goals, audiences, and priorities, and walk through our processes and systems for information access and sharing. From there, we construct and set up campaigns, working closely with the client's team to confirm assets, creative, and plans are managed effectively. Additionally, we provide a project plan and creative brief, along with task-driven communications through project management software like Asana and shared Google Drive folders. This collaborative effort ensures a seamless onboarding process for our clients.
