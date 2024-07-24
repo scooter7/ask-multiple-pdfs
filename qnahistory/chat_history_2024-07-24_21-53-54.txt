@@ -1,0 +1,7 @@
+User: Explain how you leverage audience data to build out targeted digital marketing campaigns. 
+
+Bot: To leverage audience data effectively for targeted digital marketing campaigns, we utilize a variety of tools and techniques. Firstly, we create student personas based on demographics and psychographics specific to each institution. This helps us understand the nuances of the audience. We then conduct interactive sessions to gather in-depth insights into their personalities.
+
+We use tools like Google Keyword Planner and Facebook's audience builder to identify and target the most relevant audiences for each campaign. By clustering the demographics of the institution's current audience, we can tailor our messaging and calls to action effectively. Additionally, if there are prior campaign data available, we analyze the impact per channel and make recommendations for future placements.
+
+This detailed audience segmentation allows us to align calls to action and messaging with each audience's position in the decision-making funnel. By using data visualization platforms like Tableau and Google Data Studio, we can track campaign performance in real-time and adjust strategies accordingly. Ultimately, this data-driven approach ensures that our digital marketing campaigns are targeted, effective, and tailored to the specific needs of the audience.
