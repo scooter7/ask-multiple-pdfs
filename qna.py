@@ -37,7 +37,7 @@ def main():
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Proposal Q&A</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Hey there! Explore questions and answers to past proposals.</p>
+        <p align="left">Hey there! Explore questions and answers to past proposals. The text entry field witll appear momentarily.</p>
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
@@ -55,7 +55,7 @@ def main():
             vectorstore = get_vectorstore(text_chunks, chunk_metadata)
             st.session_state.conversation = get_conversation_chain(vectorstore)
     
-    user_question = st.text_input("Ask about enrollment best practices")
+    user_question = st.text_input("Proposal Q&A")
     if user_question:
         handle_userinput(user_question)
 
