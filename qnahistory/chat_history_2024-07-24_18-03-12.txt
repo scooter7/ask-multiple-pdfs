@@ -1,0 +1,3 @@
+User: How does Carnegie use AI for clients
+
+Bot: Carnegie utilizes AI for clients by integrating automation tools like Zapier to set up integrations for lead generation advertising campaigns on social media platforms such as Facebook, Instagram, and LinkedIn. Additionally, for clients using Carnegie Clarity™, a proprietary website personalization and attribution tool, they can provide direct integration into Salesforce for web attribution and custom website interactions on a 1:1 identified user basis.
