@@ -37,7 +37,7 @@ def main():
     <div style="text-align: center;">
         <h1 style="font-weight: bold;">Proposal Q&A</h1>
         <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-        <p align="left">Hey there! Explore questions and answers to past proposals. The text entry field witll appear momentarily.</p>
+        <p align="left">Hey there! Explore questions and answers to past proposals. The text entry field will appear momentarily.</p>
     </div>
     """
     st.markdown(header_html, unsafe_allow_html=True)
