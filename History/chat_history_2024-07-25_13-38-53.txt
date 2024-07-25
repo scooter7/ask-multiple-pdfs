@@ -1,0 +1,3 @@
+User: How can I submit a sick day after payroll has been submitted and timesheets have been unlocked?
+
+Bot: After the payroll has been submitted and timesheets have been unlocked, you can wait until Kris Peterson posts in the #general slack channel that timesheets have been unlocked (the Thursday prior to payday). Once that notification is received, you can go into your TimeStar system using the computer or mobile app. Log in, select the dates and hours you are requesting for the sick day, choose the reason as "Sick" under the "Pay Type" options, make the changes, and then resubmit your timesheet. This will notify your manager to review, approve, and/or discuss the sick day request.
