@@ -1,0 +1,3 @@
+User: How can I submit a sick day after payroll has been submitted?
+
+Bot: After the payroll has been submitted, if you need to submit a sick day or make changes to your timesheet due to unexpected circumstances like a sick day, you should wait until Kris Peterson posts in the #general slack channel that timesheets have been unlocked (usually the Thursday prior to payday). Once the timesheets have been unlocked, you can go into your Timesheet to make the necessary changes and resubmit them. If you have specific questions about submitting your timesheet, you can reach out to your manager or contact Kris Peterson in Human Resources at kpeterson@carnegiehighered.com for assistance.
