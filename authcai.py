@@ -46,10 +46,10 @@ def fetch_token():
 
         # Display the authorization URL for the user to click
         st.markdown(f'[Authorize with Google]({authorization_url})')
+        st.write("Please click the link above to authorize and then paste the full redirect URL here.")
     else:
         # Retrieve the state and authorization URL from session
         state = st.session_state.oauth_state
-        authorization_url = st.session_state.authorization_url
         oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=state)
 
         # Display the text input field for the redirect URL
