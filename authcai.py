@@ -45,17 +45,12 @@ def display_authorize_url():
     st.write("Please click the link above to authorize and then paste the full redirect URL here.")
 
 def fetch_token():
-    # Ensure the state is preserved and the text input for the redirect URL is shown
-    if 'authorization_url' in st.session_state and 'oauth_state' in st.session_state:
-        state = st.session_state.oauth_state
-        oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=state)
-
-        # Display the text input field for the redirect URL
+    if 'oauth_state' in st.session_state and 'authorization_url' in st.session_state:
+        oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=st.session_state.oauth_state)
         authorization_response = st.text_input("Paste the full redirect URL here:")
-
+        
         if authorization_response:
             try:
-                # Fetch the access token
                 token = oauth.fetch_token(
                     TOKEN_URL,
                     authorization_response=authorization_response,
@@ -69,13 +64,11 @@ def fetch_token():
     return None
 
 def main():
-    # Set page config
     st.set_page_config(
         page_title="Ask Carnegie Everything",
         page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
     
-    # Hide the Streamlit toolbar
     hide_toolbar_css = """
     <style>
         .css-14xtw13.e8zbici0 { display: none !important; }
@@ -83,19 +76,14 @@ def main():
     """
     st.markdown(hide_toolbar_css, unsafe_allow_html=True)
     
-    # Check if token exists in session state
     if 'token' not in st.session_state:
         token = fetch_token()
         if token:
             st.session_state.token = token
-            
-            # Fetch user info using the token
             user_info = fetch_user_info(token)
             st.session_state.user_info = user_info
-            
             st.experimental_rerun()
     else:
-        # If token exists in session state, show the user info
         user_info = st.session_state.get('user_info')
         
         if user_info:
@@ -240,7 +228,6 @@ def handle_userinput(user_question):
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-        # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
