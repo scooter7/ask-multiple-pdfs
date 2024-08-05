@@ -73,16 +73,17 @@ def main():
     if 'token' not in st.session_state:
         if 'authorization_url' not in st.session_state:
             display_authorize_url()
-        else:
-            st.write("Authorization URL and state have been set.")
-            authorization_response = st.text_input("Paste the full redirect URL here:")
-            if authorization_response:
-                token = fetch_token(authorization_response)
-                if token:
-                    st.session_state.token = token
-                    user_info = fetch_user_info(token)
-                    st.session_state.user_info = user_info
-                    st.experimental_rerun()
+
+        st.write("Please click the authorization link above and then paste the full redirect URL here.")
+        authorization_response = st.text_input("Paste the full redirect URL here:")
+
+        if authorization_response:
+            token = fetch_token(authorization_response)
+            if token:
+                st.session_state.token = token
+                user_info = fetch_user_info(token)
+                st.session_state.user_info = user_info
+                st.experimental_rerun()
     else:
         user_info = st.session_state.get('user_info')
         
