@@ -11,6 +11,7 @@ streamlit-google-auth
 StreamlitGAuth
 streamlit-oauth
 scikit-learn
+httpx-oauth
 # uncomment to use huggingface llms
 # huggingface-hub==0.14.1
 
