@@ -46,7 +46,6 @@ def fetch_token():
         # Display the authorization URL for the user to click
         st.markdown(f'[Authorize with Google]({authorization_url})')
 
-        return None
     else:
         # Retrieve the state from session
         state = st.session_state.oauth_state
@@ -63,7 +62,7 @@ def fetch_token():
                 client_secret=CLIENT_SECRET
             )
             return token
-        return None
+    return None
 
 def main():
     # Set page config
