@@ -38,26 +38,32 @@ SCOPE = ["email", "profile"]
 
 def fetch_token():
     # OAuth2 client setup
-    oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE)
+    if 'oauth_state' not in st.session_state:
+        oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE)
+        authorization_url, state = oauth.authorization_url(AUTHORIZE_URL, access_type="offline", prompt="select_account")
+        st.session_state.oauth_state = state
 
-    # Redirect user to Google's OAuth 2.0 server
-    authorization_url, state = oauth.authorization_url(AUTHORIZE_URL, access_type="offline", prompt="select_account")
+        # Display the authorization URL for the user to click
+        st.markdown(f'[Authorize with Google]({authorization_url})')
 
-    # Display the authorization URL for the user to click
-    st.markdown(f'[Authorize with Google]({authorization_url})')
+        return None
+    else:
+        # Retrieve the state from session
+        state = st.session_state.oauth_state
+        oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=state)
 
-    # Get the authorization response URL from the user
-    authorization_response = st.text_input("Paste the full redirect URL here:")
+        # Get the authorization response URL from the user
+        authorization_response = st.text_input("Paste the full redirect URL here:")
 
-    if authorization_response:
-        # Fetch the access token
-        token = oauth.fetch_token(
-            TOKEN_URL,
-            authorization_response=authorization_response,
-            client_secret=CLIENT_SECRET
-        )
-        return token
-    return None
+        if authorization_response:
+            # Fetch the access token
+            token = oauth.fetch_token(
+                TOKEN_URL,
+                authorization_response=authorization_response,
+                client_secret=CLIENT_SECRET
+            )
+            return token
+        return None
 
 def main():
     # Set page config
@@ -96,6 +102,7 @@ def main():
             if st.button("Log out"):
                 del st.session_state.token
                 del st.session_state.user_info
+                del st.session_state.oauth_state
                 st.experimental_rerun()
 
             st.write(css, unsafe_allow_html=True)
@@ -191,8 +198,8 @@ def modify_response_language(original_response):
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response is original_response.replace(" them ", " us ")
-    response is original_response.replace("Them ", "Us ")
+    response = original_response.replace(" them ", " us ")
+    response = original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
