@@ -41,10 +41,10 @@ SCOPE = "email profile"
 oauth2 = OAuth2Component(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
-    authorize_endpoint=AUTHORIZE_URL,
-    token_endpoint=TOKEN_URL,
-    refresh_token_endpoint=REFRESH_TOKEN_URL,
-    revoke_token_endpoint=REVOKE_TOKEN_URL,
+    authorize_url=AUTHORIZE_URL,  # Corrected argument name
+    token_url=TOKEN_URL,
+    refresh_token_url=REFRESH_TOKEN_URL,
+    revoke_token_url=REVOKE_TOKEN_URL,
     revocation_endpoint_auth_method="client_secret_post"
 )
 
@@ -186,8 +186,8 @@ def modify_response_language(original_response):
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response is original_response.replace(" them ", " us ")
-    response is original_response.replace("Them ", "Us ")
+    response = original_response.replace(" them ", " us ")
+    response = original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
