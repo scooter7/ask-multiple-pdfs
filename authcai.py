@@ -42,16 +42,17 @@ def fetch_token():
         oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE)
         authorization_url, state = oauth.authorization_url(AUTHORIZE_URL, access_type="offline", prompt="select_account")
         st.session_state.oauth_state = state
+        st.session_state.authorization_url = authorization_url
 
         # Display the authorization URL for the user to click
         st.markdown(f'[Authorize with Google]({authorization_url})')
-
     else:
-        # Retrieve the state from session
+        # Retrieve the state and authorization URL from session
         state = st.session_state.oauth_state
+        authorization_url = st.session_state.authorization_url
         oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=state)
 
-        # Get the authorization response URL from the user
+        # Display the text input field for the redirect URL
         authorization_response = st.text_input("Paste the full redirect URL here:")
 
         if authorization_response:
@@ -102,6 +103,7 @@ def main():
                 del st.session_state.token
                 del st.session_state.user_info
                 del st.session_state.oauth_state
+                del st.session_state.authorization_url
                 st.experimental_rerun()
 
             st.write(css, unsafe_allow_html=True)
