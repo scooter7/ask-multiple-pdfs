@@ -33,21 +33,14 @@ async def get_access_token(client, redirect_uri, code):
 
 async def get_user_info(client, token):
     try:
-        user_id, user_email = await client.get_id_email(token)
-        return user_id, user_email
-    except Exception as e:
-        st.error(f"Error while retrieving user profile: {e}")
-        raise e
-
-def fetch_user_info(token):
-    user_info_endpoint = "https://www.googleapis.com/oauth2/v1/userinfo"
-    headers = {
-        "Authorization": f"Bearer {token['access_token']}"
-    }
-    try:
-        response = httpx.get(user_info_endpoint, headers=headers)
-        response.raise_for_status()
-        return response.json()
+        user_info_endpoint = "https://www.googleapis.com/oauth2/v1/userinfo"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}"
+        }
+        async with httpx.AsyncClient() as async_client:
+            response = await async_client.get(user_info_endpoint, headers=headers)
+            response.raise_for_status()
+            return response.json()
     except httpx.HTTPStatusError as e:
         st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
         raise e
@@ -190,9 +183,9 @@ def main():
             try:
                 token = asyncio.run(get_access_token(client, redirect_uri, code))
                 session_state.token = token
-                user_id, user_email = asyncio.run(get_user_info(client, token['access_token']))
-                session_state.user_id = user_id
-                session_state.user_email = user_email
+                user_info = asyncio.run(get_user_info(client, token))
+                session_state.user_id = user_info['id']
+                session_state.user_email = user_info['email']
                 st.experimental_rerun()
             except Exception as e:
                 st.write(f"Error fetching token: {e}")
