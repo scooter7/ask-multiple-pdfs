@@ -1,7 +1,8 @@
 import os
+import asyncio
 import streamlit as st
-from streamlit_oauth import OAuth2Component
-import requests
+from httpx_oauth.clients.google import GoogleOAuth2
+from session_state import get
 from io import BytesIO
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -13,115 +14,39 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
+import httpx
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/History"
 
-# Load Google Auth credentials from Streamlit secrets
-google_auth = {
-    "client_id": st.secrets["google_auth"]["client_id"],
-    "project_id": st.secrets["google_auth"]["project_id"],
-    "auth_uri": st.secrets["google_auth"]["auth_uri"],
-    "token_uri": st.secrets["google_auth"]["token_uri"],
-    "auth_provider_x509_cert_url": st.secrets["google_auth"]["auth_provider_x509_cert_url"],
-    "client_secret": st.secrets["google_auth"]["client_secret"],
-    "redirect_uris": st.secrets["google_auth"]["redirect_uris"]
-}
-
-AUTHORIZE_URL = google_auth["auth_uri"]
-TOKEN_URL = google_auth["token_uri"]
-REFRESH_TOKEN_URL = google_auth["token_uri"]
-REVOKE_TOKEN_URL = "https://accounts.google.com/o/oauth2/revoke"
-CLIENT_ID = google_auth["client_id"]
-CLIENT_SECRET = google_auth["client_secret"]
-REDIRECT_URI = google_auth["redirect_uris"][0]
-SCOPE = "email profile"
-
-# Create OAuth2Component instance
-oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, REFRESH_TOKEN_URL, REVOKE_TOKEN_URL)
-
-def main():
-    # Set page config
-    st.set_page_config(
-        page_title="Ask Carnegie Everything",
-        page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
+async def get_authorization_url(client, redirect_uri):
+    authorization_url = await client.get_authorization_url(
+        redirect_uri,
+        scope=["profile", "email"],
+        extras_params={"access_type": "offline"},
     )
-    
-    # Hide the Streamlit toolbar
-    hide_toolbar_css = """
-    <style>
-        .css-14xtw13.e8zbici0 { display: none !important; }
-    </style>
-    """
-    st.markdown(hide_toolbar_css, unsafe_allow_html=True)
-    
-    # Check if token exists in session state
-    if 'token' not in st.session_state:
-        # If not, show authorize button
-        result = oauth2.authorize_button("Authorize", REDIRECT_URI, SCOPE)
-        
-        # Debugging: Print the result to see its structure
-        st.write(result)
-        
-        if result and 'token' in result:
-            # If authorization successful, save token and user info in session state
-            st.session_state.token = result.get('token')
-            
-            # Fetch user info using the token
-            user_info = fetch_user_info(result.get('token'))
-            st.session_state.user_info = user_info
-            
-            st.experimental_rerun()
-    else:
-        # If token exists in session state, show the user info
-        user_info = st.session_state.get('user_info')
-        
-        if user_info:
-            st.image(user_info.get('picture', ''))
-            st.write(f'Hello, {user_info.get("name", "User")}')
-            st.write(f'Your email is {user_info.get("email", "")}')
-            if st.button("Log out"):
-                del st.session_state.token
-                del st.session_state.user_info
-                st.experimental_rerun()
+    return authorization_url
 
-            st.write(css, unsafe_allow_html=True)
-            header_html = """
-            <div style="text-align: center;">
-                <h1 style="font-weight: bold;">Ask Carnegie Everything - ACE</h1>
-                <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
-                <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl! The text entry field will appear momentarily.</p>
-            </div>
-            """
-            st.markdown(header_html, unsafe_allow_html=True)
-            if 'conversation' not in st.session_state:
-                st.session_state.conversation = None
-            if 'chat_history' not in st.session_state:
-                st.session_state.chat_history = []
-            pdf_docs = get_github_pdfs()
-            if pdf_docs:
-                raw_text = get_pdf_text(pdf_docs)
-                text_chunks = get_text_chunks(raw_text)
-                if text_chunks:
-                    vectorstore = get_vectorstore(text_chunks)
-                    st.session_state.conversation = get_conversation_chain(vectorstore)
-            user_question = st.text_input("Ask ACE about anything Carnegie:")
-            if user_question:
-                handle_userinput(user_question)
-        else:
-            st.error("User information is missing. Please re-authenticate.")
+async def get_access_token(client, redirect_uri, code):
+    token = await client.get_access_token(code, redirect_uri)
+    return token
 
-def fetch_user_info(token):
-    user_info_endpoint = "https://www.googleapis.com/oauth2/v1/userinfo"
-    headers = {
-        "Authorization": f"Bearer {token['access_token']}"
-    }
-    response = requests.get(user_info_endpoint, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error("Failed to fetch user information.")
-        return None
+async def get_user_info(client, token):
+    try:
+        user_info_endpoint = "https://www.googleapis.com/oauth2/v1/userinfo"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}"
+        }
+        async with httpx.AsyncClient() as async_client:
+            response = await async_client.get(user_info_endpoint, headers=headers)
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+        raise e
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        raise e
 
 def get_github_pdfs():
     github_token = st.secrets["github"]["access_token"]
@@ -129,22 +54,28 @@ def get_github_pdfs():
         'Accept': 'application/vnd.github.v3+json',
         'Authorization': f'token {github_token}'
     }
-    response = requests.get(GITHUB_REPO_URL, headers=headers)
-    if response.status_code != 200:
-        st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
+    try:
+        response = httpx.get(GITHUB_REPO_URL, headers=headers)
+        response.raise_for_status()
+        files = response.json()
+        if not isinstance(files, list):
+            st.error(f"Unexpected response format: {files}")
+            return []
+        pdf_docs = []
+        for file in files:
+            if 'name' in file and file['name'].endswith('.pdf'):
+                pdf_url = file.get('download_url')
+                if pdf_url:
+                    response = httpx.get(pdf_url, headers=headers)
+                    response.raise_for_status()
+                    pdf_docs.append(BytesIO(response.content))
+        return pdf_docs
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
         return []
-    files = response.json()
-    if not isinstance(files, list):
-        st.error(f"Unexpected response format: {files}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
         return []
-    pdf_docs = []
-    for file in files:
-        if 'name' in file and file['name'].endswith('.pdf'):
-            pdf_url = file.get('download_url')
-            if pdf_url:
-                response = requests.get(pdf_url, headers=headers)
-                pdf_docs.append(BytesIO(response.content))
-    return pdf_docs
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -198,11 +129,14 @@ def save_chat_history(chat_history):
         "content": encoded_content,
         "branch": "main"
     }
-    response = requests.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
-    if response.status_code == 201:
+    try:
+        response = httpx.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
+        response.raise_for_status()
         st.success("Chat history saved successfully.")
-    else:
-        st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
@@ -214,10 +148,79 @@ def handle_userinput(user_question):
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-        # Save chat history after each interaction
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
+
+def main():
+    st.set_page_config(
+        page_title="Ask Carnegie Everything",
+        page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
+    )
+    
+    hide_toolbar_css = """
+    <style>
+        .css-14xtw13.e8zbici0 { display: none !important; }
+    </style>
+    """
+    st.markdown(hide_toolbar_css, unsafe_allow_html=True)
+    
+    client_id = st.secrets["google_auth"]["client_id"]
+    client_secret = st.secrets["google_auth"]["client_secret"]
+    redirect_uri = st.secrets["google_auth"]["redirect_uris"][0]
+
+    client = GoogleOAuth2(client_id, client_secret)
+    authorization_url = asyncio.run(get_authorization_url(client, redirect_uri))
+
+    session_state = get(token=None, user_id=None, user_email=None)
+
+    if session_state.token is None:
+        try:
+            code = st.experimental_get_query_params()['code'][0]
+        except KeyError:
+            st.markdown(f'[Authorize with Google]({authorization_url})')
+        else:
+            try:
+                token = asyncio.run(get_access_token(client, redirect_uri, code))
+                session_state.token = token
+                user_info = asyncio.run(get_user_info(client, token))
+                session_state.user_id = user_info['id']
+                session_state.user_email = user_info['email']
+                st.experimental_rerun()
+            except Exception as e:
+                st.write(f"Error fetching token: {e}")
+                st.markdown(f'[Authorize with Google]({authorization_url})')
+    else:
+        st.write(f"You're logged in as {session_state.user_email}")
+        if st.button("Log out"):
+            session_state.token = None
+            session_state.user_id = None
+            session_state.user_email = None
+            st.experimental_rerun()
+
+        st.write(css, unsafe_allow_html=True)
+        header_html = """
+        <div style="text-align: center;">
+            <h1 style="font-weight: bold;">Ask Carnegie Everything - ACE</h1>
+            <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+            <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl! The text entry field will appear momentarily.</p>
+        </div>
+        """
+        st.markdown(header_html, unsafe_allow_html=True)
+        if 'conversation' not in st.session_state:
+            st.session_state.conversation = None
+        if 'chat_history' not in st.session_state:
+            st.session_state.chat_history = []
+        pdf_docs = get_github_pdfs()
+        if pdf_docs:
+            raw_text = get_pdf_text(pdf_docs)
+            text_chunks = get_text_chunks(raw_text)
+            if text_chunks:
+                vectorstore = get_vectorstore(text_chunks)
+                st.session_state.conversation = get_conversation_chain(vectorstore)
+        user_question = st.text_input("Ask ACE about anything Carnegie:")
+        if user_question:
+            handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
