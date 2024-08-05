@@ -87,6 +87,11 @@ def main():
                 user_info = fetch_user_info(token)
                 st.session_state.user_info = user_info
                 st.experimental_rerun()
+            else:
+                if 'oauth_state' in st.session_state:
+                    del st.session_state.oauth_state
+                if 'authorization_url' in st.session_state:
+                    del st.session_state.authorization_url
     else:
         user_info = st.session_state.get('user_info')
         
