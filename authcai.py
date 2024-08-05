@@ -36,19 +36,17 @@ CLIENT_SECRET = google_auth["client_secret"]
 REDIRECT_URI = google_auth["redirect_uris"][0]
 SCOPE = ["email", "profile"]
 
-def display_authorize_url():
-    oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE)
-    authorization_url, state = oauth.authorization_url(AUTHORIZE_URL, access_type="offline", prompt="select_account")
-    st.session_state.oauth_state = state
-    st.session_state.authorization_url = authorization_url
-    st.markdown(f'[Authorize with Google]({authorization_url})')
-    st.write("Please click the link above to authorize and then paste the full redirect URL here.")
-
 def fetch_token():
-    if 'oauth_state' in st.session_state and 'authorization_url' in st.session_state:
+    if 'authorization_url' not in st.session_state:
+        oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE)
+        authorization_url, state = oauth.authorization_url(AUTHORIZE_URL, access_type="offline", prompt="select_account")
+        st.session_state.oauth_state = state
+        st.session_state.authorization_url = authorization_url
+        st.markdown(f'[Authorize with Google]({authorization_url})')
+        st.write("Please click the link above to authorize and then paste the full redirect URL here.")
+    else:
         oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=st.session_state.oauth_state)
         authorization_response = st.text_input("Paste the full redirect URL here:")
-        
         if authorization_response:
             try:
                 token = oauth.fetch_token(
@@ -59,8 +57,6 @@ def fetch_token():
                 return token
             except Exception as e:
                 st.error(f"Error fetching token: {e}")
-    else:
-        display_authorize_url()
     return None
 
 def main():
