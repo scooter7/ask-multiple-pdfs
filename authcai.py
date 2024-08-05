@@ -1,6 +1,6 @@
 import os
 import streamlit as st
-from streamlit_oauth import OAuth2Component
+from requests_oauthlib import OAuth2Session
 import requests
 from io import BytesIO
 from PyPDF2 import PdfReader
@@ -30,23 +30,34 @@ google_auth = {
 
 AUTHORIZE_URL = google_auth["auth_uri"]
 TOKEN_URL = google_auth["token_uri"]
-REFRESH_TOKEN_URL = google_auth["token_uri"]
 REVOKE_TOKEN_URL = "https://accounts.google.com/o/oauth2/revoke"
 CLIENT_ID = google_auth["client_id"]
 CLIENT_SECRET = google_auth["client_secret"]
 REDIRECT_URI = google_auth["redirect_uris"][0]
-SCOPE = "email profile"
+SCOPE = ["email", "profile"]
 
-# Create OAuth2Component instance
-oauth2 = OAuth2Component(
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET,
-    authorize_url=AUTHORIZE_URL,  # Corrected argument name
-    token_url=TOKEN_URL,
-    refresh_token_url=REFRESH_TOKEN_URL,
-    revoke_token_url=REVOKE_TOKEN_URL,
-    revocation_endpoint_auth_method="client_secret_post"
-)
+def fetch_token():
+    # OAuth2 client setup
+    oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE)
+
+    # Redirect user to Google's OAuth 2.0 server
+    authorization_url, state = oauth.authorization_url(AUTHORIZE_URL, access_type="offline", prompt="select_account")
+
+    # Display the authorization URL for the user to click
+    st.markdown(f'[Authorize with Google]({authorization_url})')
+
+    # Get the authorization response URL from the user
+    authorization_response = st.text_input("Paste the full redirect URL here:")
+
+    if authorization_response:
+        # Fetch the access token
+        token = oauth.fetch_token(
+            TOKEN_URL,
+            authorization_response=authorization_response,
+            client_secret=CLIENT_SECRET
+        )
+        return token
+    return None
 
 def main():
     # Set page config
@@ -65,18 +76,12 @@ def main():
     
     # Check if token exists in session state
     if 'token' not in st.session_state:
-        # If not, show authorize button
-        result = oauth2.authorize_button("Authorize", REDIRECT_URI, SCOPE)
-        
-        # Debugging: Print the result to see its structure
-        st.write(result)
-        
-        if result and 'token' in result:
-            # If authorization successful, save token and user info in session state
-            st.session_state.token = result.get('token')
+        token = fetch_token()
+        if token:
+            st.session_state.token = token
             
             # Fetch user info using the token
-            user_info = fetch_user_info(result.get('token'))
+            user_info = fetch_user_info(token)
             st.session_state.user_info = user_info
             
             st.experimental_rerun()
@@ -186,8 +191,8 @@ def modify_response_language(original_response):
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response is original_response.replace(" them ", " us ")
+    response is original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
