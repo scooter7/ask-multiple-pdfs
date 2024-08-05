@@ -38,7 +38,15 @@ REDIRECT_URI = google_auth["redirect_uris"][0]
 SCOPE = "email profile"
 
 # Create OAuth2Component instance
-oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL, REFRESH_TOKEN_URL, REVOKE_TOKEN_URL)
+oauth2 = OAuth2Component(
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    authorize_endpoint=AUTHORIZE_URL,
+    token_endpoint=TOKEN_URL,
+    refresh_token_endpoint=REFRESH_TOKEN_URL,
+    revoke_token_endpoint=REVOKE_TOKEN_URL,
+    revocation_endpoint_auth_method="client_secret_post"
+)
 
 def main():
     # Set page config
@@ -178,8 +186,8 @@ def modify_response_language(original_response):
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response is original_response.replace(" them ", " us ")
+    response is original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
