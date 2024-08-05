@@ -14,6 +14,7 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
+import httpx
 
 GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
 GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/History"
@@ -31,20 +32,28 @@ async def get_access_token(client, redirect_uri, code):
     return token
 
 async def get_user_info(client, token):
-    user_id, user_email = await client.get_id_email(token)
-    return user_id, user_email
+    try:
+        user_id, user_email = await client.get_id_email(token)
+        return user_id, user_email
+    except Exception as e:
+        st.error(f"Error while retrieving user profile: {e}")
+        raise e
 
 def fetch_user_info(token):
     user_info_endpoint = "https://www.googleapis.com/oauth2/v1/userinfo"
     headers = {
         "Authorization": f"Bearer {token['access_token']}"
     }
-    response = requests.get(user_info_endpoint, headers=headers)
-    if response.status_code == 200:
+    try:
+        response = httpx.get(user_info_endpoint, headers=headers)
+        response.raise_for_status()
         return response.json()
-    else:
-        st.error("Failed to fetch user information.")
-        return None
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+        raise e
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        raise e
 
 def get_github_pdfs():
     github_token = st.secrets["github"]["access_token"]
@@ -52,22 +61,28 @@ def get_github_pdfs():
         'Accept': 'application/vnd.github.v3+json',
         'Authorization': f'token {github_token}'
     }
-    response = requests.get(GITHUB_REPO_URL, headers=headers)
-    if response.status_code != 200:
-        st.error(f"Failed to fetch files: {response.status_code}, {response.text}")
+    try:
+        response = httpx.get(GITHUB_REPO_URL, headers=headers)
+        response.raise_for_status()
+        files = response.json()
+        if not isinstance(files, list):
+            st.error(f"Unexpected response format: {files}")
+            return []
+        pdf_docs = []
+        for file in files:
+            if 'name' in file and file['name'].endswith('.pdf'):
+                pdf_url = file.get('download_url')
+                if pdf_url:
+                    response = httpx.get(pdf_url, headers=headers)
+                    response.raise_for_status()
+                    pdf_docs.append(BytesIO(response.content))
+        return pdf_docs
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
         return []
-    files = response.json()
-    if not isinstance(files, list):
-        st.error(f"Unexpected response format: {files}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
         return []
-    pdf_docs = []
-    for file in files:
-        if 'name' in file and file['name'].endswith('.pdf'):
-            pdf_url = file.get('download_url')
-            if pdf_url:
-                response = requests.get(pdf_url, headers=headers)
-                pdf_docs.append(BytesIO(response.content))
-    return pdf_docs
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -121,11 +136,14 @@ def save_chat_history(chat_history):
         "content": encoded_content,
         "branch": "main"
     }
-    response = requests.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
-    if response.status_code == 201:
+    try:
+        response = httpx.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
+        response.raise_for_status()
         st.success("Chat history saved successfully.")
-    else:
-        st.error(f"Failed to save chat history: {response.status_code}, {response.text}")
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
