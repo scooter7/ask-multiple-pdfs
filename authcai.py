@@ -44,22 +44,17 @@ def display_authorize_url():
     st.markdown(f'[Authorize with Google]({authorization_url})')
     st.write("Please click the link above to authorize and then paste the full redirect URL here.")
 
-def fetch_token():
-    if 'authorization_url' in st.session_state and 'oauth_state' in st.session_state:
-        oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=st.session_state.oauth_state)
-        authorization_response = st.text_input("Paste the full redirect URL here:")
-        if authorization_response:
-            try:
-                token = oauth.fetch_token(
-                    TOKEN_URL,
-                    authorization_response=authorization_response,
-                    client_secret=CLIENT_SECRET
-                )
-                return token
-            except Exception as e:
-                st.error(f"Error fetching token: {e}")
-    else:
-        display_authorize_url()
+def fetch_token(authorization_response):
+    oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=st.session_state.oauth_state)
+    try:
+        token = oauth.fetch_token(
+            TOKEN_URL,
+            authorization_response=authorization_response,
+            client_secret=CLIENT_SECRET
+        )
+        return token
+    except Exception as e:
+        st.error(f"Error fetching token: {e}")
     return None
 
 def main():
@@ -76,12 +71,17 @@ def main():
     st.markdown(hide_toolbar_css, unsafe_allow_html=True)
     
     if 'token' not in st.session_state:
-        token = fetch_token()
-        if token:
-            st.session_state.token = token
-            user_info = fetch_user_info(token)
-            st.session_state.user_info = user_info
-            st.experimental_rerun()
+        if 'authorization_url' not in st.session_state:
+            display_authorize_url()
+        else:
+            authorization_response = st.text_input("Paste the full redirect URL here:")
+            if authorization_response:
+                token = fetch_token(authorization_response)
+                if token:
+                    st.session_state.token = token
+                    user_info = fetch_user_info(token)
+                    st.session_state.user_info = user_info
+                    st.experimental_rerun()
     else:
         user_info = st.session_state.get('user_info')
         
