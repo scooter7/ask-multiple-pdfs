@@ -101,8 +101,8 @@ def modify_response_language(original_response):
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response is original_response.replace(" them ", " us ")
-    response is original_response.replace("Them ", "Us ")
+    response = original_response.replace(" them ", " us ")
+    response = original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
