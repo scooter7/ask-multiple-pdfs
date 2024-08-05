@@ -43,8 +43,10 @@ def display_authorize_url():
     st.session_state.authorization_url = authorization_url
     st.markdown(f'[Authorize with Google]({authorization_url})')
     st.write("Please click the link above to authorize and then paste the full redirect URL here.")
+    st.write(f"Debug: Stored state = {state}")
 
 def fetch_token(authorization_response):
+    st.write(f"Debug: Stored state in session = {st.session_state.oauth_state}")
     oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=st.session_state.oauth_state)
     try:
         token = oauth.fetch_token(
@@ -78,6 +80,7 @@ def main():
         authorization_response = st.text_input("Paste the full redirect URL here:")
 
         if authorization_response:
+            st.write(f"Debug: Authorization response received = {authorization_response}")
             token = fetch_token(authorization_response)
             if token:
                 st.session_state.token = token
