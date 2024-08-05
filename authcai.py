@@ -44,25 +44,28 @@ def fetch_token():
         st.session_state.oauth_state = state
         st.session_state.authorization_url = authorization_url
 
-    # Display the authorization URL for the user to click
-    st.markdown(f'[Authorize with Google]({st.session_state.authorization_url})')
-    st.write("Please click the link above to authorize and then paste the full redirect URL here.")
-    
-    # Display the text input field for the redirect URL
-    authorization_response = st.text_input("Paste the full redirect URL here:")
-
-    if authorization_response:
-        # Retrieve the state from session
+        # Display the authorization URL for the user to click
+        st.markdown(f'[Authorize with Google]({authorization_url})')
+        st.write("Please click the link above to authorize and then paste the full redirect URL here.")
+    else:
+        # Retrieve the state and authorization URL from session
         state = st.session_state.oauth_state
         oauth = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI, scope=SCOPE, state=state)
 
-        # Fetch the access token
-        token = oauth.fetch_token(
-            TOKEN_URL,
-            authorization_response=authorization_response,
-            client_secret=CLIENT_SECRET
-        )
-        return token
+        # Display the text input field for the redirect URL
+        authorization_response = st.text_input("Paste the full redirect URL here:")
+
+        if authorization_response:
+            try:
+                # Fetch the access token
+                token = oauth.fetch_token(
+                    TOKEN_URL,
+                    authorization_response=authorization_response,
+                    client_secret=CLIENT_SECRET
+                )
+                return token
+            except Exception as e:
+                st.error(f"Error fetching token: {e}")
     return None
 
 def main():
@@ -199,8 +202,8 @@ def modify_response_language(original_response):
     response = original_response.replace("They ", "We ")
     response = original_response.replace(" their ", " our ")
     response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response is original_response.replace(" them ", " us ")
+    response is original_response.replace("Them ", "Us ")
     return response
 
 def save_chat_history(chat_history):
