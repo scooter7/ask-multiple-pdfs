@@ -1,0 +1,9 @@
+User: How do I request PTO
+
+Bot: To request PTO, you can follow these steps using the TimeStar system:
+1. Log in via computer or the mobile app.
+2. Select the dates and hours you are requesting off.
+3. Choose the reason for your time off from the "Pay Type" dropdown list (e.g., Vacation, Sick, etc.).
+4. Press submit.
+
+Make sure to submit your request at least two weeks in advance if possible. If using the mobile app, tap the three horizontal lines to reveal the menu, select 'Time Off', then tap the 'Request Time Off' button to proceed with your request.
