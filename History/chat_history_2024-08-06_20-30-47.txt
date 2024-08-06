@@ -1,0 +1,3 @@
+User: How do I take leave
+
+Bot: To take leave, you should submit a Parental Leave Notification Form to Human Resources at least 30 days prior to your intended leave. If you are a birth mother, the Business Office will submit your leave request. For other types of leave, you can use Insperity’s time and attendance module with the pay code "Parental Leave." Additionally, you can use the TimeStar system to request time off for various reasons like vacation, sick leave, bereavement, jury duty, or volunteer time. Make sure to submit your requests with as much notice as possible through the Insperity Portal or TimeStar system. If you have specific questions or need more information, contact Human Resources for assistance.
