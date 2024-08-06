@@ -1,0 +1,3 @@
+User: How to log in to Tinman?
+
+Bot: To log in to Tinman, you need to first connect to the VPN using the OpenVPN Connect application. Once connected to the VPN, navigate to http://tinman.carnegie.llc/admin and log in using the same credentials you use to log in to your Gmail & VPN. This will bring you to a page displaying "My Items" with quick links to any Tinman orders, campaigns, contracts, proposal requests, and error alerts you're connected to.
