@@ -1,0 +1,18 @@
+User: what holidays does the company observe?
+
+Bot: In 2024, the company observes the following holidays:
+- New Year’s Day
+- Martin Luther King, Jr. Day
+- Presidents’ Day
+- Memorial Day
+- Juneteenth
+- Independence Day
+- Labor Day
+- Early Release on November 27th
+- Thanksgiving Day
+- Friday after Thanksgiving Day
+- Christmas Eve Early Release on December 24th
+- Christmas Day
+- New Year’s Day in 2025
+
+Additionally, there is a Summer Friday program that allows employees to leave work early on Fridays between June 7 and August 30.
