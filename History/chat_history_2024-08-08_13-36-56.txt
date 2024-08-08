@@ -1,0 +1,3 @@
+User: What are website portals
+
+Bot: Website portals are online platforms or websites that serve as a centralized hub for accessing information, resources, tools, and services. They typically provide users with a single point of access to various content and functionalities. Portals can be used for a wide range of purposes, such as accessing company information, employee benefits, training modules, organizational charts, submitting timesheets, requesting time off, and more. In the context of the information provided, Insperity Portal serves as a website portal for employees to access their paystub, benefit elections, documents, training modules, and update personal information.
