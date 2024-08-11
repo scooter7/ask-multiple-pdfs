@@ -148,30 +148,37 @@ def save_chat_history(chat_history):
 def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
+
+        # Debug: Print the response structure
+        st.write("Response structure:", response)
+
         st.session_state.chat_history = response['chat_history']
         
         # Initialize the list of citations
         all_citations = []
         
-        # Check if the response contains source documents with metadata
+        # Attempt to collect citations if they exist
         if 'source_documents' in response:
+            st.write("Found 'source_documents' in response")
             for doc in response['source_documents']:
+                st.write("Document metadata:", doc.metadata)
                 source = doc.metadata.get('source', '')
                 if source:
                     all_citations.append(source)
-        
+        else:
+            st.write("'source_documents' not found in response")
+
         # Process and display the messages
         full_response = ""
         for i, message in enumerate(st.session_state.chat_history):
-            # Collect the full response content
             full_response += message.content + " "
-        
+
         # Modify the full response to include citations
         modified_content = modify_response_language(full_response.strip(), all_citations)
-        
+
         # Display the final response with citations
         st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-        
+
         # Save the modified response back to the session state
         st.session_state.chat_history[-1].content = modified_content
         
