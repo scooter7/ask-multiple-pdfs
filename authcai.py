@@ -131,7 +131,7 @@ def modify_response_language(original_response, citations=None):
 
     if citations:
         response += "\n\nSources:\n" + "\n".join(
-            f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]}#page={citation.split(' - ')[1].replace('Page ', '')})"
+            f"- [{citation.split(' - ')[0]} - {citation.split(' - ')[1]}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0].replace(' ', '%20')}#page={citation.split(' - ')[1].replace('Page ', '')})"
             for citation in citations)
     return response
 
