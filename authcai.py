@@ -128,9 +128,10 @@ def modify_response_language(original_response, citations=None):
     response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
     response = response.replace("Them ", "Us ")
+
     if citations:
         response += "\n\nSources:\n" + "\n".join(
-            f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})"
+            f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]}#page={citation.split(' - ')[1].replace('Page ', '')})"
             for citation in citations)
     return response
 
