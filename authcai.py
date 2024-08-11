@@ -90,12 +90,13 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-def get_vectorstore(text_chunks):
+def get_vectorstore(text_chunks, metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+    documents = [Document(page_content=chunk, metadata={'source': meta['source']}) for chunk, meta in zip(text_chunks, metadata)]
+    vectorstore = FAISS.from_documents(documents, embedding=embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
@@ -147,13 +148,20 @@ def handle_userinput(user_question):
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
-                # Ensure metadata is present and process citations
-                if hasattr(message, 'metadata') and message.metadata:
-                    citations = [meta.get('source') for meta in message.metadata if 'source' in meta]
-                    if citations:
-                        citation_links = "\n".join(f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})" for citation in citations)
-                        modified_content += f"\n\nSources:\n{citation_links}"
+                # Check and extract metadata
+                citations = []
+                if hasattr(message, 'source_documents'):
+                    for doc in message.source_documents:
+                        if 'source' in doc.metadata:
+                            citations.append(doc.metadata['source'])
+                
+                # Add citations as links
+                if citations:
+                    citation_links = "\n".join(f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})" for citation in citations)
+                    modified_content += f"\n\nSources:\n{citation_links}"
+                
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
