@@ -73,7 +73,7 @@ def get_github_pdfs():
                     response = httpx.get(pdf_url, headers=headers)
                     response.raise_for_status()
                     pdf_docs.append(BytesIO(response.content))
-                    pdf_names.append(file['name'])  # Capture the file name
+                    pdf_names.append(file['name'])  # Correctly capture the file name
 
         return pdf_docs, pdf_names
 
@@ -137,7 +137,7 @@ def modify_response_language(original_response, citations=None):
 
     if citations:
         response += "\n\nSources:\n" + "\n".join(
-            f"- [{citation.split(' - ')[0]} - {citation.split(' - ')[1]}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0].replace(' ', '%20')}#page={citation.split(' - ')[1].replace('Page ', '')})"
+            f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0].replace(' ', '%20')}#page={citation.split(' - ')[1].replace('Page ', '')})"
             for citation in citations)
     return response
 
