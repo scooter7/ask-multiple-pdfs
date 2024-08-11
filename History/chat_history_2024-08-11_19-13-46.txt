@@ -1,0 +1,3 @@
+User: what do we use for email?
+
+Bot: For email, we primarily use Gmail based on the provided context. Gmail is used for official company correspondence, important updates, requests for feedback and action items, and specific client communication that we want to keep a record of. It is also used to remind clients to respond in Asana if they are not doing so effectively. The goal is to keep email communication minimal to ensure nothing is missed from clients or outside parties.
