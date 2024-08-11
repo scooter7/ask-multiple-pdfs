@@ -82,13 +82,18 @@ def get_pdf_text(pdf_docs):
     text = []
     metadata = []
     for pdf in pdf_docs:
-        pdf_name = "example_pdf_name.pdf"  # Replace this with actual logic to extract the file name
+        # If pdf is a file-like object, you might need to adapt this to get the name differently
+        if isinstance(pdf, str):  # Assuming pdf is a file path
+            pdf_name = os.path.basename(pdf)
+        else:
+            pdf_name = "unknown.pdf"  # Fallback in case pdf is not a path and has no name
+
         pdf_reader = PdfReader(pdf)
         for page_num, page in enumerate(pdf_reader.pages):
             page_text = page.extract_text()
             if page_text:
                 text.append(page_text)
-                metadata.append({'source': f"{pdf_name} - Page {page_num + 1}"})  # Store file name instead of BytesIO object
+                metadata.append({'source': f"{pdf_name} - Page {page_num + 1}"})  # Use actual file name
     return text, metadata
 
 def get_text_chunks(text, metadata):
