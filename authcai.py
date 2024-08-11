@@ -150,8 +150,10 @@ def handle_userinput(user_question):
         response = st.session_state.conversation({'question': user_question})
         st.session_state.chat_history = response['chat_history']
         
-        # Check if the response contains the expected documents
+        # Initialize the list of citations
         all_citations = []
+        
+        # Check if the response contains source documents with metadata
         if 'source_documents' in response:
             for doc in response['source_documents']:
                 source = doc.metadata.get('source', '')
@@ -159,12 +161,19 @@ def handle_userinput(user_question):
                     all_citations.append(source)
         
         # Process and display the messages
+        full_response = ""
         for i, message in enumerate(st.session_state.chat_history):
-            modified_content = modify_response_language(message.content, all_citations)
-            if i % 2 == 0:
-                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-            else:
-                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+            # Collect the full response content
+            full_response += message.content + " "
+        
+        # Modify the full response to include citations
+        modified_content = modify_response_language(full_response.strip(), all_citations)
+        
+        # Display the final response with citations
+        st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        
+        # Save the modified response back to the session state
+        st.session_state.chat_history[-1].content = modified_content
         
         save_chat_history(st.session_state.chat_history)
     else:
