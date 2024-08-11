@@ -117,7 +117,9 @@ def modify_response_language(original_response, citations=None):
     response = response.replace(" them ", " us ")
     response = response.replace("Them ", "Us ")
     if citations:
-        response += "\n\nSources:\n" + "\n".join(f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})" for citation in citations)
+        response += "\n\nSources:\n" + "\n".join(
+            f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})"
+            for citation in citations)
     return response
 
 def save_chat_history(chat_history):
@@ -157,8 +159,19 @@ def handle_userinput(user_question):
         answer = response['answer']
         source_documents = response.get('source_documents', [])
 
+        # Debug: Print out the source documents to check metadata
+        st.write("Source Documents:", source_documents)
+
         # Extract citations from source documents
-        citations = [doc.metadata['source'] for doc in source_documents if 'source' in doc.metadata]
+        citations = []
+        for doc in source_documents:
+            metadata = doc.metadata
+            if metadata and 'source' in metadata:
+                citation = metadata['source']
+                citations.append(citation)
+        
+        # Debug: Print out the citations
+        st.write("Citations:", citations)
 
         # Modify the response with hyperlinks
         modified_content = modify_response_language(answer, citations)
