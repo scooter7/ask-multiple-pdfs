@@ -145,38 +145,21 @@ def save_chat_history(chat_history):
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
-def handle_userinput():
-    # Display the conversation history
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+def handle_userinput(user_question):
+    if 'conversation' in st.session_state and st.session_state.conversation:
+        response = st.session_state.conversation({'question': user_question})
+        st.session_state.chat_history = response['chat_history']
+        all_citations = [doc.metadata.get('source', '') for doc in response['documents']]
 
-    # Process new user input
-    prompt = st.text_input("Ask ACE about anything Carnegie:")
-    if prompt:
-        # Append user input to session messages
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.write(prompt)
-
-        # Split the user input into chunks if necessary
-        query_chunks = chunk_query(prompt)
-        full_response = ''
-        all_citations = []
-
-        # Process each chunk of the query
-        for chunk in query_chunks:
-            response = user_input(chunk)
-            full_response += ''.join(response['output_text'])
-            all_citations.extend(response.get('citations', []))
-
-        # Modify the response to include citations and apply any language changes
-        modified_response = modify_response_language(full_response, all_citations)
-
-        # Display and store the assistant's response
-        with st.chat_message("assistant"):
-            st.write(modified_response)
-            st.session_state.messages.append({"role": "assistant", "content": modified_response})
+        for i, message in enumerate(st.session_state.chat_history):
+            modified_content = modify_response_language(message.content, all_citations)
+            if i % 2 == 0:
+                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        save_chat_history(st.session_state.chat_history)
+    else:
+        st.error("The conversation model is not initialized. Please wait until the model is ready.")
 
 def main():
     st.set_page_config(
@@ -251,7 +234,9 @@ def main():
                 vectorstore = get_vectorstore(text_chunks)
                 st.session_state.conversation = get_conversation_chain(vectorstore)
 
-        handle_userinput()
+        user_question = st.text_input("Ask ACE about anything Carnegie:")
+        if user_question:
+            handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
