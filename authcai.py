@@ -144,14 +144,25 @@ def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
         st.session_state.chat_history = response['chat_history']
-        citations = [msg.metadata['source'] for msg in st.session_state.chat_history if 'source' in msg.metadata]  # Extract citations
+        source_documents = response.get('source_documents', [])
+        citations = []
+        for doc in source_documents:
+            metadata = doc.metadata
+            if 'source' in metadata and 'url' in metadata:
+                citation = {'source': metadata['source'], 'url': metadata['url']}
+                if citation not in citations:
+                    citations.append(citation)
         
+        full_response = ""
         for i, message in enumerate(st.session_state.chat_history):
-            modified_content = modify_response_language(message.content, citations if i % 2 == 1 else None)  # Pass citations only for the bot response
-            if i % 2 == 0:
-                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+            if message.type == 'human':
+                st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
             else:
-                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+                full_response += message.content
+
+        # Modify the response language and add citations
+        modified_content = modify_response_language(full_response, citations)
+        st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
         
         save_chat_history(st.session_state.chat_history)
     else:
