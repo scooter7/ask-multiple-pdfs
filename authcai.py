@@ -135,7 +135,6 @@ def get_conversation_chain(vectorstore):
 def modify_response_language(original_response, citations=None):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
-    response is modified to ensure consistency with the platform's voice.
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
     response = response.replace(" them ", " us ")
