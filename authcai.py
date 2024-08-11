@@ -149,14 +149,23 @@ def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
         st.session_state.chat_history = response['chat_history']
-        all_citations = [doc.metadata.get('source', '') for doc in response['documents']]
-
+        
+        # Check if the response contains the expected documents
+        all_citations = []
+        if 'source_documents' in response:
+            for doc in response['source_documents']:
+                source = doc.metadata.get('source', '')
+                if source:
+                    all_citations.append(source)
+        
+        # Process and display the messages
         for i, message in enumerate(st.session_state.chat_history):
             modified_content = modify_response_language(message.content, all_citations)
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
