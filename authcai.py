@@ -148,25 +148,15 @@ def save_chat_history(chat_history):
 def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
         response = st.session_state.conversation({'question': user_question})
-
-        # Debug: Print the response structure
-        st.write("Response structure:", response)
-
         st.session_state.chat_history = response['chat_history']
         
-        # Initialize the list of citations
+        # Attempt to map the response back to source documents manually
         all_citations = []
+        # Hypothetical function to map answer to source documents
+        possible_sources = map_answer_to_sources(response['answer'], st.session_state.documents)
         
-        # Attempt to collect citations if they exist
-        if 'source_documents' in response:
-            st.write("Found 'source_documents' in response")
-            for doc in response['source_documents']:
-                st.write("Document metadata:", doc.metadata)
-                source = doc.metadata.get('source', '')
-                if source:
-                    all_citations.append(source)
-        else:
-            st.write("'source_documents' not found in response")
+        for source in possible_sources:
+            all_citations.append(source.metadata.get('source', ''))
 
         # Process and display the messages
         full_response = ""
