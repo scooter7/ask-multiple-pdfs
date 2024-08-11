@@ -101,7 +101,7 @@ def get_vectorstore(text_chunks):
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
     return conversation_chain
 
 def modify_response_language(original_response, citations=None):
@@ -146,25 +146,12 @@ def handle_userinput(user_question):
         st.session_state.chat_history = response['chat_history']
         
         # Extract citations from source documents
-        source_documents = response.get('source_documents', [])
-        citations = []
-        for doc in source_documents:
-            metadata = doc.metadata
-            if 'source' in metadata and 'url' in metadata:
-                citation = f"{metadata['source']}"
-                if citation not in citations:
-                    citations.append(citation)
+        citations = [doc.metadata['source'] for doc in response['source_documents'] if 'source' in doc.metadata]
 
-        # Generate the full response with citations included
-        full_response = ""
-        for i, message in enumerate(st.session_state.chat_history):
-            if message.type == 'human':
-                st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-            else:
-                full_response += message.content
+        # Modify the response with hyperlinks
+        modified_content = modify_response_language(response['answer'], citations)
         
-        # Modify the response language and include citations
-        modified_content = modify_response_language(full_response, citations)
+        # Display the conversation
         st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
         
         save_chat_history(st.session_state.chat_history)
