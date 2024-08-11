@@ -248,17 +248,24 @@ def main():
         </div>
         """
         st.markdown(header_html, unsafe_allow_html=True)
+        
         if 'conversation' not in st.session_state:
             st.session_state.conversation = None
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
+        
         pdf_docs = get_github_pdfs()
         if pdf_docs:
-            raw_text = get_pdf_text(pdf_docs)
-            text_chunks = get_text_chunks(raw_text)
+            # Extract text and metadata
+            raw_text, source_metadata = get_pdf_text(pdf_docs)
+            
+            # Get text chunks and their corresponding metadata
+            text_chunks, chunk_metadata = get_text_chunks(raw_text, source_metadata)
+            
             if text_chunks:
-                vectorstore = get_vectorstore(text_chunks)
+                vectorstore = get_vectorstore(text_chunks, chunk_metadata)
                 st.session_state.conversation = get_conversation_chain(vectorstore)
+        
         user_question = st.text_input("Ask ACE about anything Carnegie:")
         if user_question:
             handle_userinput(user_question)
