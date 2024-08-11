@@ -147,7 +147,7 @@ def handle_userinput(user_question):
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
-                # Check if the message has metadata
+                # Ensure metadata is present and process citations
                 if hasattr(message, 'metadata') and message.metadata:
                     citations = [meta.get('source') for meta in message.metadata if 'source' in meta]
                     if citations:
