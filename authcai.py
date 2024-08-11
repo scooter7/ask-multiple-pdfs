@@ -114,7 +114,7 @@ def modify_response_language(original_response, citations=None):
     
     if citations and len(citations) > 0:
         response += "\n\nSources:\n" + "\n".join(
-            f"- [{citation}](https://github.com/scooter7/gemini_multipdf_chat/blob/main/docs/{citation.split(' - ')[0]})"
+            f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})"
             for citation in citations
         )
     
@@ -152,7 +152,8 @@ def handle_userinput():
             st.write(message["content"])
 
     # Process new user input
-    if prompt := st.chat_input():
+    prompt = st.text_input("Ask ACE about anything Carnegie:")
+    if prompt:
         # Append user input to session messages
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
