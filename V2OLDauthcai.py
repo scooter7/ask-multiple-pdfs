@@ -1,3 +1,8 @@
+import logging
+
+# Set the logging level to WARNING to suppress INFO and DEBUG logs
+logging.getLogger().setLevel(logging.WARNING)
+
 import os
 import asyncio
 import streamlit as st
@@ -11,7 +16,7 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.schema import Document  # <-- Import the Document class here
+from langchain.schema import Document
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
@@ -178,9 +183,6 @@ def handle_userinput(user_question):
         answer = response['answer']
         source_documents = response.get('source_documents', [])
 
-        # Debug: Print out the source documents to check metadata
-        st.write("Source Documents:", source_documents)
-
         # Extract citations from source documents
         citations = []
         for doc in source_documents:
@@ -188,9 +190,6 @@ def handle_userinput(user_question):
             if metadata and 'source' in metadata:
                 citation = metadata['source']
                 citations.append(citation)
-        
-        # Debug: Print out the citations
-        st.write("Citations:", citations)
 
         # Modify the response with hyperlinks
         modified_content = modify_response_language(answer, citations)
