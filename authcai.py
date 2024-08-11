@@ -221,20 +221,30 @@ def main():
         </div>
         """
         st.markdown(header_html, unsafe_allow_html=True)
+        
         if 'conversation' not in st.session_state:
             st.session_state.conversation = None
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
+
+        # Fetch PDFs from GitHub
         pdf_docs = get_github_pdfs()
         if pdf_docs:
             raw_text = get_pdf_text(pdf_docs)
+            
+            # Create metadata for each document
+            source_metadata = [{'source': f"Document {i+1}"} for i in range(len(pdf_docs))]
+
             text_chunks = get_text_chunks(raw_text)
             if text_chunks:
-                vectorstore = get_vectorstore(text_chunks)
+                # Pass both text_chunks and metadata to get_vectorstore
+                vectorstore = get_vectorstore(text_chunks, source_metadata)
                 st.session_state.conversation = get_conversation_chain(vectorstore)
+        
         user_question = st.text_input("Ask ACE about anything Carnegie:")
         if user_question:
             handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
+
