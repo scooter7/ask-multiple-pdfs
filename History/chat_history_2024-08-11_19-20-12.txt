@@ -1,0 +1,3 @@
+User: what is SHIPing?
+
+Bot: SHIPing refers to a method used in targeted advertising and segmentation. It involves segmenting communications by the Subject Line, Header Image, Intro Paragraph, and the P.S. Line. It is a way to personalize experiences for individuals based on their interests and needs.
