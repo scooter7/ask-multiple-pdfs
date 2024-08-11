@@ -61,8 +61,11 @@ def get_github_pdfs():
         files = response.json()
         if not isinstance(files, list):
             st.error(f"Unexpected response format: {files}")
-            return []
+            return [], []
+
         pdf_docs = []
+        pdf_names = []
+
         for file in files:
             if 'name' in file and file['name'].endswith('.pdf'):
                 pdf_url = file.get('download_url')
@@ -70,14 +73,18 @@ def get_github_pdfs():
                     response = httpx.get(pdf_url, headers=headers)
                     response.raise_for_status()
                     pdf_docs.append(BytesIO(response.content))
-        return pdf_docs
+                    pdf_names.append(file['name'])  # Capture the file name
+
+        return pdf_docs, pdf_names
+
     except httpx.HTTPStatusError as e:
         st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
-        return []
+        return [], []
+
     except Exception as e:
         st.error(f"An error occurred: {e}")
-        return []
-
+        return [], []
+        
 def get_pdf_text(pdf_docs, pdf_names):
     text = []
     metadata = []
@@ -256,10 +263,10 @@ def main():
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
         
-        pdf_docs = get_github_pdfs()
+        pdf_docs, pdf_names = get_github_pdfs()  # Get both PDFs and their names
         if pdf_docs:
             # Extract text and metadata
-            raw_text, source_metadata = get_pdf_text(pdf_docs)
+            raw_text, source_metadata = get_pdf_text(pdf_docs, pdf_names)
             
             # Get text chunks and their corresponding metadata
             text_chunks, chunk_metadata = get_text_chunks(raw_text, source_metadata)
