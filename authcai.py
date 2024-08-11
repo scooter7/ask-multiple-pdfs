@@ -78,22 +78,16 @@ def get_github_pdfs():
         st.error(f"An error occurred: {e}")
         return []
 
-def get_pdf_text(pdf_docs):
+def get_pdf_text(pdf_docs, pdf_names):
     text = []
     metadata = []
-    for pdf in pdf_docs:
-        # If pdf is a file-like object, you might need to adapt this to get the name differently
-        if isinstance(pdf, str):  # Assuming pdf is a file path
-            pdf_name = os.path.basename(pdf)
-        else:
-            pdf_name = "unknown.pdf"  # Fallback in case pdf is not a path and has no name
-
+    for pdf, pdf_name in zip(pdf_docs, pdf_names):
         pdf_reader = PdfReader(pdf)
         for page_num, page in enumerate(pdf_reader.pages):
             page_text = page.extract_text()
             if page_text:
                 text.append(page_text)
-                metadata.append({'source': f"{pdf_name} - Page {page_num + 1}"})  # Use actual file name
+                metadata.append({'source': f"{pdf_name} - Page {page_num + 1}"})
     return text, metadata
 
 def get_text_chunks(text, metadata):
