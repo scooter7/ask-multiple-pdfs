@@ -11,7 +11,6 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.schema import Document  # <-- Import Document here
 from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
@@ -91,13 +90,12 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-def get_vectorstore(text_chunks, metadata):
+def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    documents = [Document(page_content=chunk, metadata={'source': meta['source']}) for chunk, meta in zip(text_chunks, metadata)]
-    vectorstore = FAISS.from_documents(documents, embedding=embeddings)
+    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
@@ -106,13 +104,15 @@ def get_conversation_chain(vectorstore):
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
 
-def modify_response_language(original_response):
+def modify_response_language(original_response, citations=None):
     response = original_response.replace(" they ", " we ")
-    response = original_response.replace("They ", "We ")
-    response = original_response.replace(" their ", " our ")
-    response = original_response.replace("Their ", "Our ")
-    response = original_response.replace(" them ", " us ")
-    response = original_response.replace("Them ", "Us ")
+    response = response.replace("They ", "We ")
+    response = response.replace(" their ", " our ")
+    response = response.replace("Their ", "Our ")
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
+    if citations:
+        response += "\n\nSources:\n" + "\n".join(f"- [{citation}](https://github.com/scooter7/gemini_multipdf_chat/blob/main/docs/{citation.split(' - ')[0]})" for citation in citations)
     return response
 
 def save_chat_history(chat_history):
@@ -149,20 +149,7 @@ def handle_userinput(user_question):
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
-                # Check and extract metadata
-                citations = []
-                if hasattr(message, 'source_documents'):
-                    for doc in message.source_documents:
-                        if 'source' in doc.metadata:
-                            citations.append(doc.metadata['source'])
-                
-                # Add citations as links
-                if citations:
-                    citation_links = "\n".join(f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})" for citation in citations)
-                    modified_content += f"\n\nSources:\n{citation_links}"
-                
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
-        
         save_chat_history(st.session_state.chat_history)
     else:
         st.error("The conversation model is not initialized. Please wait until the model is ready.")
@@ -222,30 +209,20 @@ def main():
         </div>
         """
         st.markdown(header_html, unsafe_allow_html=True)
-        
         if 'conversation' not in st.session_state:
             st.session_state.conversation = None
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
-
-        # Fetch PDFs from GitHub
         pdf_docs = get_github_pdfs()
         if pdf_docs:
             raw_text = get_pdf_text(pdf_docs)
-            
-            # Create metadata for each document
-            source_metadata = [{'source': f"Document {i+1}"} for i in range(len(pdf_docs))]
-
             text_chunks = get_text_chunks(raw_text)
             if text_chunks:
-                # Pass both text_chunks and metadata to get_vectorstore
-                vectorstore = get_vectorstore(text_chunks, source_metadata)
+                vectorstore = get_vectorstore(text_chunks)
                 st.session_state.conversation = get_conversation_chain(vectorstore)
-        
         user_question = st.text_input("Ask ACE about anything Carnegie:")
         if user_question:
             handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()
-
