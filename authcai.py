@@ -78,24 +78,34 @@ def get_github_pdfs():
         return []
 
 def get_pdf_text(pdf_docs):
-    text = ""
+    text = []
+    metadata = []
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text += page.extract_text() or ""
-    return text
+        for page_num, page in enumerate(pdf_reader.pages):
+            page_text = page.extract_text()
+            if page_text:
+                text.append(page_text)
+                metadata.append({'source': f"{pdf} - Page {page_num + 1}"})  # Example metadata
+    return text, metadata
 
-def get_text_chunks(text):
+def get_text_chunks(text, metadata):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
-    chunks = text_splitter.split_text(text)
-    return chunks
+    chunks = []
+    chunk_metadata = []
+    for i, page_text in enumerate(text):
+        page_chunks = text_splitter.split_text(page_text)
+        chunks.extend(page_chunks)
+        chunk_metadata.extend([metadata[i]] * len(page_chunks))  # Assign correct metadata to each chunk
+    return chunks, chunk_metadata
 
-def get_vectorstore(text_chunks):
+def get_vectorstore(text_chunks, chunk_metadata):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
     embeddings = OpenAIEmbeddings()
-    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+    documents = [Document(page_content=chunk, metadata=chunk_metadata[i]) for i, chunk in enumerate(text_chunks)]
+    vectorstore = FAISS.from_documents(documents, embedding=embeddings)
     return vectorstore
 
 def get_conversation_chain(vectorstore):
