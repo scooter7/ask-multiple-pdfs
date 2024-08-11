@@ -100,8 +100,13 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory, return_source_documents=True)
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
+    conversation_chain = ConversationalRetrievalChain.from_llm(
+        llm=llm, 
+        retriever=vectorstore.as_retriever(), 
+        memory=memory, 
+        return_source_documents=True
+    )
     return conversation_chain
 
 def modify_response_language(original_response, citations=None):
@@ -142,14 +147,21 @@ def save_chat_history(chat_history):
 
 def handle_userinput(user_question):
     if 'conversation' in st.session_state and st.session_state.conversation:
+        # Call the conversation chain
         response = st.session_state.conversation({'question': user_question})
-        st.session_state.chat_history = response['chat_history']
         
+        # Store the chat history
+        st.session_state.chat_history = response['chat_history']
+
+        # Extract the answer and source documents from the response
+        answer = response['answer']
+        source_documents = response.get('source_documents', [])
+
         # Extract citations from source documents
-        citations = [doc.metadata['source'] for doc in response['source_documents'] if 'source' in doc.metadata]
+        citations = [doc.metadata['source'] for doc in source_documents if 'source' in doc.metadata]
 
         # Modify the response with hyperlinks
-        modified_content = modify_response_language(response['answer'], citations)
+        modified_content = modify_response_language(answer, citations)
         
         # Display the conversation
         st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
