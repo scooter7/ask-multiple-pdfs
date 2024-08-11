@@ -147,6 +147,10 @@ def handle_userinput(user_question):
             if i % 2 == 0:
                 st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
             else:
+                citations = [meta.get('source') for meta in message.metadata if 'source' in meta]
+                if citations:
+                    citation_links = "\n".join(f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})" for citation in citations)
+                    modified_content += f"\n\nSources:\n{citation_links}"
                 st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
         save_chat_history(st.session_state.chat_history)
     else:
