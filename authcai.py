@@ -82,12 +82,13 @@ def get_pdf_text(pdf_docs):
     text = []
     metadata = []
     for pdf in pdf_docs:
+        pdf_name = "example_pdf_name.pdf"  # Replace this with actual logic to extract the file name
         pdf_reader = PdfReader(pdf)
         for page_num, page in enumerate(pdf_reader.pages):
             page_text = page.extract_text()
             if page_text:
                 text.append(page_text)
-                metadata.append({'source': f"{pdf} - Page {page_num + 1}"})  # Example metadata
+                metadata.append({'source': f"{pdf_name} - Page {page_num + 1}"})  # Store file name instead of BytesIO object
     return text, metadata
 
 def get_text_chunks(text, metadata):
