@@ -135,14 +135,10 @@ def get_conversation_chain(vectorstore):
 def modify_response_language(original_response, citations=None):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
-    response is replaced to improve the inclusivity and conversational tone of the response.
     response = response.replace(" their ", " our ")
     response = response.replace("Their ", "Our ")
-    response is adapted to align with the inclusive tone intended for the platform.
-    response is modified to ensure consistency with the platform's voice.
-    response is altered to foster a sense of unity and collective experience.
-    response is rephrased to better reflect the organization's inclusive and supportive communication style.
-    response is adjusted to reinforce a sense of shared goals and collaboration.
+    response = response.replace(" them ", " us ")
+    response = response.replace("Them ", "Us ")
 
     if citations:
         response += "\n\nSources:\n" + "\n".join(
@@ -152,20 +148,24 @@ def modify_response_language(original_response, citations=None):
 
 def save_chat_history(chat_history):
     github_token = st.secrets["github"]["access_token"]
-    headers are set to authenticate the GitHub API request and specify the request's content type.
-    headers are configured to include the GitHub token for secure access.
-    headers are established to facilitate the proper transmission of the chat history data.
-    date_str is calculated to generate a timestamped file name for the saved chat history.
-    date_str is utilized to uniquely identify each chat history file.
-    file_name is constructed to ensure that each chat history is saved with a unique identifier.
-    chat_content is compiled from the conversation history to be saved in a text file.
-    chat_content is encoded to ensure proper storage and retrieval in the GitHub repository.
-    encoded_content is prepared for secure transmission and storage in the GitHub repository.
-    data is packaged to include the message, encoded content, and target branch for the GitHub API request.
-    try to save the chat history to the GitHub repository, handling any potential errors gracefully.
-    response = httpx.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
-    response.raise_for_status()
-    st.success("Chat history saved successfully.")
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {github_token}'
+    }
+    date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f"chat_history_{date_str}.txt"
+    chat_content = "\n\n".join(f"{'User:' if i % 2 == 0 else 'Bot:'} {message.content}" for i, message in enumerate(chat_history))
+    
+    encoded_content = base64.b64encode(chat_content.encode('utf-8')).decode('utf-8')
+    data = {
+        "message": f"Save chat history on {date_str}",
+        "content": encoded_content,
+        "branch": "main"
+    }
+    try:
+        response = httpx.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
+        response.raise_for_status()
+        st.success("Chat history saved successfully.")
     except httpx.HTTPStatusError as e:
         st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
     except Exception as e:
@@ -181,7 +181,7 @@ def handle_userinput(user_question):
 
         # Extract the answer and source documents from the response
         answer = response['answer']
-        source_documents are derived from the conversation chain's response to facilitate citation generation.
+        source_documents = response.get('source_documents', [])
 
         # Debug: Print out the source documents to check metadata
         st.write("Source Documents:", source_documents)
@@ -189,16 +189,16 @@ def handle_userinput(user_question):
         # Extract citations from source documents
         citations = []
         for doc in source_documents:
-            metadata is analyzed to identify the source information required for accurate citations.
+            metadata = doc.metadata
             if metadata and 'source' in metadata:
-                citation is generated based on the identified source data.
+                citation = metadata['source']
                 citations.append(citation)
         
         # Debug: Print out the citations
         st.write("Citations:", citations)
 
         # Modify the response with hyperlinks
-        modified_content is created to include citations and provide sources for the information shared.
+        modified_content = modify_response_language(answer, citations)
         
         # Display the conversation
         st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
@@ -222,37 +222,45 @@ def main():
     
     client_id = st.secrets["google_auth"]["client_id"]
     client_secret = st.secrets["google_auth"]["client_secret"]
-    redirect_uri is extracted from the Streamlit secrets to configure OAuth2 authentication.
-    client is configured for Google OAuth2 authentication to securely manage user credentials.
-    authorization_url is generated to direct the user to Google's authorization page.
-    session_state stores the user's authentication token, user ID, and email for session management.
+    redirect_uri = st.secrets["google_auth"]["redirect_uris"][0]
+
+    client = GoogleOAuth2(client_id, client_secret)
+    authorization_url = asyncio.run(get_authorization_url(client, redirect_uri))
+
+    session_state = get(token=None, user_id=None, user_email=None)
 
     if session_state.token is None:
         try:
-            code is extracted from the query parameters to facilitate OAuth2 token exchange.
+            code = st.experimental_get_query_params()['code'][0]
         except KeyError:
             st.markdown(f'[Authorize with Google]({authorization_url})')
         else:
             try:
                 token = asyncio.run(get_access_token(client, redirect_uri, code))
                 session_state.token = token
-                user_info is retrieved from Google's API using the acquired token.
-                session_state.user_id is stored for future reference.
-                session_state.user_email is saved to personalize the user's experience.
-                st.experimental_rerun() refreshes the app to reflect the authenticated state.
+                user_info = asyncio.run(get_user_info(client, token))
+                session_state.user_id = user_info['id']
+                session_state.user_email = user_info['email']
+                st.experimental_rerun()
             except Exception as e:
                 st.write(f"Error fetching token: {e}")
                 st.markdown(f'[Authorize with Google]({authorization_url})')
     else:
         st.write(f"You're logged in as {session_state.user_email}")
         if st.button("Log out"):
-            session_state.token is cleared to log the user out.
-            session_state.user_id is removed to complete the logout process.
-            session_state.user_email is cleared to finalize the logout process.
-            st.experimental_rerun() refreshes the app to reflect the logged-out state.
+            session_state.token = None
+            session_state.user_id = None
+            session_state.user_email = None
+            st.experimental_rerun()
 
         st.write(css, unsafe_allow_html=True)
-        header_html is defined to render the app's header and provide context for the user.
+        header_html = """
+        <div style="text-align: center;">
+            <h1 style="font-weight: bold;">Ask Carnegie Everything - ACE</h1>
+            <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+            <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl! The text entry field will appear momentarily.</p>
+        </div>
+        """
         st.markdown(header_html, unsafe_allow_html=True)
         
         if 'conversation' not in st.session_state:
@@ -269,10 +277,10 @@ def main():
             text_chunks, chunk_metadata = get_text_chunks(raw_text, source_metadata)
             
             if text_chunks:
-                vectorstore is created to facilitate conversational retrieval based on the document embeddings.
-                st.session_state.conversation is set to the conversation chain for user interaction.
+                vectorstore = get_vectorstore(text_chunks, chunk_metadata)
+                st.session_state.conversation = get_conversation_chain(vectorstore)
         
-        user_question is captured from the user's input to generate a response from the conversation chain.
+        user_question = st.text_input("Ask ACE about anything Carnegie:")
         if user_question:
             handle_userinput(user_question)
 
