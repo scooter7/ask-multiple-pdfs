@@ -1,145 +1,110 @@
 import os
-import requests
+import asyncio
+import streamlit as st
+from httpx_oauth.clients.google import GoogleOAuth2
+from session_state import get
 from io import BytesIO
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
-import streamlit as st
-from langchain_community.vectorstores import FAISS
-from openai import OpenAI
-from dotenv import load_dotenv
-from langchain.schema import Document
+from langchain.vectorstores import FAISS
+from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
+from htmlTemplates import css, bot_template, user_template
 from datetime import datetime
 import base64
+import httpx
 
-load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GITHUB_REPO_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
+GITHUB_HISTORY_URL = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/History"
 
-# Initialize OpenAI client
-client = OpenAI(api_key=OPENAI_API_KEY)
+async def get_authorization_url(client, redirect_uri):
+    authorization_url = await client.get_authorization_url(
+        redirect_uri,
+        scope=["profile", "email"],
+        extras_params={"access_type": "offline"},
+    )
+    return authorization_url
 
-# Function to get list of PDFs from GitHub repository
-def get_pdfs_from_github():
-    api_url = "https://api.github.com/repos/scooter7/ask-multiple-pdfs/contents/docs"
-    headers = {"Accept": "application/vnd.github.v3+json"}
-    response = requests.get(api_url, headers=headers)
-    if response.status_code == 200:
+async def get_access_token(client, redirect_uri, code):
+    token = await client.get_access_token(code, redirect_uri)
+    return token
+
+async def get_user_info(client, token):
+    try:
+        user_info_endpoint = "https://www.googleapis.com/oauth2/v1/userinfo"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}"
+        }
+        async with httpx.AsyncClient() as async_client:
+            response = await async_client.get(user_info_endpoint, headers=headers)
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+        raise e
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        raise e
+
+def get_github_pdfs():
+    github_token = st.secrets["github"]["access_token"]
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {github_token}'
+    }
+    try:
+        response = httpx.get(GITHUB_REPO_URL, headers=headers)
+        response.raise_for_status()
         files = response.json()
-        pdf_files = [file['download_url'] for file in files if file['name'].endswith('.pdf')]
-        return pdf_files
-    else:
-        st.error(f"Failed to fetch list of PDF files from GitHub: {response.status_code}")
+        if not isinstance(files, list):
+            st.error(f"Unexpected response format: {files}")
+            return []
+        pdf_docs = []
+        for file in files:
+            if 'name' in file and file['name'].endswith('.pdf'):
+                pdf_url = file.get('download_url')
+                if pdf_url:
+                    response = httpx.get(pdf_url, headers=headers)
+                    response.raise_for_status()
+                    pdf_docs.append(BytesIO(response.content))
+        return pdf_docs
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+        return []
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
         return []
 
-# Function to download PDF files from the GitHub repository
-def download_pdfs_from_github():
-    pdf_urls = get_pdfs_from_github()
-    pdf_docs = []
-    for url in pdf_urls:
-        response = requests.get(url)
-        if response.status_code == 200:
-            file_name = url.split('/')[-1]
-            with open(file_name, 'wb') as f:
-                f.write(response.content)
-            pdf_docs.append(file_name)
-        else:
-            st.error(f"Failed to download {url}")
-    return pdf_docs
-
-# Read all PDF files and return text
 def get_pdf_text(pdf_docs):
-    text = []
-    source_metadata = []
+    text = ""
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
-        for page_num, page in enumerate(pdf_reader.pages):
-            page_text = page.extract_text()
-            if page_text:
-                text.append(page_text)
-                source_metadata.append({'source': f"{pdf} - Page {page_num + 1}", 'url': f"https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{pdf}"})
-            else:
-                st.warning(f"Failed to extract text from page in {pdf}")
-    return text, source_metadata
+        for page in pdf_reader.pages:
+            text += page.extract_text() or ""
+    return text
 
-# Split text into chunks
-def get_text_chunks(text, metadata, chunk_size=2000, chunk_overlap=500):
-    splitter = CharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    chunks = []
-    chunk_metadata = []
-    for i, page_text in enumerate(text):
-        page_chunks = splitter.split_text(page_text)
-        chunks.extend(page_chunks)
-        chunk_metadata.extend([metadata[i]] * len(page_chunks))  # Assign correct metadata to each chunk
-    return chunks, chunk_metadata
+def get_text_chunks(text):
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+    chunks = text_splitter.split_text(text)
+    return chunks
 
-# Get embeddings for each chunk
-def get_vector_store(chunks, metadata):
-    if not chunks:
-        st.error("No text chunks available for embedding")
-        return None
-    embeddings = OpenAIEmbeddings(api_key=OPENAI_API_KEY)
-    documents = [Document(page_content=chunk, metadata=metadata[i]) for i, chunk in enumerate(chunks)]
-    vector_store = FAISS.from_documents(documents, embedding=embeddings)
-    vector_store.save_local("faiss_index")
-    return vector_store
+def get_vectorstore(text_chunks):
+    if not text_chunks:
+        raise ValueError("No text chunks available for embedding.")
+    os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
+    embeddings = OpenAIEmbeddings()
+    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+    return vectorstore
 
-def load_or_create_vector_store(chunks, metadata):
-    if os.path.exists("faiss_index"):
-        try:
-            embeddings = OpenAIEmbeddings(api_key=OPENAI_API_KEY)
-            vector_store = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
-            return vector_store
-        except Exception as e:
-            st.error(f"Failed to load FAISS index: {e}")
-    return get_vector_store(chunks, metadata)
+def get_conversation_chain(vectorstore):
+    llm = ChatOpenAI()
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+    return conversation_chain
 
-# Function to handle user input, process it, and return citations with the response
-def user_input(user_question, max_retries=5, delay=2):
-    vector_store = load_or_create_vector_store([], [])
-    if not vector_store:
-        st.error("Failed to load or create the vector store.")
-        return {"output_text": ["Failed to load or create the vector store."]}
-
-    try:
-        docs = vector_store.similarity_search(user_question)
-    except Exception as e:
-        st.error(f"Failed to perform similarity search: {e}")
-        return {"output_text": [f"Failed to perform similarity search: {e}"]}
-
-    response_text = ""
-    citations = []
-
-    for doc in docs:
-        context = doc.page_content
-        context_chunks = get_text_chunks([context], [doc.metadata])
-
-        for chunk, meta in zip(context_chunks[0], context_chunks[1]):
-            for attempt in range(max_retries):
-                try:
-                    completion = client.chat.completions.create(
-                        model="gpt-4",
-                        messages=[
-                            {"role": "system", "content": "You specialize in leveraging the PDF content in the repository to find and discuss information from these documents."},
-                            {"role": "user", "content": f"Context: {chunk}\n\nQuestion: {user_question}"}
-                        ]
-                    )
-                    response_text += completion.choices[0].message.content + " "
-                    citations.append(meta['source'])
-                    break
-                except Exception as e:
-                    if 'Resource has been exhausted' in str(e):
-                        st.warning(f"API quota has been exhausted. Retrying in {delay} seconds...")
-                        time.sleep(delay)
-                        delay *= 2  # Exponential backoff
-                    else:
-                        st.error(f"Failed to generate response: {e}")
-                        return {"output_text": [f"Failed to generate response: {e}"]}
-
-    return {"output_text": [response_text], "citations": citations}
-
-# Modify response to include citations
-def modify_response_language(original_response, citations):
+def modify_response_language(original_response, citations=None):
     response = original_response.replace(" they ", " we ")
     response = response.replace("They ", "We ")
     response = response.replace(" their ", " our ")
@@ -150,63 +115,117 @@ def modify_response_language(original_response, citations):
         response += "\n\nSources:\n" + "\n".join(f"- [{citation}](https://github.com/scooter7/ask-multiple-pdfs/blob/main/docs/{citation.split(' - ')[0]})" for citation in citations)
     return response
 
+def save_chat_history(chat_history):
+    github_token = st.secrets["github"]["access_token"]
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {github_token}'
+    }
+    date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f"chat_history_{date_str}.txt"
+    chat_content = "\n\n".join(f"{'User:' if i % 2 == 0 else 'Bot:'} {message.content}" for i, message in enumerate(chat_history))
+    
+    encoded_content = base64.b64encode(chat_content.encode('utf-8')).decode('utf-8')
+    data = {
+        "message": f"Save chat history on {date_str}",
+        "content": encoded_content,
+        "branch": "main"
+    }
+    try:
+        response = httpx.put(f"{GITHUB_HISTORY_URL}/{file_name}", headers=headers, json=data)
+        response.raise_for_status()
+        st.success("Chat history saved successfully.")
+    except httpx.HTTPStatusError as e:
+        st.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+def handle_userinput(user_question):
+    if 'conversation' in st.session_state and st.session_state.conversation:
+        response = st.session_state.conversation({'question': user_question})
+        st.session_state.chat_history = response['chat_history']
+        citations = [msg.metadata['source'] for msg in st.session_state.chat_history if 'source' in msg.metadata]  # Extract citations
+        
+        for i, message in enumerate(st.session_state.chat_history):
+            modified_content = modify_response_language(message.content, citations if i % 2 == 1 else None)  # Pass citations only for the bot response
+            if i % 2 == 0:
+                st.write(user_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template.replace("{{MSG}}", modified_content), unsafe_allow_html=True)
+        
+        save_chat_history(st.session_state.chat_history)
+    else:
+        st.error("The conversation model is not initialized. Please wait until the model is ready.")
+
 def main():
     st.set_page_config(
-        page_title="Leverage Existing Proposal Content",
+        page_title="Ask Carnegie Everything",
+        page_icon="https://raw.githubusercontent.com/scooter7/ask-multiple-pdfs/main/ACE_92x93.png"
     )
+    
+    hide_toolbar_css = """
+    <style>
+        .css-14xtw13.e8zbici0 { display: none !important; }
+    </style>
+    """
+    st.markdown(hide_toolbar_css, unsafe_allow_html=True)
+    
+    client_id = st.secrets["google_auth"]["client_id"]
+    client_secret = st.secrets["google_auth"]["client_secret"]
+    redirect_uri = st.secrets["google_auth"]["redirect_uris"][0]
 
-    # Automatically download and process PDFs from GitHub
-    with st.spinner("Downloading and processing PDFs..."):
-        pdf_docs = download_pdfs_from_github()
-        if pdf_docs:
-            raw_text, source_metadata = get_pdf_text(pdf_docs)
-            if raw_text:
-                text_chunks, chunk_metadata = get_text_chunks(raw_text, source_metadata)
-                if text_chunks:
-                    vector_store = load_or_create_vector_store(text_chunks, chunk_metadata)
-                    if vector_store:
-                        st.success("PDF processing complete")
-                    else:
-                        st.error("Failed to create vector store")
-                else:
-                    st.error("No text chunks created")
-            else:
-                st.error("No text extracted from PDFs")
+    client = GoogleOAuth2(client_id, client_secret)
+    authorization_url = asyncio.run(get_authorization_url(client, redirect_uri))
+
+    session_state = get(token=None, user_id=None, user_email=None)
+
+    if session_state.token is None:
+        try:
+            code = st.experimental_get_query_params()['code'][0]
+        except KeyError:
+            st.markdown(f'[Authorize with Google]({authorization_url})')
         else:
-            st.error("No PDFs downloaded")
+            try:
+                token = asyncio.run(get_access_token(client, redirect_uri, code))
+                session_state.token = token
+                user_info = asyncio.run(get_user_info(client, token))
+                session_state.user_id = user_info['id']
+                session_state.user_email = user_info['email']
+                st.experimental_rerun()
+            except Exception as e:
+                st.write(f"Error fetching token: {e}")
+                st.markdown(f'[Authorize with Google]({authorization_url})')
+    else:
+        st.write(f"You're logged in as {session_state.user_email}")
+        if st.button("Log out"):
+            session_state.token = None
+            session_state.user_id = None
+            session_state.user_email = None
+            st.experimental_rerun()
 
-    # Main content area for displaying chat messages
-    st.title("Find and engage with past proposal content")
-    st.write("Welcome to the chat!")
-    st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
+        st.write(css, unsafe_allow_html=True)
+        header_html = """
+        <div style="text-align: center;">
+            <h1 style="font-weight: bold;">Ask Carnegie Everything - ACE</h1>
+            <img src="https://www.carnegiehighered.com/wp-content/uploads/2021/11/Twitter-Image-2-2021.png" alt="Icon" style="height:200px; width:500px;">
+            <p align="left">Hey there! Just a quick heads-up: while I'm here to jazz up your day and be super helpful, keep in mind that I might not always have the absolute latest info or every single detail nailed down. So, if you're making big moves or crucial decisions, it's always a good idea to double-check with your manager or division lead, HR, or those cool cats on the operations team. And hey, if you run into any hiccups or just wanna shoot the breeze, hit me up anytime! Your feedback is like fuel for this chatbot engine, so don't hold back—give <a href="https://form.asana.com/?k=6rnnec7Gsxzz55BMqpp6ug&d=654504412089816">the suggestions and feedback form </a>a whirl! The text entry field will appear momentarily.</p>
+        </div>
+        """
+        st.markdown(header_html, unsafe_allow_html=True)
+        if 'conversation' not in st.session_state:
+            st.session_state.conversation = None
+        if 'chat_history' not in st.session_state:
+            st.session_state.chat_history = []
+        pdf_docs = get_github_pdfs()
+        if pdf_docs:
+            raw_text = get_pdf_text(pdf_docs)
+            text_chunks = get_text_chunks(raw_text)
+            if text_chunks:
+                vectorstore = get_vectorstore(text_chunks)
+                st.session_state.conversation = get_conversation_chain(vectorstore)
+        user_question = st.text_input("Ask ACE about anything Carnegie:")
+        if user_question:
+            handle_userinput(user_question)
 
-    # Chat input
-    if "messages" not in st.session_state.keys():
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Find and engage with past Carnegie proposals."}]
-
-    for message in st.session_state.messages:
-        st.write(message["content"])
-
-    if prompt := st.text_input("Ask ACE about anything Carnegie:"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.write(prompt)
-
-        # Split the prompt into smaller chunks and process each one
-        query_chunks = chunk_query(prompt)
-        full_response = ''
-        all_citations = []
-
-        for chunk in query_chunks:
-            response = user_input(chunk)
-            for item in response['output_text']:
-                full_response += item
-            all_citations.extend(response['citations'])
-
-        modified_response = modify_response_language(full_response, all_citations)
-
-        st.write(modified_response)
-        st.session_state.messages.append({"role": "assistant", "content": modified_response})
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
