@@ -1,0 +1,3 @@
+User: how to do joins in slate
+
+Bot: I don't know the answer to that question.
