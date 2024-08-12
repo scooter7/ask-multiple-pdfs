@@ -1,0 +1,3 @@
+User: files.com
+
+Bot: Files.com is a secure file sharing service that can be used to handle list sharing and exchanges in support of campaigns. Users can upload lists to a shared folder on Files.com, and team members will receive notifications when new lists are uploaded. Additionally, Files.com has a built-in editor that allows users to make updates to lists without downloading them. To access Files.com, users can navigate to https://app.files.com/login, enter "carnegie" as the domain, and sign in with Microsoft Azure SSO. Two-factor authentication (2FA) is required for logging in.
