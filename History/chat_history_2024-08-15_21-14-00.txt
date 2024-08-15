@@ -1,0 +1,8 @@
+User: how can i change my standard work hours?
+
+Bot: To change your standard work hours, you can follow these steps:  
+1. Click on the gear icon in the upper right corner of your platform to access your Settings.  
+2. Within Settings, select 'Working Hours & Location.'  
+3. Here, you will be able to specify your work hours for each day by tailoring them to match your specific requirements. You can customize your schedule based on each day's demands and designate your preferred location if necessary.  
+4. Once you've set your standard work hours, make sure to save your changes.  
+If you need further assistance, please let me know.
