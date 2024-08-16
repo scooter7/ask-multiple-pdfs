@@ -1,0 +1,3 @@
+User: What is your experience with crm and lead tracking integration
+
+Bot: Based on the information provided, our team has extensive experience with CRM and lead tracking integration. We work with various CRMs such as Salesforce, Slate, Ellucian Recruit, and Hubspot. We integrate digital lead generation efforts and landing pages directly into the CRM systems like Salesforce, utilizing tools like Zapier for automation. We also provide integration guides for the most commonly used CRMs to ensure seamless lead tracking and management for our clients.
