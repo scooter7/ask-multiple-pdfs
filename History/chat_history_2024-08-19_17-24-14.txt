@@ -1,0 +1,3 @@
+User: how do I get lead scoring integrated into Slate?
+
+Bot: Lead scoring integration into Slate would involve working with the Digital Integrations team. They handle all Clarity Integrations, including lead scoring. You can refer to the Guide - Clarity & Slate Team Process for Integration for more information on the process. It's important to follow the specific steps outlined in the integration guide and work closely with the Digital Integrations team to ensure a successful integration of lead scoring into Slate.
