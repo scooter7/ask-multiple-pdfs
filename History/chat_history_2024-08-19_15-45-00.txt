@@ -1,0 +1,3 @@
+User: what is the parental leave policy
+
+Bot: The Carnegie Parental Leave Policy consists of two types of paid leave: Paid Birth and Recovery Leave (PBRL) and Paid Parental Leave. The PBRL provides up to 6 weeks of paid leave for the birthing parent to allow for medical recovery after childbirth, while the Paid Parental Leave provides up to 6 weeks of paid leave for all parents, including birthing mothers, spouses, domestic partners, and adopting parents, to care for the child and transition to parenthood. In total, parents can receive up to 12 weeks of combined pay through these two types of leave.
