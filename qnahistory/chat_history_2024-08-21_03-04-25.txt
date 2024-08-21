@@ -1,0 +1,3 @@
+User: how do you approach digital reporting
+
+Bot: Our approach to digital reporting involves providing live dashboards that are available 24/7 and updated daily. These dashboards showcase key performance indicators such as Cost Per Lead, Cost per Click, top performing keywords, lowest performing keywords, conversion trends, and ad copy performance details. Additionally, our strategists provide analysis, insights, and next steps based on campaign performance, ensuring transparency into campaign performance metrics at all times.
