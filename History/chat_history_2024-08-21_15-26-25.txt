@@ -1,0 +1,3 @@
+User: Do sick days count the same as vacation days?
+
+Bot: No, sick days do not count the same as vacation days. Sick days are specifically meant for unexpected time off due to illness or caring for a sick family member, while vacation days are for planned time off for relaxation, rejuvenation, and personal needs.
