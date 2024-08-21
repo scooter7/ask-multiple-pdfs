@@ -1,0 +1,3 @@
+User: what is your experience with slate
+
+Bot: Based on the context provided, it seems that Underscore has extensive experience working with Slate, which is one of the most frequently used CRMs by their clients. They have a team of Slate experts who have optimized Slate instances for more than 100 schools across the country. Underscore provides services such as implementation, student search marketing, enrollment communications, enrollment strategy, applications and portals, personalized training, and creative work related to Slate. Additionally, they offer direct Slate integration into digital media planning, targeting, and tracking. They also mention working with other CRMs like Salesforce/TargetX, Ellucian Recruit, and Hubspot.
