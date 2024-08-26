@@ -1,0 +1,3 @@
+User: When is the last Summer Friday?
+
+Bot: The last Summer Friday is on August 30th in 2024.
