@@ -1,0 +1,11 @@
+User: How do I edit people in tinman
+
+Bot: To edit people in Tinman, you can follow these steps:
+
+1. Log into Tinman by connecting to the VPN and navigating to http://tinman.carnegie.llc/admin.
+2. Once logged in, locate the "People" section on the client landing page.
+3. Click on the "Edit Contact" option next to the person you want to edit.
+4. Make the necessary changes to the contact's information.
+5. Save your edits.
+
+If you cannot find the specific editing option, you may also try searching for the person using the search function provided on the client landing page.
