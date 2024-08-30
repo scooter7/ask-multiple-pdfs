@@ -1,0 +1,11 @@
+User: How do I edit people in tinman
+
+Bot: To edit people in Tinman, you can follow these steps:
+1. Log into Tinman using your credentials.
+2. Locate the client's landing page by clicking on "Clients" from the top navigation.
+3. On the client landing page, navigate to the People Section.
+4. In the People Section, you should see options such as Copy Contact, Delete Contact, Edit Contact, and View Contact.
+5. Click on the "Edit Contact" option next to the person you want to edit.
+6. Make the necessary changes to the person's information and save your edits.
+
+If you can't find the option to edit people in Tinman, please refer to the user manual or contact Tinman support for further assistance.
