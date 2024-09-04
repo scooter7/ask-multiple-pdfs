@@ -1,0 +1,3 @@
+User: Microsoft authenticator?
+
+Bot: Yes, Microsoft Authenticator can be used for 2-factor authentication when logging into platforms like Files.com that require it. Once you set up Microsoft Azure SSO and enable 2FA, you can use Microsoft Authenticator to receive the codes needed for authentication.
