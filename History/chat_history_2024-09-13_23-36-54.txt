@@ -1,0 +1,3 @@
+User: What is Tinman?
+
+Bot: Tinman is a custom-built software used at Carnegie for tracking proposal requests, budgets, contracts, active client orders, and invoice schedules and approvals. It is a tool that helps manage various aspects of client projects and services within the organization.
