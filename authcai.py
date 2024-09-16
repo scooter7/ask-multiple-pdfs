@@ -1,7 +1,7 @@
 import logging
 
 # Set the logging level to WARNING to suppress INFO and DEBUG logs
-logging.getLogger().setLevel(logging.WARNING)
+logging.basicConfig(level=logging.WARNING)
 
 import os
 import asyncio
@@ -122,7 +122,8 @@ def get_vectorstore(text_chunks, chunk_metadata):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
+    # Removed the langchain.verbose reference
+    llm = ChatOpenAI()  # If there are specific verbosity options, handle via logging
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, output_key='answer')
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm, 
