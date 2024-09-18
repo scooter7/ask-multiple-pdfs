@@ -1,0 +1,3 @@
+User: what should an Enrollment Strategist know about their client?
+
+Bot: An Enrollment Strategist should know about their client's immediate enrollment goals, such as first-year, transfer, fall/spring cohorts, etc. They should also be aware of growth goals, including headcount and target populations, as well as shaping goals related to NTR, academic profile, geodemographics, gender, ethnicity, and in-state vs out-of-state considerations.
