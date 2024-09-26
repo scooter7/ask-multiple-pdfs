@@ -1,0 +1,3 @@
+User: do we have a powerpoint template?
+
+Bot: Yes, there are pre-designed PowerPoint templates available. When creating a presentation in Google Slides, you can select "From a Template" to access the Google Slides Template Gallery. If you don't have a specific template in mind, you can default to using the "Carnegie Template" found in the Carnegie Standard Templates section.
