@@ -42,3 +42,12 @@ user_template = '''
     <div class="message">{{MSG}}</div>
 </div>
 '''
+
+bot_template2 = '''
+<div class="chat-message bot">
+    <div class="avatar">
+        <img src="https://pbs.twimg.com/profile_images/1448804935236308994/HWKGYo3v_400x400.jpg" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
+    </div>
+    <div class="message">{{MSG}}</div>
+</div>
+'''
