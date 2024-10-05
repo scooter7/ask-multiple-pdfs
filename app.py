@@ -8,6 +8,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
+import io  # Add for downloading text
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -45,6 +46,16 @@ def handle_userinput(user_question):
             st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
         else:
             st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+
+        # Add button to download the last bot response as a text file
+        if i % 2 != 0:  # Only for bot responses
+            text_to_download = message.content
+            st.download_button(
+                label="Download Response",
+                data=io.StringIO(text_to_download).getvalue(),
+                file_name="bot_response.txt",
+                mime="text/plain"
+            )
 
 def main():
     st.set_page_config(page_title="Document Exploration Tool", page_icon=":books:")
