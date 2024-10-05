@@ -44,7 +44,7 @@ def handle_userinput(user_question):
         if i % 2 == 0:
             st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
         else:
-            st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
     st.set_page_config(page_title="Document Exploration Tool", page_icon=":books:")
