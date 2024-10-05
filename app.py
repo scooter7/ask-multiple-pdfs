@@ -47,7 +47,7 @@ def handle_userinput(user_question):
             st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def main():
-    st.set_page_config(page_title="Proposal Exploration Tool", page_icon=":books:")
+    st.set_page_config(page_title="Document Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:
@@ -55,7 +55,7 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Proposal Exploration Tool :books:")
+    st.header("Document Exploration Tool :books:")
     user_question = st.text_input("Ask a question about your documents:")
     if user_question:
         handle_userinput(user_question)
