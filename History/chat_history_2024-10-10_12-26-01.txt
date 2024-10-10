@@ -1,0 +1,3 @@
+User: Do we have a Harvest resource guide?
+
+Bot: Yes, we have a Harvest Resource Guide.
