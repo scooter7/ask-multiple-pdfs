@@ -33,9 +33,9 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    # Limit the memory to keep only the last few chat turns to avoid token limit issues
+    # Use ConversationBufferMemory without the k parameter
     llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True, k=5)  # Keep only the last 5 interactions
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)  # No k, just buffer memory
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
 
