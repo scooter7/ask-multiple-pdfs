@@ -10,9 +10,9 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
 import io  # Add for downloading text
 
-# TEMP FIX for langchain verbose issue
+# Patch langchain to avoid AttributeError with missing 'verbose'
 import langchain
-langchain.verbose = False  # Disable verbose to avoid AttributeError
+langchain.verbose = False  # Prevent AttributeError
 
 # Function to extract text from uploaded PDFs
 def get_pdf_text(pdf_docs):
@@ -23,7 +23,7 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-# Function to split the extracted text into chunks
+# Function to split the extracted text into smaller chunks
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=500, chunk_overlap=100, length_function=len)
     chunks = text_splitter.split_text(text)
@@ -40,31 +40,23 @@ def get_vectorstore(text_chunks):
 
 # Function to create a conversation chain using LangChain
 def get_conversation_chain(vectorstore):
-    # Explicitly initialize ChatOpenAI with a temperature setting to avoid any unnecessary internal settings
     llm = ChatOpenAI(temperature=0.7)  # Adjust as needed
-
-    # Initialize conversation memory
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-
-    # Create a conversational retrieval chain
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory
     )
-    
     return conversation_chain
 
 # Function to handle user input and generate responses
 def handle_userinput(user_question):
-    # Truncate chat history if it's too long (limit to last 5 exchanges)
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[-10:]
 
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
-    # Display the chat history
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
@@ -85,27 +77,25 @@ def main():
     st.set_page_config(page_title="Document Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
-    # Initialize session state variables if not already set
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    # Header and user question input
     st.header("Document Exploration Tool :books:")
     user_question = st.text_input("Ask a question about your documents:")
 
-    # Clear session button to reset conversation
     if st.button("Clear Session"):
         st.session_state.conversation = None
         st.session_state.chat_history = None
         st.success("Session cleared!")
 
-    # If a question is entered, handle it
     if user_question:
-        handle_userinput(user_question)
+        if len(user_question.split()) > 3000:
+            st.error("Your input is too long. Please shorten the question.")
+        else:
+            handle_userinput(user_question)
 
-    # Sidebar to upload documents and process them
     with st.sidebar:
         st.subheader("Your documents")
         pdf_docs = st.file_uploader("Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
