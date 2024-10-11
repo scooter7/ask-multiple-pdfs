@@ -10,6 +10,10 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
 import io  # Add for downloading text
 
+# TEMP FIX for langchain verbose issue
+import langchain
+langchain.verbose = False  # Disable verbose to avoid AttributeError
+
 # Function to extract text from uploaded PDFs
 def get_pdf_text(pdf_docs):
     text = ""
