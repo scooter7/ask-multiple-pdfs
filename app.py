@@ -9,10 +9,9 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
 import io  # Add for downloading text
-from langchain.callbacks import get_openai_callback
 
-# Token counting function to ensure limits
 def count_tokens(text):
+    """Count the number of tokens in a given text."""
     return len(text.split())
 
 def get_pdf_text(pdf_docs):
@@ -45,6 +44,9 @@ def get_conversation_chain(vectorstore):
 
 def limit_conversation_history(conversation_history, max_tokens=5000):
     """Limit the conversation history to avoid exceeding the token limit."""
+    if conversation_history is None:
+        return []
+    
     current_token_count = sum([count_tokens(message.content) for message in conversation_history])
     limited_history = conversation_history
 
@@ -61,33 +63,39 @@ def handle_userinput(user_question):
         st.error("Your question is too long. Please shorten it.")
         return
     
-    # Reduce chat history tokens before passing to model
+    # Ensure chat_history is initialized
     st.session_state.chat_history = limit_conversation_history(st.session_state.chat_history)
 
-    # Send user question and get response from model
+    # Process the user question
     response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
 
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
-            st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+    # Ensure response has a valid chat history
+    if 'chat_history' in response:
+        st.session_state.chat_history = response['chat_history']
 
-        # Download bot responses
-        if i % 2 != 0:  # Only for bot responses
-            text_to_download = message.content
-            st.download_button(
-                label="Download Response",
-                data=io.StringIO(text_to_download).getvalue(),
-                file_name="bot_response.txt",
-                mime="text/plain"
-            )
+        for i, message in enumerate(st.session_state.chat_history):
+            if i % 2 == 0:
+                st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+
+            # Download bot responses
+            if i % 2 != 0:  # Only for bot responses
+                text_to_download = message.content
+                st.download_button(
+                    label="Download Response",
+                    data=io.StringIO(text_to_download).getvalue(),
+                    file_name="bot_response.txt",
+                    mime="text/plain"
+                )
+    else:
+        st.error("No valid response from the model.")
 
 def main():
     st.set_page_config(page_title="Document Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
+    # Initialize session state variables if they don't exist
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
