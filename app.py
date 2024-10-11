@@ -25,7 +25,7 @@ def get_pdf_text(pdf_docs):
 
 # Function to split the extracted text into chunks
 def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=500, chunk_overlap=100, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
 
@@ -57,6 +57,10 @@ def get_conversation_chain(vectorstore):
 
 # Function to handle user input and generate responses
 def handle_userinput(user_question):
+    # Truncate chat history if it's too long (limit to last 5 exchanges)
+    if len(st.session_state.chat_history) > 10:
+        st.session_state.chat_history = st.session_state.chat_history[-10:]
+
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
@@ -67,8 +71,7 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
-        # Add a button to download the last bot response as a text file
-        if i % 2 != 0:  # Only for bot responses
+        if i % 2 != 0:
             text_to_download = message.content
             st.download_button(
                 label="Download Response",
