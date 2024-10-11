@@ -9,6 +9,11 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
 import io  # Add for downloading text
+from langchain.callbacks import get_openai_callback
+
+# Token counting function to ensure limits
+def count_tokens(text):
+    return len(text.split())
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -19,7 +24,7 @@ def get_pdf_text(pdf_docs):
     return text
 
 def get_text_chunks(text):
-    # Adjust chunk size and overlap to avoid token overflow
+    # Reduce chunk size further to avoid hitting token limits
     text_splitter = CharacterTextSplitter(separator="\n", chunk_size=500, chunk_overlap=100, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
@@ -33,17 +38,33 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    # Use ConversationBufferMemory without the k parameter
     llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)  # No k, just buffer memory
+    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
     return conversation_chain
 
+def limit_conversation_history(conversation_history, max_tokens=5000):
+    """Limit the conversation history to avoid exceeding the token limit."""
+    current_token_count = sum([count_tokens(message.content) for message in conversation_history])
+    limited_history = conversation_history
+
+    while current_token_count > max_tokens and limited_history:
+        # Remove the oldest message
+        limited_history = limited_history[1:]
+        current_token_count = sum([count_tokens(message.content) for message in limited_history])
+
+    return limited_history
+
 def handle_userinput(user_question):
-    if len(user_question) > 4000:  # Limit input length to prevent exceeding token limits
+    # Check token length of user input
+    if count_tokens(user_question) > 3000:  # Adjust this based on model limit
         st.error("Your question is too long. Please shorten it.")
         return
     
+    # Reduce chat history tokens before passing to model
+    st.session_state.chat_history = limit_conversation_history(st.session_state.chat_history)
+
+    # Send user question and get response from model
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
@@ -53,6 +74,7 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
+        # Download bot responses
         if i % 2 != 0:  # Only for bot responses
             text_to_download = message.content
             st.download_button(
@@ -69,7 +91,7 @@ def main():
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
-        st.session_state.chat_history = None
+        st.session_state.chat_history = []
 
     st.header("Document Exploration Tool :books:")
     user_question = st.text_input("Ask a question about your documents:")
