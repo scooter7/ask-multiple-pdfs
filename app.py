@@ -10,26 +10,7 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
 import io  # Add for downloading text
 
-# Helper function to count tokens in a string
-def count_tokens(text):
-    return len(text.split())
-
-# Function to truncate chat history
-def truncate_chat_history(chat_history, max_tokens=3000):
-    total_tokens = 0
-    truncated_history = []
-    
-    # Traverse from the latest to earliest messages
-    for message in reversed(chat_history):
-        tokens_in_message = count_tokens(message.content)
-        if total_tokens + tokens_in_message <= max_tokens:
-            truncated_history.insert(0, message)  # Add to the beginning of the list
-            total_tokens += tokens_in_message
-        else:
-            break
-    
-    return truncated_history
-
+# Function to extract text from uploaded PDFs
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -38,12 +19,13 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text() or ""
     return text
 
-# Adjust chunk size to stay within token limits
+# Function to split the extracted text into chunks
 def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=500, chunk_overlap=100, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1000, chunk_overlap=200, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
 
+# Function to create a vector store from the text chunks
 def get_vectorstore(text_chunks):
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
@@ -52,46 +34,36 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
+# Function to create a conversation chain using LangChain
 def get_conversation_chain(vectorstore):
-    # Initialize the LLM without verbosity settings
-    llm = ChatOpenAI()  # Ensure this uses the correct model initialization
+    # Explicitly initialize ChatOpenAI with a temperature setting to avoid any unnecessary internal settings
+    llm = ChatOpenAI(temperature=0.7)  # Adjust as needed
 
-    # Set up the memory buffer for the conversation
+    # Initialize conversation memory
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
 
-    # Create a conversational retrieval chain with the LLM and vector store retriever
+    # Create a conversational retrieval chain
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory
     )
-
+    
     return conversation_chain
 
+# Function to handle user input and generate responses
 def handle_userinput(user_question):
-    conversation = st.session_state.conversation
-    chat_history = st.session_state.chat_history or []
+    response = st.session_state.conversation({'question': user_question})
+    st.session_state.chat_history = response['chat_history']
 
-    # Ensure conversation object is available
-    if conversation is None:
-        st.error("Please upload and process documents first.")
-        return
-
-    # Truncate chat history to avoid exceeding token limits
-    truncated_history = truncate_chat_history(chat_history)
-    st.session_state.chat_history = truncated_history
-    
-    response = conversation({'question': user_question})
-    truncated_history.extend(response['chat_history'])
-    st.session_state.chat_history = truncated_history
-
-    for i, message in enumerate(truncated_history):
+    # Display the chat history
+    for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
         else:
             st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
-        # Add button to download the last bot response as a text file
+        # Add a button to download the last bot response as a text file
         if i % 2 != 0:  # Only for bot responses
             text_to_download = message.content
             st.download_button(
@@ -101,31 +73,32 @@ def handle_userinput(user_question):
                 mime="text/plain"
             )
 
-# Handle large inputs by checking token count before processing
-def handle_large_input(user_question):
-    max_token_limit = 16384
-    question_tokens = count_tokens(user_question)
-    
-    if question_tokens > max_token_limit:
-        st.error("The input is too long. Please shorten the question.")
-    else:
-        handle_userinput(user_question)
-
+# Main function that runs the Streamlit app
 def main():
     st.set_page_config(page_title="Document Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
+    # Initialize session state variables if not already set
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
+    # Header and user question input
     st.header("Document Exploration Tool :books:")
     user_question = st.text_input("Ask a question about your documents:")
 
-    if user_question:
-        handle_large_input(user_question)
+    # Clear session button to reset conversation
+    if st.button("Clear Session"):
+        st.session_state.conversation = None
+        st.session_state.chat_history = None
+        st.success("Session cleared!")
 
+    # If a question is entered, handle it
+    if user_question:
+        handle_userinput(user_question)
+
+    # Sidebar to upload documents and process them
     with st.sidebar:
         st.subheader("Your documents")
         pdf_docs = st.file_uploader("Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
