@@ -19,7 +19,6 @@ def count_tokens(text, model_name="gpt-3.5-turbo"):
 MODEL_TOKEN_LIMIT = 16385  # Token limit for GPT-4 (if using GPT-4, adjust accordingly)
 CHUNK_SIZE = 300  # Target chunk size in tokens
 
-# Split text into sentences or paragraphs for better chunking
 def split_text_by_sentences(text):
     """Split text by common sentence delimiters for better chunking."""
     import re
@@ -91,6 +90,12 @@ def limit_conversation_history(conversation_history, max_tokens=5000):
     return limited_history
 
 def handle_userinput(user_question):
+    """Handles user input and sends it to the conversation chain"""
+    # Ensure the conversation chain is initialized
+    if st.session_state.conversation is None:
+        st.error("Please upload and process your documents first.")
+        return
+    
     # Check token length of user input
     if count_tokens(user_question) > 3000:  # Adjust this based on model limit
         st.error("Your question is too long. Please shorten it.")
