@@ -8,7 +8,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
-import io  # Add for downloading text
+import io  # For downloading text
 
 # Patch langchain to avoid AttributeError with missing 'verbose'
 import langchain
@@ -49,6 +49,11 @@ def get_conversation_chain(vectorstore):
     )
     return conversation_chain
 
+# Helper function to chunk user input if it's too long
+def chunk_user_input(user_input, chunk_size=1000):
+    words = user_input.split()
+    return [" ".join(words[i:i + chunk_size]) for i in range(0, len(words), chunk_size)]
+
 # Function to handle user input and generate responses
 def handle_userinput(user_question):
     # Ensure chat_history is initialized
@@ -59,26 +64,30 @@ def handle_userinput(user_question):
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[-10:]
 
-    # Generate response using the conversation chain
-    response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
+    # Process the user question in chunks if necessary
+    user_question_chunks = chunk_user_input(user_question)
 
-    # Display chat history
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
-            st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+    # Generate response using the conversation chain for each chunk
+    for chunk in user_question_chunks:
+        response = st.session_state.conversation({'question': chunk})
+        st.session_state.chat_history = response['chat_history']
 
-        # Download bot responses
-        if i % 2 != 0:
-            text_to_download = message.content
-            st.download_button(
-                label="Download Response",
-                data=io.StringIO(text_to_download).getvalue(),
-                file_name="bot_response.txt",
-                mime="text/plain"
-            )
+        # Display chat history
+        for i, message in enumerate(st.session_state.chat_history):
+            if i % 2 == 0:
+                st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+
+            # Download bot responses
+            if i % 2 != 0:
+                text_to_download = message.content
+                st.download_button(
+                    label="Download Response",
+                    data=io.StringIO(text_to_download).getvalue(),
+                    file_name="bot_response.txt",
+                    mime="text/plain"
+                )
 
 # Main function that runs the Streamlit app
 def main():
