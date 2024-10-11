@@ -9,19 +9,25 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
 import io
-from langchain.callbacks import get_openai_callback
 from tiktoken import encoding_for_model
 
-# Function to count tokens using OpenAI tiktoken tokenizer
+# Token counting using OpenAI tiktoken tokenizer
 def count_tokens(text, model_name="gpt-3.5-turbo"):
     enc = encoding_for_model(model_name)
     return len(enc.encode(text))
 
-# Token limit for the model (gpt-3.5-turbo and gpt-4 have different limits)
-MODEL_TOKEN_LIMIT = 16385
-CHUNK_SIZE = 300  # Reduce chunk size to avoid large text overflow
+MODEL_TOKEN_LIMIT = 16385  # Token limit for GPT-4 (if using GPT-4, adjust accordingly)
+CHUNK_SIZE = 300  # Target chunk size in tokens
+
+# Split text into sentences or paragraphs for better chunking
+def split_text_by_sentences(text):
+    """Split text by common sentence delimiters for better chunking."""
+    import re
+    sentence_endings = re.compile(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s')
+    return sentence_endings.split(text)
 
 def get_pdf_text(pdf_docs):
+    """Extract text from uploaded PDFs."""
     text = ""
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf)
@@ -30,8 +36,29 @@ def get_pdf_text(pdf_docs):
     return text
 
 def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=CHUNK_SIZE, chunk_overlap=100, length_function=len)
-    chunks = text_splitter.split_text(text)
+    """Break text into smaller chunks while keeping chunks under the token limit."""
+    sentences = split_text_by_sentences(text)  # First split by sentences
+    chunks = []
+    current_chunk = ""
+
+    # Accumulate sentences until we reach the token limit for each chunk
+    for sentence in sentences:
+        # Count tokens in the current chunk
+        current_chunk_token_count = count_tokens(current_chunk)
+        sentence_token_count = count_tokens(sentence)
+
+        # If adding this sentence exceeds the chunk size, start a new chunk
+        if current_chunk_token_count + sentence_token_count > CHUNK_SIZE:
+            chunks.append(current_chunk)
+            current_chunk = sentence  # Start a new chunk with this sentence
+        else:
+            # Otherwise, keep adding sentences to the current chunk
+            current_chunk += sentence
+
+    # Add any remaining chunk that wasn't added
+    if current_chunk:
+        chunks.append(current_chunk)
+
     return chunks
 
 def get_vectorstore(text_chunks):
@@ -119,6 +146,7 @@ def main():
             with st.spinner("Processing"):
                 raw_text = get_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
+
                 # Explicitly check total tokens of all chunks
                 total_tokens = sum(count_tokens(chunk) for chunk in text_chunks)
                 if total_tokens > MODEL_TOKEN_LIMIT:
