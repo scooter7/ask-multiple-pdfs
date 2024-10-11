@@ -42,7 +42,6 @@ def get_text_chunks(text):
 
     # Accumulate sentences until we reach the token limit for each chunk
     for sentence in sentences:
-        # Count tokens in the current chunk
         current_chunk_token_count = count_tokens(current_chunk)
         sentence_token_count = count_tokens(sentence)
 
@@ -61,6 +60,7 @@ def get_text_chunks(text):
     return chunks
 
 def get_vectorstore(text_chunks):
+    """Create a vector store from text chunks."""
     if not text_chunks:
         raise ValueError("No text chunks available for embedding.")
     os.environ["OPENAI_API_KEY"] = st.secrets["openai_api_key"]
@@ -69,6 +69,7 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
+    """Set up the conversation chain."""
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
@@ -91,13 +92,11 @@ def limit_conversation_history(conversation_history, max_tokens=5000):
 
 def handle_userinput(user_question):
     """Handles user input and sends it to the conversation chain"""
-    # Ensure the conversation chain is initialized
     if st.session_state.conversation is None:
         st.error("Please upload and process your documents first.")
         return
     
-    # Check token length of user input
-    if count_tokens(user_question) > 3000:  # Adjust this based on model limit
+    if count_tokens(user_question) > 3000:  # Adjust based on model limit
         st.error("Your question is too long. Please shorten it.")
         return
     
@@ -107,7 +106,6 @@ def handle_userinput(user_question):
     # Process the user question
     response = st.session_state.conversation({'question': user_question})
 
-    # Ensure response has a valid chat history
     if 'chat_history' in response:
         st.session_state.chat_history = response['chat_history']
 
@@ -117,7 +115,6 @@ def handle_userinput(user_question):
             else:
                 st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
-            # Download bot responses
             if i % 2 != 0:  # Only for bot responses
                 text_to_download = message.content
                 st.download_button(
@@ -129,6 +126,18 @@ def handle_userinput(user_question):
     else:
         st.error("No valid response from the model.")
 
+def process_document_chunks(text_chunks):
+    """Process document chunks and store them incrementally."""
+    if "text_chunks" not in st.session_state:
+        st.session_state.text_chunks = []
+
+    # Append new chunks to the session state
+    st.session_state.text_chunks.extend(text_chunks)
+
+    # Recalculate vectorstore and conversation chain
+    vectorstore = get_vectorstore(st.session_state.text_chunks)
+    st.session_state.conversation = get_conversation_chain(vectorstore)
+
 def main():
     st.set_page_config(page_title="Document Exploration Tool", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
@@ -138,6 +147,8 @@ def main():
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
+    if "text_chunks" not in st.session_state:
+        st.session_state.text_chunks = []
 
     st.header("Document Exploration Tool :books:")
     user_question = st.text_input("Ask a question about your documents:")
@@ -152,13 +163,9 @@ def main():
                 raw_text = get_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
 
-                # Explicitly check total tokens of all chunks
-                total_tokens = sum(count_tokens(chunk) for chunk in text_chunks)
-                if total_tokens > MODEL_TOKEN_LIMIT:
-                    st.error("The document is too large. Please upload a smaller document or split the file.")
-                else:
-                    vectorstore = get_vectorstore(text_chunks)
-                    st.session_state.conversation = get_conversation_chain(vectorstore)
+                # Process document in chunks
+                process_document_chunks(text_chunks)
+                st.success(f"Processed {len(text_chunks)} chunks of your document!")
 
 if __name__ == '__main__':
     main()
