@@ -8,11 +8,18 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
-import io  # Add for downloading text
+import io
+from langchain.callbacks import get_openai_callback
+from tiktoken import encoding_for_model
 
-def count_tokens(text):
-    """Count the number of tokens in a given text."""
-    return len(text.split())
+# Function to count tokens using OpenAI tiktoken tokenizer
+def count_tokens(text, model_name="gpt-3.5-turbo"):
+    enc = encoding_for_model(model_name)
+    return len(enc.encode(text))
+
+# Token limit for the model (gpt-3.5-turbo and gpt-4 have different limits)
+MODEL_TOKEN_LIMIT = 16385
+CHUNK_SIZE = 300  # Reduce chunk size to avoid large text overflow
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -23,8 +30,7 @@ def get_pdf_text(pdf_docs):
     return text
 
 def get_text_chunks(text):
-    # Reduce chunk size further to avoid hitting token limits
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=500, chunk_overlap=100, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=CHUNK_SIZE, chunk_overlap=100, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
 
@@ -63,7 +69,7 @@ def handle_userinput(user_question):
         st.error("Your question is too long. Please shorten it.")
         return
     
-    # Ensure chat_history is initialized
+    # Limit conversation history tokens
     st.session_state.chat_history = limit_conversation_history(st.session_state.chat_history)
 
     # Process the user question
@@ -113,11 +119,13 @@ def main():
             with st.spinner("Processing"):
                 raw_text = get_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
-                if text_chunks:
+                # Explicitly check total tokens of all chunks
+                total_tokens = sum(count_tokens(chunk) for chunk in text_chunks)
+                if total_tokens > MODEL_TOKEN_LIMIT:
+                    st.error("The document is too large. Please upload a smaller document or split the file.")
+                else:
                     vectorstore = get_vectorstore(text_chunks)
                     st.session_state.conversation = get_conversation_chain(vectorstore)
-                else:
-                    st.error("No valid text extracted from PDFs. Please check your documents.")
 
 if __name__ == '__main__':
     main()
