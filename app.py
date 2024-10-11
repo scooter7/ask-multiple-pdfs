@@ -51,18 +51,26 @@ def get_conversation_chain(vectorstore):
 
 # Function to handle user input and generate responses
 def handle_userinput(user_question):
+    # Ensure chat_history is initialized
+    if st.session_state.chat_history is None:
+        st.session_state.chat_history = []
+
+    # Trim chat history to last 10 messages if necessary
     if len(st.session_state.chat_history) > 10:
         st.session_state.chat_history = st.session_state.chat_history[-10:]
 
+    # Generate response using the conversation chain
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
+    # Display chat history
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
         else:
             st.write(bot_template2.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
+        # Download bot responses
         if i % 2 != 0:
             text_to_download = message.content
             st.download_button(
@@ -80,14 +88,14 @@ def main():
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
-        st.session_state.chat_history = None
+        st.session_state.chat_history = []
 
     st.header("Document Exploration Tool :books:")
     user_question = st.text_input("Ask a question about your documents:")
 
     if st.button("Clear Session"):
         st.session_state.conversation = None
-        st.session_state.chat_history = None
+        st.session_state.chat_history = []
         st.success("Session cleared!")
 
     if user_question:
