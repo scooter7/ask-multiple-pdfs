@@ -9,10 +9,17 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template2, user_template
 import io  # For downloading text
+import tiktoken  # Tokenizer for counting tokens
 
-# Patch langchain to avoid AttributeError with missing 'verbose'
-import langchain
-langchain.verbose = False  # Prevent AttributeError
+# Initialize OpenAI Tokenizer
+tokenizer = tiktoken.get_encoding("cl100k_base")
+
+# Token limit for the model (GPT-4 is 16384 tokens)
+TOKEN_LIMIT = 16384
+
+# Function to count tokens
+def count_tokens(text):
+    return len(tokenizer.encode(text))
 
 # Function to extract text from uploaded PDFs
 def get_pdf_text(pdf_docs):
@@ -54,15 +61,33 @@ def chunk_user_input(user_input, chunk_size=1000):
     words = user_input.split()
     return [" ".join(words[i:i + chunk_size]) for i in range(0, len(words), chunk_size)]
 
+# Function to trim chat history based on token limits
+def trim_chat_history(chat_history, token_limit):
+    """Trim the chat history to stay under the token limit."""
+    trimmed_history = []
+    total_tokens = 0
+    for message in reversed(chat_history):
+        message_tokens = count_tokens(message.content)
+        if total_tokens + message_tokens > token_limit:
+            break
+        trimmed_history.insert(0, message)
+        total_tokens += message_tokens
+    return trimmed_history
+
 # Function to handle user input and generate responses
 def handle_userinput(user_question):
     # Ensure chat_history is initialized
     if st.session_state.chat_history is None:
         st.session_state.chat_history = []
 
-    # Trim chat history to last 10 messages if necessary
-    if len(st.session_state.chat_history) > 10:
-        st.session_state.chat_history = st.session_state.chat_history[-10:]
+    # Calculate how many tokens are in the user's question
+    user_question_tokens = count_tokens(user_question)
+
+    # Available tokens for chat history
+    available_tokens = TOKEN_LIMIT - user_question_tokens - 1000  # Reserve 1000 tokens for the response
+
+    # Trim chat history to fit within available tokens
+    st.session_state.chat_history = trim_chat_history(st.session_state.chat_history, available_tokens)
 
     # Process the user question in chunks if necessary
     user_question_chunks = chunk_user_input(user_question)
