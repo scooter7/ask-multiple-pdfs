@@ -53,9 +53,19 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
+    # Initialize the LLM without verbosity settings
+    llm = ChatOpenAI()  # Ensure this uses the correct model initialization
+
+    # Set up the memory buffer for the conversation
     memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
+
+    # Create a conversational retrieval chain with the LLM and vector store retriever
+    conversation_chain = ConversationalRetrievalChain.from_llm(
+        llm=llm,
+        retriever=vectorstore.as_retriever(),
+        memory=memory
+    )
+
     return conversation_chain
 
 def handle_userinput(user_question):
