@@ -1,0 +1,3 @@
+User: Can i use lastpass to store personal passwords?
+
+Bot: Yes, you can use LastPass to store personal passwords securely. LastPass is a password manager that helps you store and manage your passwords in a safe and organized way. It encrypts your data and provides a secure way to access your passwords across multiple devices.
