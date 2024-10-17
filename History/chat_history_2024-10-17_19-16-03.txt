@@ -1,0 +1,3 @@
+User: what can I use lastpass for
+
+Bot: You can use LastPass to securely store and access digital login information. This is particularly useful for individuals on Slate and Digital teams.
