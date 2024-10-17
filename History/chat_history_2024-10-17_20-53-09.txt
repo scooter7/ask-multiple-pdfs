@@ -1,0 +1,15 @@
+User: travel calendar
+
+Bot: To add a travel calendar to your Google Calendar, you can choose from the following options based on your team: 
+
+- Bus Dev & Marketing  
+- Central Admin  
+- Client Success  
+- Creative  
+- RMS  
+- Slate Optimization  
+- Student Search  
+- Web  
+- CLARUS  
+
+If you're unsure which calendar to add, it's best to ask your supervisor for guidance.
