@@ -1,0 +1,13 @@
+User: How to complete a expense report 
+
+Bot: To complete an expense report in Certify, follow these steps:
+
+1. Log in to your Certify account.
+2. Click on "New Expense Report" in the left-hand navigation.
+3. Enter a name for the report, dates, description, and check off "billable to client" if applicable. Click "Next".
+4. Within the expense report, towards the second half of the page, add expenses by typing the type, details, and selecting the receipt if needed.
+5. If the company paid for the expense, change the last entry to “Company Paid - Do not reimburse me”.
+6. Submit the report for approval by clicking “Submit for Approval”, reviewing the details, certifying the report, and clicking “Submit”.
+7. Once all receipts are entered, at the top of the page, you can submit the report.
+
+Remember that expenses are reimbursed every other Friday, so make sure to submit your report by the end of the day on the Friday prior to payment.
