@@ -1,0 +1,9 @@
+User: how do i change my password?
+
+Bot: To change your password, follow these steps:
+1. Visit your Google Account Page.
+2. Click on the Security tab.
+3. Scroll down to the “Signing in to Google” section.
+4. Next to “2-Step Verification,” change “Off” to “On” and follow the prompts to add your phone number and verify your details.
+5. Make sure your new password meets the requirements: at least twelve characters in length, containing characters from three of the four categories (English uppercase, English lowercase, Base 10 digits, Non-alphabetic characters), and not containing your account name or parts of your full name exceeding two consecutive characters.
+6. Remember that passwords expire every 90 days, so ensure you change it before expiration to avoid disruption.
