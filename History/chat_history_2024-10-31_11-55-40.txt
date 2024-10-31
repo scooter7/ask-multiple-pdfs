@@ -1,0 +1,3 @@
+User: Do we have any policies around voting or Election Day
+
+Bot: Yes, there is a policy regarding voting leave mentioned in the initial context provided. The policy is called "Voting Leave." It's always a good idea to refer to the Employee Handbook or connect with HR for more specific details on this policy.
