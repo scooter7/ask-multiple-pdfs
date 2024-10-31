@@ -1,0 +1,3 @@
+User: Do we have any policies around voting or Election Day
+
+Bot: Yes, there is a policy called "Voting Leave" mentioned in the context provided under the "Time and Attendance" section. It is advisable to refer to the specific policy for details on voting leave and Election Day policies at Carnegie.
