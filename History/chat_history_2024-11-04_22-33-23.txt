@@ -1,0 +1,3 @@
+User: How do i compose an email signature
+
+Bot: To compose an email signature, you typically include your full name, job title, company name, contact information (phone number, email address), and any relevant links (company website, LinkedIn profile). You can also add a personal touch like a quote or a brief description of your role. When setting up your email signature, most email clients have a designated section in the settings where you can input this information.
