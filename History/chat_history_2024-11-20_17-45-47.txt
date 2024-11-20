@@ -1,0 +1,10 @@
+User: How do I log into the company asana account
+
+Bot: To log into the company Asana account, you will need to follow these steps:
+
+1. You will receive an email invitation from the email address notifications@harvestapp.com to join the Carnegie workspace.
+2. Accept the invitation by clicking the button in the email invitation.
+3. Choose to "Sign in with Google" on the following screen.
+4. Select your Carnegie Gmail account and follow the prompts.
+
+If you encounter any issues during this process, you can refer to the Asana Resource Guide for more details.
