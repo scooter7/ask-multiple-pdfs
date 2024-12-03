@@ -1,0 +1,3 @@
+User: where can I find the Employee Change Form?
+
+Bot: The Employee Change Form can be submitted to HR if there are changes in information about your direct report. This form is typically used for situations such as an employee becoming a manager, job title change, manager change, department/team change, or a change in the employee's weekly capacity. If you need the specific form itself, it would be best to reach out to your HR department or administrator for guidance on where to access it.
