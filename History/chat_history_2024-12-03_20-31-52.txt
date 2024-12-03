@@ -1,0 +1,3 @@
+User: where can I find the Employee Change Form?
+
+Bot: You can find the Employee Change Form by contacting HR at hr@carnegiehighered.com. The form is used for submitting changes related to employees becoming managers, job title changes, manager changes, department/team changes, and changes to an employee's weekly capacity.
