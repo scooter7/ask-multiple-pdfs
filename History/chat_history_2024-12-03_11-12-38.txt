@@ -1,0 +1,3 @@
+User: where can I find the Employee Change Form?
+
+Bot: The Employee Change Form can be submitted if there are changes in information about your direct report, such as becoming a manager, job title change, manager change, department/team change, or a change in the employee's weekly capacity. To access the form, you can send an email to hr@carnegiehighered.com to request the Employee Change Form.
