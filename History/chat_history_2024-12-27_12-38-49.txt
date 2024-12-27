@@ -1,0 +1,3 @@
+User: Can I see the holiday schedule for 2025
+
+Bot: I'm sorry, I don't have information on the holiday schedule for 2025.
