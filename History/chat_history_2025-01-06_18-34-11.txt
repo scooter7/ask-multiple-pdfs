@@ -1,0 +1,15 @@
+User: how do i set up google tag manager
+
+Bot: To set up Google Tag Manager, you can follow these steps:
+
+1. Go to the Google Tag Manager website.
+2. Sign in with your Google account.
+3. Click on the "Create Account" button.
+4. Enter an account name and select your country.
+5. Click on "Continue."
+6. Accept the Terms of Service.
+7. You will see the container code snippet. Copy this code.
+8. Add the container code snippet to your website's branding template or specific page within X days.
+9. Once the container code is added, you can start adding tags, triggers, and variables in Google Tag Manager for tracking and analytics purposes.
+
+If you need more detailed instructions, you can refer to the Google Tag Manager documentation or seek assistance from a digital strategist.
