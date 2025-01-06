@@ -1,0 +1,11 @@
+User: how do i set up google tag manager
+
+Bot: To set up Google Tag Manager, you need to add the GTM container script code to your Branding Template. Here is a general how-to guide:
+
+1. Go to your Branding Template.
+2. Find the section where you can add scripts or code.
+3. Copy the GTM container script code provided by Google Tag Manager.
+4. Paste the code into the designated area in your Branding Template.
+5. Save the changes to your Branding Template.
+
+By following these steps, you should successfully set up Google Tag Manager on your website.
