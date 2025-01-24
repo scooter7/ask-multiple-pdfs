@@ -1,0 +1,14 @@
+User: How to set up a project in Asana
+
+Bot: To set up a project in Asana, follow these steps:
+
+1. Go to your Asana account and navigate to the Projects tab.
+2. Click on the "+ Add Project" button.
+3. Enter the project name as "Sales - Future Scope" in the "Project Name" text box.
+4. Add five zeros (00000) to the project code box.
+5. Leave the dates section blank.
+6. Select "Non-Billable" as the project type and do not add a budget.
+7. All standard tasks will be automatically added to the project.
+8. All employees will be automatically added to the project as well.
+
+These steps will help you create a new project in Asana following the specified guidelines.
