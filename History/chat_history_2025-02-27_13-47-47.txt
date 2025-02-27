@@ -1,0 +1,3 @@
+User: Is there is an insperity service that helps with insurance and medical bill questions?
+
+Bot: Yes, Insperity offers an Employee Assistance Program (EAP) that provides support for various topics, including health education, stress, and potentially medical bill questions. You can access this service by selecting 'Benefits' from the left navigation menu and then choosing 'Employee Assistance Program (EAP)'.
