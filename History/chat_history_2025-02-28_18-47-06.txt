@@ -1,0 +1,3 @@
+User: What are Carnegie's working hours?
+
+Bot: Carnegie's general business hours are Monday through Friday, from 8:30 a.m. to 5:30 p.m. local time each day. The standard work schedule for employees is between 7:30 a.m. – 6:30 p.m., with core hours of 9:30 a.m. – 4:30 p.m., and a one-hour lunch break.
