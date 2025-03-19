@@ -1,0 +1,3 @@
+User: What is a market opportunity index?
+
+Bot: A Market Opportunity Index (MOI) is a tool that provides service levels for identifying and analyzing market opportunities. It uses data points to help determine market saturation, feeder potential, expansion opportunities, and reach into new markets. It helps in identifying potential markets that align with the client's goals and can provide ZIP codes and DMAs (Designated Market Areas) for further customization.
