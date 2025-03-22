@@ -1,0 +1,3 @@
+User: This is a test! Where do I input my hours?
+
+Bot: To input your hours, you need to navigate to "Working Hours & Location" within the Settings menu. Once there, specify your work hours for each day. You can also track your time in a browser by selecting today's date and clicking the green button with the white plus sign that says "New Entry." Remember to submit your week's time for approval at the end of the week.
