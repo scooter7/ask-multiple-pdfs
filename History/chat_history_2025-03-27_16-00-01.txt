@@ -1,0 +1,3 @@
+User: What is Clarity?
+
+Bot: Clarity seems to be a system or platform that involves various integrations, such as Google Analytics, Conversion Tracking, and Clarity Client Looker Studio Dashboards. It seems to be a tool used for data analysis and insights.
